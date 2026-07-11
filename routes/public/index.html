@@ -443,6 +443,119 @@
   @media (max-width:480px){
     .welcome-card img{ height:340px; }
   }
+
+  /* ---------- Welcome screen extras (IELTS login + socials) ---------- */
+  .welcome-extras{
+    margin-top:1.75rem; display:flex; flex-direction:column; align-items:center; gap:1rem;
+  }
+  .welcome-ielts-link{
+    font-family:'Arial', 'Helvetica Neue', sans-serif; font-size:1.5rem; font-weight:800; letter-spacing:0.01em;
+    color:var(--ink); text-decoration:none; text-transform:uppercase; position:relative; padding-bottom:2px;
+    transition:color .2s ease;
+  }
+  .welcome-ielts-link:hover{ color:var(--brass); }
+  .welcome-social-row{ display:flex; align-items:center; gap:1.25rem; }
+  .welcome-social-icon{
+    display:flex; align-items:center; justify-content:center;
+    width:38px; height:38px; border-radius:50%;
+    background:var(--paper-2); color:var(--ink);
+    border:1px solid var(--line); transition:background .2s ease, color .2s ease, transform .2s ease;
+  }
+  .welcome-social-icon:hover{ background:var(--brass); color:#fff; border-color:var(--brass); transform:translateY(-2px); }
+
+  /* ---------- Footer socials & extras ---------- */
+  .footer-social-row{ display:flex; align-items:center; gap:0.9rem; margin-top:0.9rem; }
+  .footer-social-icon{
+    display:flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:50%;
+    background:rgba(255,255,255,0.06); color:#B7C1D6;
+    border:1px solid var(--line-light); transition:background .2s ease, color .2s ease, transform .2s ease;
+  }
+  .footer-social-icon:hover{ background:var(--brass); color:#fff; border-color:var(--brass); transform:translateY(-2px); }
+  .footer-ielts-link{
+    font-family:'Arial', 'Helvetica Neue', sans-serif; font-size:1.1rem; font-weight:800; letter-spacing:0.01em;
+    color:#B7C1D6; text-decoration:none; text-transform:uppercase; position:relative; display:inline-block;
+    transition:color .2s ease;
+  }
+  .footer-ielts-link:hover{ color:var(--brass-light); }
+  .ielts-login-tag{
+    display:block; font-size:0.32em; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    text-align:center; margin-top:0.2em; opacity:0.75;
+  }
+
+  @media (max-width:640px){
+    .welcome-extras{ margin-top:1.25rem; gap:0.8rem; }
+    .welcome-ielts-link{ font-size:1.2rem; }
+    .welcome-social-row{ gap:1rem; }
+    .welcome-social-icon{ width:34px; height:34px; }
+    .footer-social-row{ gap:0.75rem; }
+    .footer-social-icon{ width:32px; height:32px; }
+  }
+
+  /* ---------- Scroll-reveal animation system ---------- */
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.2,.7,.3,1), transform .7s cubic-bezier(.2,.7,.3,1); }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+  .reveal-stagger.is-visible > *{ animation:revealPop .6s cubic-bezier(.2,.7,.3,1) both; }
+  .reveal-stagger.is-visible > *:nth-child(1){ animation-delay:.05s; }
+  .reveal-stagger.is-visible > *:nth-child(2){ animation-delay:.15s; }
+  .reveal-stagger.is-visible > *:nth-child(3){ animation-delay:.25s; }
+  .reveal-stagger.is-visible > *:nth-child(4){ animation-delay:.35s; }
+  @keyframes revealPop{ from{ opacity:0; transform:translateY(24px) scale(.97); } to{ opacity:1; transform:translateY(0) scale(1); } }
+
+  /* ---------- Vibrant accents & richer hovers (additive, non-structural) ---------- */
+  .card, .problem-card{ position:relative; overflow:hidden; }
+  .card::before, .problem-card::before{
+    content:""; position:absolute; inset:0; opacity:0; pointer-events:none;
+    background:linear-gradient(135deg, rgba(184,134,46,0.10), rgba(232,199,122,0.05) 40%, transparent 70%);
+    transition:opacity .35s ease;
+  }
+  .card:hover::before, .problem-card:hover::before{ opacity:1; }
+  .card:hover, .problem-card:hover{ transform:translateY(-5px); box-shadow:0 14px 30px -14px rgba(18,33,59,0.25); border-color:var(--brass); }
+  .btn-primary{ position:relative; overflow:hidden; }
+  .btn-primary::after{
+    content:""; position:absolute; top:0; left:-60%; width:50%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform:skewX(-20deg); transition:left .6s ease;
+  }
+  .btn-primary:hover::after{ left:130%; }
+  .logo span{ background:linear-gradient(120deg, var(--brass), var(--brass-light), var(--brass)); background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shimmerText 5s linear infinite; }
+  @keyframes shimmerText{ to{ background-position:200% center; } }
+  .welcome-social-icon, .footer-social-icon{ animation:none; }
+  .welcome-social-icon:hover, .footer-social-icon:hover{ box-shadow:0 6px 18px -6px rgba(184,134,46,0.55); }
+  @media (prefers-reduced-motion: reduce){
+    .reveal, .reveal-stagger > *{ opacity:1 !important; transform:none !important; animation:none !important; }
+    .logo span{ animation:none; }
+  }
+
+  /* ---------- Extra mobile polish (additive, no structural changes) ---------- */
+  @media (max-width:640px){
+    .section-head{ text-align:center; margin-left:auto; margin-right:auto; margin-bottom:2.25rem; }
+    .section-head p{ font-size:0.98rem; }
+    .card, .problem-card{ border-radius:16px; }
+    .card:hover, .problem-card:hover{ transform:translateY(-2px); }
+    .figure-card{ text-align:center; border-radius:14px; }
+    .figure-card b{ font-size:1.6rem; }
+    .hero h1{ text-align:center; max-width:none; }
+    .hero-sub{ text-align:center; }
+    .hero-grid{ text-align:center; }
+    .hero-ctas{ gap:0.75rem; }
+    .about-grid > div:first-child{ text-align:center; }
+    .about-figures{ gap:0.85rem; }
+    #testimonials .section-head{ text-align:center; }
+    .footer-grid{ text-align:center; }
+    .footer-grid > div:first-child{ order:-1; }
+    .footer-links{ align-items:center; }
+    .welcome-social-row, .footer-social-row{ justify-content:center; }
+    .welcome-extras{ margin-top:1.4rem; }
+    a, button{ -webkit-tap-highlight-color:rgba(184,134,46,0.15); }
+  }
+  @media (max-width:480px){
+    .hero h1{ font-size:clamp(2rem, 8vw, 2.6rem); line-height:1.15; }
+    .hero-sub{ font-size:0.98rem; }
+    .card, .problem-card, .figure-card{ padding:1.5rem 1.25rem; }
+    .btn-primary, .btn-ghost{ min-height:48px; }
+    nav.main-nav a{ font-size:1.02rem; }
+  }
 </style>
 </head>
 <body>
@@ -457,6 +570,17 @@
       <h2>Nextstep Immigration</h2>
       <p>Study, work &amp; residency visas — done right</p>
       <button id="visitSiteBtn" type="button">Visit Site <span aria-hidden="true">&rarr;</span></button>
+    </div>
+  </div>
+  <div class="welcome-extras">
+    <a href="#" class="welcome-ielts-link">IELTS<span class="ielts-login-tag"></span></a>
+    <div class="welcome-social-row">
+      <a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" aria-label="Facebook" class="welcome-social-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.5h2.85l.43-3.32H13.5V8.05c0-.96.27-1.62 1.65-1.62h1.76V3.46C16.6 3.4 15.53 3.3 14.28 3.3c-2.6 0-4.38 1.59-4.38 4.5v2.38H7.05v3.32H9.9V22h3.6z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/nextstep.immigration.be/" target="_blank" rel="noopener" aria-label="Instagram" class="welcome-social-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+      </a>
     </div>
   </div>
 </div>
@@ -799,11 +923,11 @@
 
         <div class="info-row">
           <div class="ico">📧</div>
-          <div><b>Email</b><span>info@nextstepimmigration.com</span></div>
+          <div><b>Email</b><span>belgian.business01@gmail.com</span></div>
         </div>
         <div class="info-row">
           <div class="ico">📞</div>
-          <div><b>Phone</b><span>+1 (555) 000-0000</span></div>
+          <div><b>Phone</b><span>+8801805723581</span></div>
         </div>
         <div class="info-row">
           <div class="ico">🕓</div>
@@ -853,12 +977,21 @@
     </div>
     <div>
       <h4>Contact</h4>
-      <p>📧 info@nextstepimmigration.com</p>
-      <p>📞 +1 (555) 000-0000</p>
+      <p>📧 belgian.business01@gmail.com</p>
+      <p>📞 <a href="tel:+8801805723581" style="color:#B7C1D6;">+880 1805-723581</a></p>
+      <p><a href="#" class="footer-ielts-link">IELTS<span class="ielts-login-tag"></span></a></p>
+      <div class="footer-social-row">
+        <a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" aria-label="Facebook" class="footer-social-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.5h2.85l.43-3.32H13.5V8.05c0-.96.27-1.62 1.65-1.62h1.76V3.46C16.6 3.4 15.53 3.3 14.28 3.3c-2.6 0-4.38 1.59-4.38 4.5v2.38H7.05v3.32H9.9V22h3.6z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/nextstep.immigration.be/" target="_blank" rel="noopener" aria-label="Instagram" class="footer-social-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+        </a>
+      </div>
     </div>
   </div>
   <div class="footer-bottom">
-    &copy; 2026 Nextstep Immigration. All rights reserved.
+    &copy; 2026 Nextstep Immigration. All rights reserved. &middot; Powered by Minhaj Group
   </div>
 </footer>
 
@@ -1069,6 +1202,36 @@
         welcome.style.display = 'none';
       }, 450);
     });
+  })();
+</script>
+<script>
+  (function(){
+    // Auto-tag key elements for scroll-reveal animation (additive, no markup edits needed)
+    var sectionSelectors = ['#about', '#services', '#problems', '#apply', '#events', '#testimonials', '#contact'];
+    sectionSelectors.forEach(function(sel){
+      var el = document.querySelector(sel);
+      if (el) el.classList.add('reveal');
+    });
+    var staggerGroups = ['.features', '.problems-grid', '.about-figures'];
+    staggerGroups.forEach(function(sel){
+      var el = document.querySelector(sel);
+      if (el) el.classList.add('reveal-stagger');
+    });
+
+    var targets = document.querySelectorAll('.reveal, .reveal-stagger');
+    if ('IntersectionObserver' in window && targets.length){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+      targets.forEach(function(t){ io.observe(t); });
+    } else {
+      targets.forEach(function(t){ t.classList.add('is-visible'); });
+    }
   })();
 </script>
 </body>
