@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nextstep Immigration — Your journey abroad, guided</title>
+<meta name="description" content="Expert immigration guidance for students, professionals, and families. Student visas, work visas, permanent residency, and family sponsorship." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12213B;
+    --ink-2:#1B2F52;
+    --paper:#F6F4EE;
+    --paper-2:#EEEAE0;
+    --brass:#B8862E;
+    --brass-light:#E8C77A;
+    --line: rgba(18,33,59,0.14);
+    --line-light: rgba(246,244,238,0.22);
+    --radius: 14px;
+    --max: 1120px;
+    font-size: 16px;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+  html, body{ max-width:100%; overflow-x:hidden; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Fraunces', Georgia, serif; font-weight:600; line-height:1.12;
+    margin:0 0 0.5em; letter-spacing:-0.01em; color:var(--ink);
+  }
+  p{ margin:0 0 1em; color:#3D4A63; }
+  .container{ max-width:var(--max); margin:0 auto; padding:0 1.5rem; }
+  a{ color:inherit; text-decoration:none; }
+
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(246,244,238,0.88); backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-container{ display:flex; align-items:center; justify-content:space-between; height:72px; }
+  .logo{ font-family:'Fraunces', serif; font-weight:600; font-size:1.25rem; color:var(--ink); letter-spacing:-0.01em; }
+  .logo span{ color:var(--brass); font-style:italic; font-weight:500; }
+  nav.main-nav{ display:flex; align-items:center; gap:2rem; }
+  nav.main-nav a:not(.btn-primary){ font-size:0.95rem; font-weight:500; color:var(--ink); position:relative; padding:6px 0; }
+  nav.main-nav a:not(.btn-primary)::after{ content:""; position:absolute; left:0; bottom:0; height:2px; width:0; background:var(--brass); transition:width .25s ease; }
+  nav.main-nav a:not(.btn-primary):hover::after{ width:100%; }
+
+  .btn-primary{
+    display:inline-flex; align-items:center; justify-content:center;
+    background:var(--ink); color:var(--paper); padding:0.7rem 1.4rem; border-radius:999px;
+    font-weight:600; font-size:0.92rem; border:1px solid var(--ink);
+    transition: background .2s ease, color .2s ease, transform .2s ease; cursor:pointer;
+  }
+  .btn-primary:hover{ background:var(--brass); border-color:var(--brass); transform:translateY(-1px); }
+  .btn-large{ padding:1rem 2rem; font-size:1rem; }
+  .btn-ghost{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:1rem 2rem; border-radius:999px; font-weight:600; font-size:1rem;
+    border:1px solid var(--line); color:var(--ink);
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .btn-ghost:hover{ border-color:var(--ink); background:rgba(18,33,59,0.04); }
+
+  .nav-toggle{ display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:12px; min-width:44px; min-height:44px; align-items:center; justify-content:center; }
+  .nav-toggle span{ width:24px; height:2px; background:var(--ink); display:block; border-radius:2px; }
+
+  .hero{
+    position:relative; padding: 6rem 0 5rem; overflow:hidden;
+    background:
+      radial-gradient(50% 55% at 88% 8%, rgba(184,134,46,0.16), transparent 62%),
+      radial-gradient(40% 40% at 8% 95%, rgba(184,134,46,0.08), transparent 65%),
+      var(--paper);
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:0.5;
+    background-image: radial-gradient(rgba(18,33,59,0.06) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.5), transparent 70%);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.5), transparent 70%);
+  }
+  .hero-grid{ position:relative; z-index:1; display:grid; grid-template-columns: 1.1fr 0.9fr; gap:3rem; align-items:center; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:0.5rem; font-size:0.8rem; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--brass); margin-bottom:1.25rem;
+  }
+  .eyebrow::before{ content:""; width:22px; height:1px; background:var(--brass); display:inline-block; }
+  .hero h1{ font-size:clamp(2.4rem, 5vw, 3.6rem); max-width:14ch; }
+  .hero h1 em{ font-style:italic; color:var(--brass); font-weight:500; }
+  .hero-sub{ font-size:1.1rem; max-width:44ch; margin-bottom:2rem; color:#425072; }
+  .hero-ctas{ display:flex; gap:1rem; flex-wrap:wrap; }
+  .hero-stats{ display:flex; gap:2.2rem; margin-top:3rem; padding-top:2rem; border-top:1px solid var(--line); }
+  .stat b{ font-family:'Fraunces', serif; font-size:1.7rem; font-weight:700; display:block; color:var(--ink); letter-spacing:-0.01em; }
+  .stat span{ font-size:0.82rem; color:#5B6884; }
+
+  .pass{
+    position:relative; background:linear-gradient(155deg, var(--ink-2) 0%, var(--ink) 55%, #0E1930 100%);
+    color:var(--paper); border-radius:var(--radius); overflow:hidden;
+    padding:2rem; box-shadow: 0 40px 70px -24px rgba(18,33,59,0.55), 0 2px 0 rgba(255,255,255,0.03) inset;
+    transform: rotate(2deg); animation: passFloat 6s ease-in-out infinite;
+  }
+  .pass::before, .pass::after{ content:""; position:absolute; width:26px; height:26px; background:var(--paper); border-radius:50%; top:50%; transform:translateY(-50%); z-index:2; }
+  .pass::before{ left:-13px; }
+  .pass::after{ right:-13px; }
+  .pass-sheen{
+    position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(115deg, rgba(255,255,255,0.08) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.05) 100%);
+  }
+  @keyframes passFloat{
+    0%, 100%{ transform: rotate(2deg) translateY(0); }
+    50%{ transform: rotate(2deg) translateY(-8px); }
+  }
+  @media (prefers-reduced-motion: reduce){ .pass{ animation:none; } }
+  .pass-top{ display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:1.4rem; margin-bottom:1.4rem; border-bottom:2px dashed var(--line-light); }
+  .pass-top .kicker{ font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--brass-light); }
+  .pass-top h3{ color:var(--paper); font-size:1.3rem; margin:0.35rem 0 0; }
+  .pass-stamp{
+    border:1.5px solid var(--brass-light); color:var(--brass-light); font-size:0.68rem;
+    letter-spacing:0.06em; text-transform:uppercase; padding:0.3rem 0.6rem; border-radius:999px;
+    transform:rotate(-8deg); white-space:nowrap; box-shadow:0 0 0 3px rgba(232,199,122,0.08);
+  }
+  .pass-row{ display:flex; justify-content:space-between; margin-bottom:1rem; }
+  .pass-row .label{ font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:#9FADC7; margin-bottom:0.2rem; }
+  .pass-row .value{ font-family:'Fraunces', serif; font-size:1rem; color:var(--paper); }
+  .pass-barcode{
+    position:relative; margin-top:1.5rem; height:34px; border-radius:4px;
+    background: repeating-linear-gradient(90deg, var(--paper) 0 2px, transparent 2px 5px, var(--brass-light) 5px 6px, transparent 6px 9px);
+    opacity:0.85;
+  }
+
+  section{ padding:5.5rem 0; }
+  .section-head{ max-width:640px; margin-bottom:3rem; }
+  .section-head .eyebrow{ margin-bottom:1rem; }
+  .section-head h2{ font-size:clamp(1.9rem, 3.4vw, 2.6rem); }
+  .section-head p{ font-size:1.05rem; }
+
+  #about{ background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .about-grid{ display:grid; grid-template-columns: 0.9fr 1.1fr; gap:3.5rem; align-items:start; }
+  .about-figures{ display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+  .figure-card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:1.5rem; }
+  .figure-card b{ font-family:'Fraunces', serif; font-size:1.9rem; display:block; color:var(--ink); }
+  .figure-card span{ font-size:0.85rem; color:#5B6884; }
+
+  .features{ display:grid; grid-template-columns:repeat(4, 1fr); gap:1.25rem; }
+  .card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:1.75rem; transition: border-color .2s ease, transform .2s ease; }
+  .card:hover{ border-color:var(--brass); transform:translateY(-3px); }
+  .card .num{ font-family:'Fraunces', serif; font-size:0.85rem; color:var(--brass); display:block; margin-bottom:0.9rem; }
+  .card h3{ font-size:1.15rem; margin-bottom:0.5rem; }
+  .card p{ font-size:0.92rem; margin-bottom:0; }
+
+  #universities{ background:var(--paper); }
+  .uni-filter{ display:flex; flex-wrap:wrap; gap:0.6rem; margin-bottom:2.5rem; }
+  .uni-filter button{
+    font-family:'Inter', sans-serif; font-size:0.85rem; font-weight:600; color:var(--ink);
+    background:var(--paper-2); border:1px solid var(--line); border-radius:999px;
+    padding:0.5rem 1.1rem; cursor:pointer; transition:background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .uni-filter button:hover{ border-color:var(--brass); }
+  .uni-filter button.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .uni-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:1.5rem; }
+  .uni-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .uni-card:hover{ transform:translateY(-3px); box-shadow:0 20px 40px -20px rgba(18,33,59,0.25); }
+  .uni-banner{
+    position:relative; height:104px; display:flex; align-items:center; padding:0 1.5rem;
+    color:#fff; overflow:hidden;
+  }
+  .uni-banner::after{
+    content:""; position:absolute; inset:0; opacity:0.5;
+    background-image: radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px);
+    background-size:14px 14px;
+  }
+  .uni-monogram{
+    position:relative; z-index:1; width:52px; height:52px; border-radius:10px;
+    background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.35);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:700; font-size:1.3rem; flex-shrink:0; margin-right:1rem;
+  }
+  .uni-banner-text{ position:relative; z-index:1; }
+  .uni-banner-text .flag{ font-size:0.95rem; margin-right:0.35rem; }
+  .uni-banner-text .country{ font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; opacity:0.85; }
+  .uni-body{ padding:1.25rem 1.5rem 1.5rem; }
+  .uni-body h3{ font-size:1.05rem; margin-bottom:0.3rem; }
+  .uni-body .uni-city{ font-size:0.82rem; color:var(--brass); font-weight:600; margin-bottom:0.6rem; display:block; }
+  .uni-body p{ font-size:0.88rem; margin-bottom:0.8rem; }
+  .uni-meta{ display:flex; justify-content:space-between; font-size:0.76rem; color:#5B6884; padding-top:0.75rem; border-top:1px solid var(--line); }
+  .uni-meta b{ color:var(--ink); }
+  .uni-note{
+    margin-top:2.5rem; padding:1.25rem 1.5rem; border:1px dashed var(--line); border-radius:var(--radius);
+    background:var(--paper-2); font-size:0.86rem; color:#5B6884;
+  }
+  @media (max-width:980px){ .uni-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:640px){ .uni-grid{ grid-template-columns:1fr; } }
+
+  #events{ background:var(--paper); }
+  .events-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+  .event-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; display:flex; flex-direction:column; transition:border-color .2s ease, transform .2s ease;
+  }
+  .event-card:hover{ border-color:var(--brass); transform:translateY(-3px); }
+  .event-card .event-img{ width:100%; aspect-ratio:16/10; background:var(--paper-2); position:relative; overflow:hidden; }
+  .event-card .event-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .event-card .event-badge{
+    position:absolute; top:0.85rem; left:0.85rem; background:var(--ink); color:var(--brass-light);
+    font-size:0.7rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase;
+    padding:0.35rem 0.7rem; border-radius:999px;
+  }
+  .event-body{ padding:1.5rem; display:flex; flex-direction:column; gap:0.6rem; flex:1; }
+  .event-body h3{ font-size:1.15rem; margin:0; }
+  .event-sub{ color:var(--brass); font-size:0.85rem; font-weight:600; margin:0; }
+  .event-body p.event-desc{ font-size:0.9rem; color:#5B6884; margin:0; }
+  .event-meta{ display:flex; flex-direction:column; gap:0.35rem; font-size:0.82rem; color:#5B6884; margin-top:auto; padding-top:0.75rem; border-top:1px solid var(--line); }
+  .event-meta span{ display:flex; align-items:center; gap:0.45rem; }
+  .event-cta{
+    margin-top:0.85rem; display:inline-flex; align-items:center; justify-content:center;
+    background:var(--ink); color:var(--paper); padding:0.65rem 1.1rem; border-radius:999px;
+    font-weight:600; font-size:0.85rem; border:1px solid var(--ink); text-align:center;
+  }
+  .event-cta:hover{ background:var(--brass); border-color:var(--brass); }
+  #eventsEmpty{ text-align:center; color:#5B6884; font-size:0.92rem; padding:2rem 0; }
+  @media (max-width:900px){ .events-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:640px){ .events-grid{ grid-template-columns:1fr; } }
+
+  /* Floating WhatsApp chat button */
+  #waFloat{
+    position:fixed; right:1.4rem; bottom:1.4rem; z-index:500;
+    width:60px; height:60px; border-radius:50%; background:#25D366;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 25px -8px rgba(18,33,59,0.45); border:2px solid var(--paper);
+    transition:transform .2s ease; text-decoration:none;
+  }
+  #waFloat:hover{ transform:translateY(-3px) scale(1.04); }
+  #waFloat svg{ width:30px; height:30px; }
+  #waFloat .wa-pulse{
+    position:absolute; inset:-2px; border-radius:50%; border:2px solid #25D366;
+    animation:waPulse 2.2s ease-out infinite;
+  }
+  @keyframes waPulse{ 0%{ transform:scale(1); opacity:0.7; } 100%{ transform:scale(1.5); opacity:0; } }
+  @media (max-width:640px){ #waFloat{ right:1rem; bottom:1rem; width:54px; height:54px; } #waFloat svg{ width:26px; height:26px; } }
+
+  #testimonials{ background:var(--ink); }
+  #testimonials .section-head h2, #testimonials .section-head p{ color:var(--paper); }
+  #testimonials .section-head p{ color:#B7C1D6; }
+  #testimonials .eyebrow{ color:var(--brass-light); }
+  #testimonials .eyebrow::before{ background:var(--brass-light); }
+  .t-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+  .t-card{ background:var(--ink-2); border:1px solid var(--line-light); border-radius:var(--radius); padding:1.75rem; }
+  .t-card p{ color:#DCE3F0; font-size:0.98rem; }
+  .t-card h4{ font-family:'Inter', sans-serif; font-weight:600; font-size:0.88rem; color:var(--brass-light); margin:0.75rem 0 0; }
+  .quote-mark{ font-family:'Fraunces', serif; font-size:2rem; color:var(--brass-light); display:block; line-height:1; margin-bottom:0.5rem; }
+
+  .contact-grid{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:3.5rem; }
+  .contact-info .info-row{ display:flex; gap:1rem; margin-bottom:1.5rem; align-items:flex-start; }
+  .info-row .ico{ width:40px; height:40px; border-radius:10px; background:var(--paper-2); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem; }
+  .info-row b{ display:block; font-size:0.95rem; }
+  .info-row span{ font-size:0.9rem; color:#5B6884; }
+
+  form#contactForm{ background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); padding:2rem; display:flex; flex-direction:column; gap:1rem; }
+  .field{ display:flex; flex-direction:column; gap:0.4rem; }
+  .field label{ font-size:0.82rem; font-weight:600; color:var(--ink); }
+  input, textarea{
+    font-family:'Inter', sans-serif; font-size:0.95rem; padding:0.85rem 1rem;
+    border-radius:9px; border:1px solid var(--line); background:var(--paper); color:var(--ink); resize:vertical;
+  }
+  input:focus, textarea:focus{ outline:2px solid var(--brass); outline-offset:1px; border-color:var(--brass); }
+  input::placeholder, textarea::placeholder{ color:#8B96AC; }
+  #formStatus{ font-size:0.88rem; margin:0; min-height:1.2em; color:var(--brass); font-weight:600; }
+
+  #apply{ background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+
+  #problems{ background:var(--paper-2); }
+  #problems h2 em{ font-style:italic; color:var(--brass); font-weight:500; }
+  .problems-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:1.25rem; align-items:end; }
+  .problem-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:2rem 1.75rem; min-height:280px; transition:border-color .2s ease, transform .2s ease;
+  }
+  .problem-card:hover{ border-color:var(--brass); transform:translateY(-3px); }
+  .problem-card--raised{ min-height:340px; }
+  .problem-card--mid{ min-height:310px; }
+  .problem-icon{ width:34px; height:34px; color:var(--brass); margin-bottom:2.5rem; display:block; }
+  .problem-card h3{ font-size:1.2rem; margin-bottom:0.75rem; }
+  .problem-card p{ font-size:0.92rem; margin-bottom:0; color:#5B6884; }
+  @media (max-width:900px){
+    .problems-grid{ grid-template-columns:repeat(2, 1fr); }
+    .problem-card, .problem-card--raised, .problem-card--mid{ min-height:auto; }
+  }
+  @media (max-width:520px){
+    .problems-grid{ grid-template-columns:1fr; }
+  }
+  .apply-back-link{ display:inline-block; margin-bottom:1.25rem; font-weight:600; color:var(--brass); text-decoration:none; }
+  .apply-back-link:hover{ text-decoration:underline; }
+  /* Isolated Apply view: hide every other section + hero so only #apply shows */
+  body.apply-view main section:not(#apply),
+  body.apply-view footer{ display:none !important; }
+  body.apply-view #apply{ border-top:none; min-height:calc(100vh - 80px); }
+  #apply{ display:none; }
+  body.apply-view #apply{ display:block; }
+  .apply-form{ max-width:760px; }
+  .apply-form fieldset{
+    border:1px solid var(--line); border-radius:var(--radius);
+    padding:1.75rem; margin:0 0 1.5rem; background:var(--paper);
+  }
+  .apply-form legend{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.1rem;
+    padding:0 0.5rem; color:var(--ink);
+  }
+  .apply-form .row{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .apply-form .row .field{ margin-bottom:0; }
+  .apply-form .field{ margin-bottom:1rem; }
+  .apply-form .field:last-child{ margin-bottom:0; }
+  .apply-form select{
+    font-family:'Inter', sans-serif; font-size:0.95rem; padding:0.85rem 1rem;
+    border-radius:9px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
+  }
+  .apply-form select:focus{ outline:2px solid var(--brass); outline-offset:1px; border-color:var(--brass); }
+  .apply-form input[type="file"]{ padding:0.5rem; border:1px solid var(--line); border-radius:9px; background:var(--paper); font-size:0.9rem; }
+  .apply-form .file-hint{ font-size:0.78rem; color:#5B6884; margin-top:0.35rem; display:block; }
+  .apply-form button[type="submit"]:disabled{ opacity:0.6; cursor:not-allowed; }
+  #applyStatus{ font-size:0.88rem; margin:1rem 0 0; min-height:1.2em; color:var(--brass); font-weight:600; }
+  @media (max-width:640px){
+    .apply-form .row{ grid-template-columns:1fr; }
+    .apply-form fieldset{ padding:1.25rem; }
+  }
+
+  footer{ background:var(--ink); color:#B7C1D6; padding-top:3.5rem; }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.5rem; padding-bottom:2.5rem; border-bottom:1px solid var(--line-light); }
+  .footer-grid h4{ color:var(--paper); font-size:1rem; margin-bottom:0.9rem; }
+  .footer-grid p{ color:#9FADC7; font-size:0.9rem; }
+  .footer-links{ display:flex; flex-direction:column; gap:0.6rem; }
+  .footer-links a{ font-size:0.9rem; color:#B7C1D6; }
+  .footer-links a:hover{ color:var(--brass-light); }
+  .footer-bottom{ text-align:center; padding:1.5rem 0; font-size:0.82rem; color:#7E8CA8; }
+
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+  @media (max-width:480px){
+    .container{ padding:0 1.15rem; }
+  }
+  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } *{ transition:none !important; } }
+
+  @media (max-width: 980px){
+    .features{ grid-template-columns:repeat(2, 1fr); }
+    .t-grid{ grid-template-columns:1fr; }
+    .hero-grid{ grid-template-columns:1fr; }
+    .pass{ transform:none; animation:none; max-width:420px; margin:0 auto; }
+    .about-grid, .contact-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+  }
+  @media (max-width: 720px){
+    :root{ font-size:15px; }
+    input, textarea, select{ font-size:16px; }
+    .uni-filter button{ padding:0.6rem 1rem; }
+    .nav-toggle{ display:flex; }
+    nav.main-nav{
+      position:absolute; top:72px; left:0; right:0; background:var(--paper);
+      border-bottom:1px solid var(--line); flex-direction:column; align-items:flex-start;
+      gap:0; padding:0.5rem 1.5rem 1rem; display:none;
+    }
+    nav.main-nav.open{ display:flex; }
+    nav.main-nav a{ width:100%; padding:0.85rem 0; border-bottom:1px solid var(--line); min-height:44px; display:flex; align-items:center; }
+    nav.main-nav a.btn-primary{ margin-top:0.75rem; text-align:center; display:inline-flex; }
+    .hero{ padding:3rem 0 2.5rem; overflow-x:clip; }
+    .hero::before{ background-size:16px 16px; }
+    .hero-ctas{ flex-direction:column; align-items:stretch; }
+    .hero-ctas .btn-primary, .hero-ctas .btn-ghost{ width:100%; }
+    .hero-stats{ flex-wrap:wrap; gap:1.25rem 1.5rem; margin-top:2.25rem; padding-top:1.5rem; }
+    .stat b{ font-size:1.4rem; }
+    .stat span{ font-size:0.78rem; }
+    .pass{ padding:1.5rem; max-width:100%; border-radius:12px; }
+    .pass::before, .pass::after{ width:20px; height:20px; }
+    .pass::before{ left:-10px; }
+    .pass::after{ right:-10px; }
+    .pass-top h3{ font-size:1.15rem; }
+    .pass-row .value{ font-size:0.92rem; }
+    .features{ grid-template-columns:1fr; }
+    .about-figures{ grid-template-columns:1fr 1fr; }
+    section{ padding:3rem 0; }
+  }
+  @media (max-width: 420px){
+    .hero-stats{ gap:1rem 1.25rem; }
+    .stat{ min-width:calc(50% - 0.625rem); }
+  }
+  @media (max-width: 380px){
+    :root{ font-size:14.5px; }
+    section{ padding:2.25rem 0; }
+    .container{ padding:0 1rem; }
+    form#contactForm{ padding:1.25rem; }
+    .apply-form fieldset{ padding:1rem; }
+    .card, .problem-card, .figure-card, .uni-body{ padding:1.25rem; }
+    .stat{ min-width:100%; }
+    .welcome-card-overlay{ padding:1.25rem 1.25rem 1.5rem; }
+    .welcome-card img{ height:280px; }
+  }
+
+  /* ---------- Welcome / splash screen ---------- */
+  #siteContent{ display:none; }
+  #welcomeScreen{
+    position:fixed; inset:0; z-index:999; background:var(--paper);
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    padding:3.5rem 1.5rem 3rem; overflow-y:auto; text-align:center;
+    transition: opacity .45s ease, visibility .45s ease;
+  }
+  #welcomeScreen.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+  .welcome-eyebrow{
+    font-size:0.8rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--brass); display:flex; align-items:center; gap:0.6rem; margin-bottom:1.5rem;
+  }
+  .welcome-eyebrow::before, .welcome-eyebrow::after{ content:""; width:28px; height:1px; background:var(--brass); }
+  .welcome-title{ font-size:clamp(2rem, 6vw, 3.4rem); margin-bottom:0.6rem; }
+  .welcome-title em{ font-style:italic; color:var(--brass); font-weight:500; }
+  .welcome-tagline{
+    font-size:0.95rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+    color:#5B6884; margin-bottom:2.5rem;
+  }
+  .welcome-tagline b{ color:var(--brass); font-weight:700; }
+  .welcome-card{
+    position:relative; width:100%; max-width:480px; border-radius:var(--radius);
+    overflow:hidden; box-shadow:0 40px 70px -24px rgba(18,33,59,0.4);
+    background:#000;
+  }
+  .welcome-card img{ display:block; width:100%; height:420px; object-fit:cover; opacity:0.88; }
+  .welcome-card-overlay{
+    position:absolute; left:0; right:0; bottom:0; padding:1.75rem 1.75rem 2rem;
+    background:linear-gradient(0deg, rgba(10,16,30,0.92) 10%, rgba(10,16,30,0.55) 55%, transparent 100%);
+    text-align:left;
+  }
+  .welcome-card-overlay h2{ color:#fff; font-size:1.5rem; margin-bottom:0.3rem; }
+  .welcome-card-overlay p{ color:#D7DCE8; font-size:0.92rem; margin-bottom:1.25rem; }
+  #visitSiteBtn{
+    display:inline-flex; align-items:center; gap:0.5rem; background:var(--brass); color:var(--ink);
+    padding:0.85rem 1.6rem; border-radius:999px; font-weight:700; font-size:0.95rem;
+    border:none; cursor:pointer; transition:background .2s ease, transform .2s ease;
+  }
+  #visitSiteBtn:hover{ background:var(--brass-light); transform:translateY(-1px); }
+  @media (max-width:480px){
+    .welcome-card img{ height:340px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="welcomeScreen">
+  <div class="welcome-eyebrow">Study, work &amp; residency visas</div>
+  <h1 class="welcome-title">Nextstep <em>Immigration</em></h1>
+  <p class="welcome-tagline">Your journey abroad, <b>guided</b></p>
+  <div class="welcome-card">
+    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop" alt="Students working together" />
+    <div class="welcome-card-overlay">
+      <h2>Nextstep Immigration</h2>
+      <p>Study, work &amp; residency visas — done right</p>
+      <button id="visitSiteBtn" type="button">Visit Site <span aria-hidden="true">&rarr;</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="siteContent">
+
+<header>
+  <div class="container nav-container">
+    <a href="#home" class="logo">Nextstep <span>Immigration</span></a>
+    <nav class="main-nav" id="mainNav">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#apply">Apply</a>
+      <a href="#events">Events</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#contact" class="btn-primary">Book a consultation</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <section id="home" class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">Study, work &amp; residency visas</div>
+        <h1>Your <em>next step</em> starts with the right paperwork, done right.</h1>
+        <p class="hero-sub">We handle the forms, deadlines, and fine print of moving abroad — so you can focus on actually getting there.</p>
+        <div class="hero-ctas">
+          <a href="#contact" class="btn-primary btn-large">Book a free consultation</a>
+          <a href="#services" class="btn-ghost">See our services</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><b>50+</b><span>Applications filed</span></div>
+          <div class="stat"><b>3+ yrs</b><span>Consulting experience</span></div>
+          <div class="stat"><b>94%</b><span>First-time approval rate</span></div>
+        </div>
+      </div>
+
+      <div class="pass">
+        <div class="pass-sheen"></div>
+        <div class="pass-top">
+          <div>
+            <div class="kicker">Boarding pass</div>
+            <h3>Next Step</h3>
+          </div>
+          <div class="pass-stamp">Approved</div>
+        </div>
+        <div class="pass-row">
+          <div><div class="label">Passenger</div><div class="value">You</div></div>
+          <div><div class="label">From</div><div class="value">Application</div></div>
+        </div>
+        <div class="pass-row">
+          <div><div class="label">Destination</div><div class="value">New Beginning</div></div>
+          <div><div class="label">Status</div><div class="value">Confirmed</div></div>
+        </div>
+        <div class="pass-barcode"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="container about-grid">
+      <div>
+        <div class="eyebrow">Who we are</div>
+        <h2>Certified consultants, ten years in the field.</h2>
+        <p>We're a team of certified immigration consultants who've spent over a decade guiding students, professionals, and families through the paperwork of relocating abroad. No jargon, no guesswork — just a clear plan for your specific case.</p>
+      </div>
+      <div class="about-figures">
+        <div class="figure-card"><b>50+</b><span>Successful applications</span></div>
+        <div class="figure-card"><b>5</b><span>Partner universities</span></div>
+        <div class="figure-card"><b>6</b><span>Countries covered</span></div>
+        <div class="figure-card"><b>94%</b><span>Approved on first try</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">What we handle</div>
+        <h2>Every stage of the journey, one team.</h2>
+        <p>From your first application to your final approval letter — we manage the details that usually cause delays.</p>
+      </div>
+      <div class="features">
+        <div class="card">
+          <span class="num">01</span>
+          <h3>Student visas</h3>
+          <p>University applications, financial documentation, and visa filing handled end to end.</p>
+        </div>
+        <div class="card">
+          <span class="num">02</span>
+          <h3>Work visas</h3>
+          <p>Skilled worker and employer-sponsored pathways, simplified into a clear checklist.</p>
+        </div>
+        <div class="card">
+          <span class="num">03</span>
+          <h3>Permanent residency</h3>
+          <p>PR and citizenship applications prepared and reviewed before you ever submit them.</p>
+        </div>
+        <div class="card">
+          <span class="num">04</span>
+          <h3>Family sponsorship</h3>
+          <p>Spousal and family visa programs, so reuniting abroad doesn't take years.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="problems">
+    <div class="container">
+      <div class="section-head" style="text-align:center; margin-left:auto; margin-right:auto;">
+        <h2>Why Applications Go <em>Wrong</em></h2>
+      </div>
+      <div class="problems-grid">
+        <div class="problem-card">
+          <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18M4 9h16M4 15h16"/></svg>
+          <h3>Country Chosen Before Eligibility</h3>
+          <p>Students select a destination without confirming whether their profile actually fits.</p>
+        </div>
+        <div class="problem-card problem-card--raised">
+          <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="5" r="1.6"/><path d="M14 10l-2.5 2 1 4-3 4M11.5 12L8 11l-2 3M14 10l3 1.5-1 3.5"/></svg>
+          <h3>Rushed Decisions for Intakes</h3>
+          <p>Applications are hurried to meet deadlines, reducing the quality of preparation.</p>
+        </div>
+        <div class="problem-card problem-card--mid">
+          <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3 11.2c.6.4 1 1.1 1 1.8h4c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg>
+          <h3>Visa Risk Not Explained Clearly</h3>
+          <p>Potential risks are ignored instead of being properly assessed and addressed early.</p>
+        </div>
+        <div class="problem-card">
+          <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h5M8 12h8M8 16h6"/></svg>
+          <h3>Profile Reviewed Too Late</h3>
+          <p>Academic background, study gaps, and documents are checked after key decisions are made.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="apply">
+    <div class="container">
+      <a href="#home" id="applyBackLink" class="apply-back-link" style="display:none;">&larr; Back to site</a>
+      <div class="section-head">
+        <div class="eyebrow">Student pathway</div>
+        <h2>Start your academic application.</h2>
+        <p>Share your academic history and upload your certificates. Fields you don't have yet (e.g. Master's) can be left blank.</p>
+      </div>
+
+      <form id="studentForm" class="apply-form" enctype="multipart/form-data">
+
+        <fieldset>
+          <legend>Personal Information</legend>
+          <div class="row">
+            <div class="field">
+              <label for="full_name">Full Name *</label>
+              <input type="text" id="full_name" name="full_name" required />
+            </div>
+            <div class="field">
+              <label for="student_email">Email *</label>
+              <input type="email" id="student_email" name="email" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="student_phone">Phone Number</label>
+            <input type="tel" id="student_phone" name="phone" />
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>SSC (Secondary School Certificate)</legend>
+          <div class="row">
+            <div class="field">
+              <label for="ssc_board">Board</label>
+              <select id="ssc_board" name="ssc_board">
+                <option value="">Select board</option>
+                <option>Dhaka</option><option>Chattogram</option><option>Rajshahi</option>
+                <option>Khulna</option><option>Barishal</option><option>Sylhet</option>
+                <option>Comilla</option><option>Dinajpur</option><option>Mymensingh</option>
+                <option>Madrasah</option><option>Technical</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="ssc_year">Passing Year</label>
+              <input type="number" id="ssc_year" name="ssc_year" min="1990" max="2030" placeholder="e.g. 2018" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="ssc_gpa">GPA (out of 5.00)</label>
+            <input type="number" id="ssc_gpa" name="ssc_gpa" step="0.01" min="0" max="5" placeholder="e.g. 4.83" />
+          </div>
+          <div class="field">
+            <label for="ssc_certificate">Upload SSC Certificate</label>
+            <input type="file" id="ssc_certificate" name="ssc_certificate" accept=".jpg,.jpeg,.png,.pdf" />
+            <span class="file-hint">JPG, PNG, or PDF — max 5MB</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>HSC (Higher Secondary Certificate)</legend>
+          <div class="row">
+            <div class="field">
+              <label for="hsc_board">Board</label>
+              <select id="hsc_board" name="hsc_board">
+                <option value="">Select board</option>
+                <option>Dhaka</option><option>Chattogram</option><option>Rajshahi</option>
+                <option>Khulna</option><option>Barishal</option><option>Sylhet</option>
+                <option>Comilla</option><option>Dinajpur</option><option>Mymensingh</option>
+                <option>Madrasah</option><option>Technical</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="hsc_year">Passing Year</label>
+              <input type="number" id="hsc_year" name="hsc_year" min="1990" max="2030" placeholder="e.g. 2020" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="hsc_gpa">GPA (out of 5.00)</label>
+            <input type="number" id="hsc_gpa" name="hsc_gpa" step="0.01" min="0" max="5" placeholder="e.g. 5.00" />
+          </div>
+          <div class="field">
+            <label for="hsc_certificate">Upload HSC Certificate</label>
+            <input type="file" id="hsc_certificate" name="hsc_certificate" accept=".jpg,.jpeg,.png,.pdf" />
+            <span class="file-hint">JPG, PNG, or PDF — max 5MB</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Honours (Bachelor's)</legend>
+          <div class="row">
+            <div class="field">
+              <label for="honours_subject">Subject / Major</label>
+              <input type="text" id="honours_subject" name="honours_subject" placeholder="e.g. Computer Science" />
+            </div>
+            <div class="field">
+              <label for="honours_institution">Institution</label>
+              <input type="text" id="honours_institution" name="honours_institution" placeholder="e.g. University of Dhaka" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="honours_result">Result (CGPA)</label>
+              <input type="text" id="honours_result" name="honours_result" placeholder="e.g. 3.65 out of 4.00" />
+            </div>
+            <div class="field">
+              <label for="honours_year">Passing Year</label>
+              <input type="number" id="honours_year" name="honours_year" min="1990" max="2030" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="honours_certificate">Upload Honours Certificate</label>
+            <input type="file" id="honours_certificate" name="honours_certificate" accept=".jpg,.jpeg,.png,.pdf" />
+            <span class="file-hint">JPG, PNG, or PDF — max 5MB</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Master's (if applicable)</legend>
+          <div class="row">
+            <div class="field">
+              <label for="masters_subject">Subject / Major</label>
+              <input type="text" id="masters_subject" name="masters_subject" />
+            </div>
+            <div class="field">
+              <label for="masters_institution">Institution</label>
+              <input type="text" id="masters_institution" name="masters_institution" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="masters_result">Result (CGPA)</label>
+              <input type="text" id="masters_result" name="masters_result" />
+            </div>
+            <div class="field">
+              <label for="masters_year">Passing Year</label>
+              <input type="number" id="masters_year" name="masters_year" min="1990" max="2030" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="masters_certificate">Upload Master's Certificate</label>
+            <input type="file" id="masters_certificate" name="masters_certificate" accept=".jpg,.jpeg,.png,.pdf" />
+            <span class="file-hint">JPG, PNG, or PDF — max 5MB</span>
+          </div>
+        </fieldset>
+
+        <button type="submit" id="studentSubmitBtn" class="btn-primary btn-large">Submit Application</button>
+        <p id="applyStatus"></p>
+      </form>
+    </div>
+  </section>
+
+  <section id="events">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Don't miss out</div>
+        <h2>Upcoming events.</h2>
+        <p>Spot assessments, exclusive admission sessions, and info evenings — updated by our team as they're scheduled.</p>
+      </div>
+      <div class="events-grid" id="eventsGrid"></div>
+      <p id="eventsEmpty" style="display:none;">No upcoming events right now — check back soon or book a consultation directly.</p>
+    </div>
+  </section>
+
+  <section id="testimonials">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Client stories</div>
+        <h2>What our clients say</h2>
+        <p>Real outcomes from students and families we've helped relocate.</p>
+      </div>
+      <div class="t-grid">
+        <div class="t-card">
+          <span class="quote-mark">&ldquo;</span>
+          <p>Nextstep made my student visa process so smooth. Every document was ready before the deadline.</p>
+          <h4>Fatima R. — Student visa</h4>
+        </div>
+        <div class="t-card">
+          <span class="quote-mark">&ldquo;</span>
+          <p>Professional, responsive, and honest from day one. They helped my whole family relocate together.</p>
+          <h4>Karim A. — Family sponsorship</h4>
+        </div>
+        <div class="t-card">
+          <span class="quote-mark">&ldquo;</span>
+          <p>My work visa was approved faster than I expected, thanks to how thoroughly they prepared everything.</p>
+          <h4>Nusrat J. — Work visa</h4>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container contact-grid">
+      <div class="contact-info">
+        <div class="eyebrow">Get in touch</div>
+        <h2>Let's plan your next step.</h2>
+        <p>Tell us where you're headed and what stage you're at — we'll reply with the exact next steps for your case.</p>
+
+        <div class="info-row">
+          <div class="ico">📧</div>
+          <div><b>Email</b><span>info@nextstepimmigration.com</span></div>
+        </div>
+        <div class="info-row">
+          <div class="ico">📞</div>
+          <div><b>Phone</b><span>+1 (555) 000-0000</span></div>
+        </div>
+        <div class="info-row">
+          <div class="ico">🕓</div>
+          <div><b>Hours</b><span>Sun–Thu, 9am–6pm</span></div>
+        </div>
+      </div>
+
+      <form id="contactForm">
+        <div class="field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" placeholder="Your full name" required />
+        </div>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
+        </div>
+        <div class="field">
+          <label for="phone">Phone number</label>
+          <input type="tel" id="phone" name="phone" placeholder="Optional" />
+        </div>
+        <div class="field">
+          <label for="message">Your message</label>
+          <textarea id="message" name="message" rows="5" placeholder="Tell us about your situation and goals" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary btn-large">Send message</button>
+        <p id="formStatus"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <h4>Nextstep Immigration</h4>
+      <p>Guiding your journey to a new beginning, one document at a time.</p>
+    </div>
+    <div>
+      <h4>Quick links</h4>
+      <div class="footer-links">
+        <a href="#home">Home</a>
+        <a href="#services">Services</a>
+        <a href="#apply">Apply</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>📧 info@nextstepimmigration.com</p>
+      <p>📞 +1 (555) 000-0000</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 Nextstep Immigration. All rights reserved.
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script>
+  // University region filter (front-end only)
+  const uniFilter = document.getElementById('uniFilter');
+  const uniCards = document.querySelectorAll('.uni-card');
+  if (uniFilter) {
+    uniFilter.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      uniFilter.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const region = btn.getAttribute('data-region');
+      uniCards.forEach(card => {
+        card.style.display = (region === 'all' || card.getAttribute('data-region') === region) ? '' : 'none';
+      });
+    });
+  }
+
+  // Isolated Apply section view (front-end only)
+  const applyBackLink = document.getElementById('applyBackLink');
+  function showApplyOnly() {
+    document.body.classList.add('apply-view');
+    if (applyBackLink) applyBackLink.style.display = 'inline-block';
+    window.scrollTo(0, 0);
+  }
+  function showFullSite() {
+    document.body.classList.remove('apply-view');
+    if (applyBackLink) applyBackLink.style.display = 'none';
+  }
+  document.querySelectorAll('a[href="#apply"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      showApplyOnly();
+      history.pushState(null, '', '#apply');
+    });
+  });
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    if (link.getAttribute('href') === '#apply') return;
+    link.addEventListener('click', () => {
+      showFullSite();
+    });
+  });
+  if (window.location.hash === '#apply') {
+    showApplyOnly();
+  }
+
+  const navToggle = document.getElementById('navToggle');
+  const mainNav = document.getElementById('mainNav');
+  navToggle.addEventListener('click', () => {
+    const isOpen = mainNav.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  mainNav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mainNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.getElementById('studentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const status = document.getElementById('applyStatus');
+    const submitBtn = document.getElementById('studentSubmitBtn');
+
+    submitBtn.disabled = true;
+    status.textContent = 'Submitting your application...';
+
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch('/api/student-application', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await res.json();
+
+      if (res.ok) {
+        status.textContent = 'Application submitted successfully! We will review it shortly.';
+        form.reset();
+      } else {
+        status.textContent = result.error || 'Something went wrong. Please try again.';
+      }
+    } catch (err) {
+      status.textContent = 'Network error. Please check your connection and try again.';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+  document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const status = document.getElementById('formStatus');
+    const data = {
+      name: form.name.value,
+      email: form.email.value,
+      phone: form.phone.value,
+      message: form.message.value
+    };
+    status.textContent = 'Sending...';
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if (res.ok) {
+        status.textContent = 'Message sent — we will get back to you soon.';
+        form.reset();
+      } else {
+        status.textContent = result.error || 'Something went wrong. Please try again.';
+      }
+    } catch (err) {
+      status.textContent = 'Network error. Please check your connection and try again.';
+    }
+  });
+
+  // ---------- Upcoming events (admin-controlled) ----------
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+  function formatEventDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  async function loadEvents() {
+    const grid = document.getElementById('eventsGrid');
+    const empty = document.getElementById('eventsEmpty');
+    if (!grid) return;
+    try {
+      const res = await fetch('/api/events');
+      const events = await res.json();
+      if (!res.ok || !Array.isArray(events) || events.length === 0) {
+        empty.style.display = 'block';
+        return;
+      }
+      grid.innerHTML = events.map((ev) => {
+        const dateLine = [formatEventDate(ev.event_date), ev.event_time].filter(Boolean).join(' · ');
+        return `
+          <div class="event-card">
+            <div class="event-img">
+              ${ev.image_url ? `<img src="${escapeHtml(ev.image_url)}" alt="${escapeHtml(ev.title)}" loading="lazy" />` : ''}
+              ${ev.badge_label ? `<span class="event-badge">${escapeHtml(ev.badge_label)}</span>` : ''}
+            </div>
+            <div class="event-body">
+              <h3>${escapeHtml(ev.title)}</h3>
+              ${ev.subtitle ? `<p class="event-sub">${escapeHtml(ev.subtitle)}</p>` : ''}
+              ${ev.description ? `<p class="event-desc">${escapeHtml(ev.description)}</p>` : ''}
+              <div class="event-meta">
+                ${dateLine ? `<span>📅 ${escapeHtml(dateLine)}</span>` : ''}
+                ${ev.location ? `<span>📍 ${escapeHtml(ev.location)}</span>` : ''}
+              </div>
+              ${ev.cta_link ? `<a class="event-cta" href="${escapeHtml(ev.cta_link)}" target="_blank" rel="noopener">${escapeHtml(ev.cta_label || 'Learn more')}</a>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+    } catch (err) {
+      empty.style.display = 'block';
+    }
+  }
+  loadEvents();
+
+  // ---------- WhatsApp floating chat button (admin-controlled) ----------
+  async function loadWhatsApp() {
+    const btn = document.getElementById('waFloat');
+    if (!btn) return;
+    try {
+      const res = await fetch('/api/settings');
+      const settings = await res.json();
+      if (res.ok && settings.whatsapp_enabled && settings.whatsapp_number) {
+        const msg = encodeURIComponent(settings.whatsapp_message || 'Hi! I would like to know more about your services.');
+        btn.href = `https://wa.me/${settings.whatsapp_number}?text=${msg}`;
+        btn.style.display = 'flex';
+      }
+    } catch (err) {
+      /* keep hidden on failure */
+    }
+  }
+  loadWhatsApp();
+</script>
+
+  <a href="#" id="waFloat" style="display:none;" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+    <span class="wa-pulse"></span>
+    <svg viewBox="0 0 32 32" fill="#fff"><path d="M16.004 3C9.086 3 3.47 8.58 3.47 15.454c0 2.31.633 4.47 1.734 6.324L3 29l7.42-2.152a12.94 12.94 0 0 0 5.584 1.264h.005c6.917 0 12.533-5.58 12.533-12.454C28.542 8.58 22.926 3 16.004 3zm0 22.63h-.004a10.42 10.42 0 0 1-5.316-1.457l-.381-.226-3.955 1.148 1.058-3.842-.248-.395a10.32 10.32 0 0 1-1.6-5.406c0-5.71 4.677-10.36 10.45-10.36 2.792 0 5.417 1.086 7.39 3.058a10.28 10.28 0 0 1 3.06 7.33c0 5.71-4.677 10.35-10.454 10.35zm5.723-7.76c-.313-.157-1.856-.913-2.144-1.017-.288-.104-.497-.157-.706.157s-.808 1.017-.99 1.226c-.183.209-.365.235-.678.078-.313-.157-1.322-.486-2.518-1.548-.93-.828-1.559-1.85-1.741-2.163-.183-.313-.02-.482.137-.638.14-.14.313-.365.47-.548.157-.183.209-.313.313-.522.104-.209.052-.392-.026-.548-.078-.157-.706-1.697-.967-2.324-.254-.61-.512-.527-.706-.537-.183-.008-.392-.01-.601-.01s-.548.078-.836.392c-.288.313-1.1 1.073-1.1 2.618s1.126 3.036 1.283 3.245c.157.209 2.216 3.379 5.368 4.738.75.324 1.335.518 1.792.663.753.24 1.438.206 1.98.125.604-.09 1.856-.759 2.118-1.492.261-.732.261-1.36.183-1.492-.078-.13-.287-.209-.6-.365z"/></svg>
+  </a>
+</div><!-- /#siteContent -->
+
+<script>
+  (function(){
+    var welcome = document.getElementById('welcomeScreen');
+    var siteContent = document.getElementById('siteContent');
+    var visitBtn = document.getElementById('visitSiteBtn');
+
+    visitBtn.addEventListener('click', function () {
+      welcome.classList.add('hidden');
+      siteContent.style.display = 'block';
+      window.scrollTo(0, 0);
+      window.setTimeout(function () {
+        welcome.style.display = 'none';
+      }, 450);
+    });
+  })();
+</script>
+</body>
+</html>

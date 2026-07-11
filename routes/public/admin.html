@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Nextstep Immigration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12213B;
+    --ink-2:#1B2F52;
+    --paper:#F6F4EE;
+    --paper-2:#EEEAE0;
+    --brass:#B8862E;
+    --brass-light:#E8C77A;
+    --line: rgba(18,33,59,0.14);
+    --line-light: rgba(246,244,238,0.22);
+    --radius: 14px;
+    --max: 1280px;
+    --danger: #B3432E;
+    --success: #3E7A4E;
+    font-size: 16px;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Fraunces', Georgia, serif; font-weight:600; line-height:1.15;
+    margin:0; letter-spacing:-0.01em; color:var(--ink);
+  }
+  p{ margin:0; color:#3D4A63; }
+  a{ color:inherit; }
+  .container{ max-width:var(--max); margin:0 auto; padding:0 1.5rem; }
+  button{ font-family:'Inter', sans-serif; cursor:pointer; }
+
+  /* ---------- Login screen ---------- */
+  #loginScreen{
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(60% 60% at 85% 10%, rgba(184,134,46,0.14), transparent 60%), var(--paper);
+    padding:1.5rem;
+  }
+  .login-card{
+    width:100%; max-width:380px; background:var(--paper); border:1px solid var(--line);
+    border-radius:var(--radius); padding:2.25rem; box-shadow:0 30px 60px -30px rgba(18,33,59,0.35);
+  }
+  .login-card .logo{ font-family:'Fraunces', serif; font-weight:600; font-size:1.2rem; margin-bottom:0.35rem; }
+  .login-card .logo span{ color:var(--brass); font-style:italic; font-weight:500; }
+  .login-card h2{ font-size:1.5rem; margin-bottom:0.4rem; }
+  .login-card .sub{ font-size:0.92rem; color:#5B6884; margin-bottom:1.5rem; }
+  .field{ display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1rem; }
+  .field label{ font-size:0.82rem; font-weight:600; }
+  input, select{
+    font-family:'Inter', sans-serif; font-size:0.95rem; padding:0.75rem 0.9rem;
+    border-radius:9px; border:1px solid var(--line); background:#fff; color:var(--ink);
+  }
+  input:focus, select:focus{ outline:2px solid var(--brass); outline-offset:1px; border-color:var(--brass); }
+  .btn-primary{
+    display:inline-flex; align-items:center; justify-content:center; gap:0.4rem;
+    background:var(--ink); color:var(--paper); padding:0.75rem 1.3rem; border-radius:999px;
+    font-weight:600; font-size:0.92rem; border:1px solid var(--ink); width:100%;
+    transition: background .2s ease, transform .2s ease;
+  }
+  .btn-primary:hover{ background:var(--brass); border-color:var(--brass); }
+  .btn-primary:disabled{ opacity:0.55; cursor:not-allowed; transform:none; }
+  #loginError{ color:var(--danger); font-size:0.85rem; margin-top:0.9rem; min-height:1.1em; }
+
+  /* ---------- Dashboard shell ---------- */
+  #dashboard{ display:none; min-height:100vh; }
+  header.topbar{
+    position:sticky; top:0; z-index:10; background:rgba(246,244,238,0.92); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{ display:flex; align-items:center; justify-content:space-between; height:68px; }
+  .topbar .logo{ font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem; }
+  .topbar .logo span{ color:var(--brass); font-style:italic; font-weight:500; }
+  .topbar-actions{ display:flex; align-items:center; gap:0.75rem; }
+  .btn-ghost{
+    display:inline-flex; align-items:center; gap:0.4rem; padding:0.6rem 1.1rem; border-radius:999px;
+    font-weight:600; font-size:0.85rem; border:1px solid var(--line); background:transparent; color:var(--ink);
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .btn-ghost:hover{ border-color:var(--ink); background:rgba(18,33,59,0.04); }
+  .btn-brass{
+    display:inline-flex; align-items:center; gap:0.4rem; padding:0.6rem 1.1rem; border-radius:999px;
+    font-weight:600; font-size:0.85rem; border:1px solid var(--brass); background:var(--brass); color:#fff;
+    transition: filter .2s ease;
+  }
+  .btn-brass:hover{ filter:brightness(0.92); }
+  .btn-brass:disabled{ opacity:0.6; cursor:not-allowed; }
+
+  main{ padding:2.25rem 0 4rem; }
+
+  .stats-grid{ display:grid; grid-template-columns:repeat(5, 1fr); gap:1rem; margin-bottom:2rem; }
+  .stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:1.25rem 1.4rem; }
+  .stat-card b{ font-family:'Fraunces', serif; font-size:1.7rem; display:block; }
+  .stat-card span{ font-size:0.8rem; color:#5B6884; text-transform:uppercase; letter-spacing:0.04em; }
+
+  .tabs{ display:flex; gap:0.5rem; margin-bottom:1.5rem; border-bottom:1px solid var(--line); }
+  .tab-btn{
+    background:none; border:none; padding:0.85rem 1.1rem; font-size:0.92rem; font-weight:600;
+    color:#5B6884; border-bottom:2px solid transparent; margin-bottom:-1px;
+  }
+  .tab-btn.active{ color:var(--ink); border-bottom-color:var(--brass); }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  .toolbar{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem; flex-wrap:wrap; }
+  .toolbar .left{ display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
+  .search-input{ min-width:220px; }
+
+  .table-wrap{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+  table{ width:100%; border-collapse:collapse; font-size:0.9rem; }
+  thead th{
+    text-align:left; padding:0.9rem 1rem; background:var(--paper-2); font-weight:600;
+    font-size:0.78rem; text-transform:uppercase; letter-spacing:0.04em; color:#5B6884;
+    border-bottom:1px solid var(--line);
+  }
+  tbody td{ padding:0.9rem 1rem; border-bottom:1px solid var(--line); vertical-align:middle; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:rgba(184,134,46,0.05); }
+  .row-name{ font-weight:600; }
+  .row-sub{ font-size:0.8rem; color:#5B6884; }
+
+  .status-pill{
+    display:inline-flex; align-items:center; padding:0.3rem 0.7rem; border-radius:999px;
+    font-size:0.75rem; font-weight:600; text-transform:capitalize;
+  }
+  .status-pending{ background:rgba(184,134,46,0.15); color:#8A6620; }
+  .status-under_review{ background:rgba(27,47,82,0.1); color:var(--ink-2); }
+  .status-approved{ background:rgba(62,122,78,0.15); color:var(--success); }
+  .status-rejected{ background:rgba(179,67,46,0.15); color:var(--danger); }
+
+  select.status-select{ font-size:0.82rem; padding:0.4rem 0.6rem; border-radius:7px; }
+
+  .icon-btn{
+    background:none; border:1px solid var(--line); border-radius:7px; padding:0.4rem 0.6rem;
+    font-size:0.8rem; color:var(--ink); margin-left:0.35rem;
+  }
+  .icon-btn:hover{ border-color:var(--ink); }
+  .icon-btn.danger{ color:var(--danger); border-color:rgba(179,67,46,0.35); }
+  .icon-btn.danger:hover{ background:rgba(179,67,46,0.08); border-color:var(--danger); }
+
+  .empty-state{ padding:3rem 1rem; text-align:center; color:#5B6884; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(18,33,59,0.55); z-index:100;
+    align-items:flex-start; justify-content:center; padding:3rem 1.5rem; overflow-y:auto;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    background:var(--paper); border-radius:var(--radius); max-width:680px; width:100%;
+    padding:2rem; box-shadow:0 30px 60px -20px rgba(18,33,59,0.45);
+  }
+  .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1.25rem; }
+  .modal-close{ background:none; border:none; font-size:1.4rem; line-height:1; color:#5B6884; padding:0.2rem 0.4rem; }
+  .detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.5rem; }
+  .detail-group{ grid-column: 1 / -1; border-top:1px dashed var(--line); padding-top:1rem; margin-top:0.25rem; }
+  .detail-group h4{ font-size:0.95rem; margin-bottom:0.75rem; color:var(--brass); }
+  .detail-item .label{ font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; color:#8B96AC; margin-bottom:0.2rem; }
+  .detail-item .value{ font-size:0.92rem; }
+  .detail-item .value a{ color:var(--brass); text-decoration:underline; }
+
+  .toast{
+    position:fixed; bottom:1.5rem; right:1.5rem; background:var(--ink); color:var(--paper);
+    padding:0.85rem 1.2rem; border-radius:10px; font-size:0.88rem; font-weight:500;
+    box-shadow:0 20px 40px -15px rgba(18,33,59,0.5); z-index:200; opacity:0; transform:translateY(10px);
+    transition:opacity .25s ease, transform .25s ease; pointer-events:none;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+  .toast.error{ background:var(--danger); }
+
+  @media (max-width: 980px){
+    .stats-grid{ grid-template-columns:repeat(2, 1fr); }
+    .detail-grid{ grid-template-columns:1fr; }
+    table{ font-size:0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="logo">Nextstep <span>Immigration</span></div>
+    <h2>Admin sign in</h2>
+    <p class="sub">Restricted access — staff only.</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn-primary" id="loginBtn">Sign in</button>
+      <p id="loginError"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ================= DASHBOARD ================= -->
+<div id="dashboard">
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="logo">Nextstep <span>Immigration</span> — Admin</div>
+      <div class="topbar-actions">
+        <span id="whoami" class="row-sub"></span>
+        <button class="btn-ghost" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><b id="statTotal">—</b><span>Total applications</span></div>
+      <div class="stat-card"><b id="statPending">—</b><span>Pending</span></div>
+      <div class="stat-card"><b id="statReview">—</b><span>Under review</span></div>
+      <div class="stat-card"><b id="statApproved">—</b><span>Approved</span></div>
+      <div class="stat-card"><b id="statContacts">—</b><span>Contact messages</span></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="applications">Student Applications</button>
+      <button class="tab-btn" data-tab="contacts">Contact Messages</button>
+      <button class="tab-btn" data-tab="events">Upcoming Events</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </div>
+
+    <!-- Applications panel -->
+    <section class="panel active" id="panel-applications">
+      <div class="toolbar">
+        <div class="left">
+          <input type="text" id="appSearch" class="search-input" placeholder="Search by name or email…" />
+          <select id="statusFilter">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="under_review">Under review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn-ghost" id="refreshAppsBtn">Refresh</button>
+          <button class="btn-brass" id="exportBtn">⬇ Export to Excel</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Applicant</th>
+              <th>Phone</th>
+              <th>Highest level</th>
+              <th>Submitted</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="appsTableBody">
+            <tr><td colspan="6" class="empty-state">Loading applications…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Contacts panel -->
+    <section class="panel" id="panel-contacts">
+      <div class="toolbar">
+        <div class="left">
+          <input type="text" id="contactSearch" class="search-input" placeholder="Search by name or email…" />
+        </div>
+        <button class="btn-ghost" id="refreshContactsBtn">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Message</th>
+              <th>Received</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="contactsTableBody">
+            <tr><td colspan="6" class="empty-state">Loading messages…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Events panel -->
+    <section class="panel" id="panel-events">
+      <div class="toolbar">
+        <div class="left">
+          <input type="text" id="eventSearch" class="search-input" placeholder="Search by title…" />
+        </div>
+        <div>
+          <button class="btn-ghost" id="refreshEventsBtn">Refresh</button>
+          <button class="btn-brass" id="addEventBtn">+ Add event</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Date &amp; location</th>
+              <th>Order</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="eventsTableBody">
+            <tr><td colspan="6" class="empty-state">Loading events…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Settings panel -->
+    <section class="panel" id="panel-settings">
+      <div class="table-wrap" style="padding:1.75rem;">
+        <h3 style="margin-bottom:0.3rem;">WhatsApp chat button</h3>
+        <p class="row-sub" style="margin-bottom:1.25rem;">Controls the floating WhatsApp button shown on the website.</p>
+        <form id="settingsForm" style="display:flex; flex-direction:column; gap:1rem; max-width:480px;">
+          <label style="display:flex; align-items:center; gap:0.6rem; font-weight:600; font-size:0.9rem;">
+            <input type="checkbox" id="waEnabled" style="width:auto; padding:0;" />
+            Show WhatsApp button on website
+          </label>
+          <div class="field">
+            <label for="waNumber">WhatsApp number (with country code, no + or spaces)</label>
+            <input type="text" id="waNumber" placeholder="e.g. 8801XXXXXXXXX" />
+          </div>
+          <div class="field">
+            <label for="waMessage">Pre-filled message</label>
+            <input type="text" id="waMessage" placeholder="Hi! I would like to know more about your services." />
+          </div>
+          <button type="submit" class="btn-brass" id="saveSettingsBtn" style="width:fit-content;">Save settings</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ================= EVENT ADD/EDIT MODAL ================= -->
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="eventModalTitle">Add event</h3>
+        <p class="row-sub">Shown on the website's Upcoming Events section.</p>
+      </div>
+      <button class="modal-close" id="eventModalClose">&times;</button>
+    </div>
+    <form id="eventForm" style="display:flex; flex-direction:column; gap:1rem;">
+      <input type="hidden" id="ev_id" />
+      <div class="field">
+        <label for="ev_title">Title *</label>
+        <input type="text" id="ev_title" required placeholder="e.g. GBS Malta Exclusive Event" />
+      </div>
+      <div class="field">
+        <label for="ev_subtitle">Subtitle</label>
+        <input type="text" id="ev_subtitle" placeholder="e.g. Instant admission opportunity" />
+      </div>
+      <div class="field">
+        <label for="ev_description">Description</label>
+        <input type="text" id="ev_description" placeholder="Short description shown on the card" />
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="field">
+          <label for="ev_date">Date</label>
+          <input type="date" id="ev_date" />
+        </div>
+        <div class="field">
+          <label for="ev_time">Time</label>
+          <input type="text" id="ev_time" placeholder="e.g. 11 AM – 5 PM" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="ev_location">Location</label>
+        <input type="text" id="ev_location" placeholder="e.g. Rahima Center, Chattogram" />
+      </div>
+      <div class="field">
+        <label for="ev_badge">Badge label</label>
+        <input type="text" id="ev_badge" placeholder="e.g. Exclusive Event / Spot Assessment" />
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="field">
+          <label for="ev_cta_label">Button label</label>
+          <input type="text" id="ev_cta_label" placeholder="Learn more" />
+        </div>
+        <div class="field">
+          <label for="ev_cta_link">Button link (URL)</label>
+          <input type="text" id="ev_cta_link" placeholder="https://wa.me/... or registration link" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="ev_image">Event image</label>
+        <input type="file" id="ev_image" accept=".jpg,.jpeg,.png,.webp" />
+        <img id="ev_image_preview" style="display:none; max-width:100%; margin-top:0.5rem; border-radius:8px;" />
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:end;">
+        <div class="field">
+          <label for="ev_order">Display order</label>
+          <input type="number" id="ev_order" value="0" />
+        </div>
+        <label style="display:flex; align-items:center; gap:0.6rem; font-weight:600; font-size:0.9rem; padding-bottom:0.75rem;">
+          <input type="checkbox" id="ev_active" style="width:auto;" checked />
+          Active (visible on website)
+        </label>
+      </div>
+      <button type="submit" class="btn-primary" id="eventSaveBtn" style="width:fit-content; padding:0.75rem 1.5rem;">Save event</button>
+      <p id="eventFormStatus" class="row-sub"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ================= APPLICATION DETAIL MODAL ================= -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="modalName">—</h3>
+        <p class="row-sub" id="modalEmail">—</p>
+      </div>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="detail-grid" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = '/api';
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+  let token = localStorage.getItem('nextstep_admin_token') || null;
+  let applications = [];
+  let contacts = [];
+
+  // ---------------- Toast ----------------
+  function toast(message, isError = false) {
+    const el = $('#toast');
+    el.textContent = message;
+    el.classList.toggle('error', isError);
+    el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => el.classList.remove('show'), 3200);
+  }
+
+  // ---------------- Auth ----------------
+  async function apiFetch(path, options = {}) {
+    const res = await fetch(API + path, {
+      ...options,
+      headers: {
+        ...(options.body && !(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
+      },
+    });
+    if (res.status === 401) {
+      logout('Your session expired. Please log in again.');
+      throw new Error('Unauthorized');
+    }
+    return res;
+  }
+
+  function showDashboard(username) {
+    $('#loginScreen').style.display = 'none';
+    $('#dashboard').style.display = 'block';
+    $('#whoami').textContent = username ? `Signed in as ${username}` : '';
+    loadEverything();
+  }
+
+  function showLogin() {
+    $('#loginScreen').style.display = 'flex';
+    $('#dashboard').style.display = 'none';
+  }
+
+  function logout(message) {
+    token = null;
+    localStorage.removeItem('nextstep_admin_token');
+    showLogin();
+    if (message) toast(message, true);
+  }
+
+  async function verifySession() {
+    if (!token) return showLogin();
+    try {
+      const res = await apiFetch('/admin/me');
+      if (!res.ok) return showLogin();
+      const data = await res.json();
+      showDashboard(data.username);
+    } catch {
+      showLogin();
+    }
+  }
+
+  $('#loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('#loginBtn');
+    const errorEl = $('#loginError');
+    errorEl.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+
+    try {
+      const res = await fetch(API + '/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: $('#username').value,
+          password: $('#password').value,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed.');
+
+      token = data.token;
+      localStorage.setItem('nextstep_admin_token', token);
+      $('#loginForm').reset();
+      showDashboard($('#username').value);
+    } catch (err) {
+      errorEl.textContent = err.message || 'Network error. Please try again.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Sign in';
+    }
+  });
+
+  $('#logoutBtn').addEventListener('click', () => logout());
+
+  // ---------------- Tabs ----------------
+  $$('.tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      $$('.tab-btn').forEach((b) => b.classList.remove('active'));
+      $$('.panel').forEach((p) => p.classList.remove('active'));
+      btn.classList.add('active');
+      $('#panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------------- Stats ----------------
+  async function loadStats() {
+    try {
+      const res = await apiFetch('/admin/stats');
+      if (!res.ok) return;
+      const s = await res.json();
+      $('#statTotal').textContent = s.totalApplications ?? 0;
+      $('#statPending').textContent = s.byStatus?.pending ?? 0;
+      $('#statReview').textContent = s.byStatus?.under_review ?? 0;
+      $('#statApproved').textContent = s.byStatus?.approved ?? 0;
+      $('#statContacts').textContent = s.totalContacts ?? 0;
+    } catch { /* handled by apiFetch */ }
+  }
+
+  // ---------------- Applications ----------------
+  function highestLevel(a) {
+    if (a.masters_subject) return `Master's — ${a.masters_subject}`;
+    if (a.honours_subject) return `Honours — ${a.honours_subject}`;
+    if (a.hsc_board) return `HSC — ${a.hsc_board}`;
+    if (a.ssc_board) return `SSC — ${a.ssc_board}`;
+    return '—';
+  }
+
+  function fmtDate(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function statusLabel(s) {
+    return (s || 'pending').replace('_', ' ');
+  }
+
+  async function loadApplications() {
+    const tbody = $('#appsTableBody');
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Loading applications…</td></tr>`;
+    try {
+      const res = await apiFetch('/admin/applications');
+      if (!res.ok) throw new Error('Failed to load applications.');
+      applications = await res.json();
+      renderApplications();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">${err.message}</td></tr>`;
+    }
+  }
+
+  function renderApplications() {
+    const tbody = $('#appsTableBody');
+    const search = $('#appSearch').value.trim().toLowerCase();
+    const statusFilter = $('#statusFilter').value;
+
+    let rows = applications.filter((a) => {
+      const matchesSearch = !search
+        || a.full_name.toLowerCase().includes(search)
+        || a.email.toLowerCase().includes(search);
+      const matchesStatus = !statusFilter || a.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+    if (rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No applications found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map((a) => `
+      <tr>
+        <td>
+          <div class="row-name">${escapeHtml(a.full_name)}</div>
+          <div class="row-sub">${escapeHtml(a.email)}</div>
+        </td>
+        <td>${escapeHtml(a.phone || '—')}</td>
+        <td>${escapeHtml(highestLevel(a))}</td>
+        <td>${fmtDate(a.created_at)}</td>
+        <td>
+          <select class="status-select" data-id="${a.id}">
+            ${['pending','under_review','approved','rejected'].map(s =>
+              `<option value="${s}" ${s === a.status ? 'selected' : ''}>${statusLabel(s)}</option>`
+            ).join('')}
+          </select>
+        </td>
+        <td style="white-space:nowrap;">
+          <button class="icon-btn" data-view="${a.id}">View</button>
+          <button class="icon-btn danger" data-delete-app="${a.id}">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  $('#appSearch').addEventListener('input', renderApplications);
+  $('#statusFilter').addEventListener('change', renderApplications);
+  $('#refreshAppsBtn').addEventListener('click', loadApplications);
+
+  $('#appsTableBody').addEventListener('change', async (e) => {
+    if (!e.target.classList.contains('status-select')) return;
+    const id = e.target.dataset.id;
+    const status = e.target.value;
+    try {
+      const res = await apiFetch(`/admin/applications/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not update status.');
+      const app = applications.find((a) => a.id === Number(id));
+      if (app) app.status = status;
+      loadStats();
+      toast('Status updated.');
+    } catch (err) {
+      toast(err.message, true);
+      loadApplications();
+    }
+  });
+
+  $('#appsTableBody').addEventListener('click', async (e) => {
+    const viewId = e.target.dataset.view;
+    const deleteId = e.target.dataset.deleteApp;
+
+    if (viewId) {
+      const app = applications.find((a) => a.id === Number(viewId));
+      if (app) openApplicationModal(app);
+    }
+
+    if (deleteId) {
+      if (!confirm('Delete this application permanently? This cannot be undone.')) return;
+      try {
+        const res = await apiFetch(`/admin/applications/${deleteId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not delete application.');
+        applications = applications.filter((a) => a.id !== Number(deleteId));
+        renderApplications();
+        loadStats();
+        toast('Application deleted.');
+      } catch (err) {
+        toast(err.message, true);
+      }
+    }
+  });
+
+  function certLink(url, label) {
+    return url
+      ? `<a href="${url}" target="_blank" rel="noopener">${label}</a>`
+      : '<span style="color:#8B96AC;">Not uploaded</span>';
+  }
+
+  function detailItem(label, value) {
+    return `<div class="detail-item"><div class="label">${label}</div><div class="value">${value ?? '—'}</div></div>`;
+  }
+
+  function openApplicationModal(a) {
+    $('#modalName').textContent = a.full_name;
+    $('#modalEmail').textContent = a.email;
+    $('#modalBody').innerHTML = `
+      ${detailItem('Phone', escapeHtml(a.phone || '—'))}
+      ${detailItem('Status', `<span class="status-pill status-${a.status}">${statusLabel(a.status)}</span>`)}
+      ${detailItem('Submitted', fmtDate(a.created_at))}
+      ${detailItem('Application ID', '#' + a.id)}
+
+      <div class="detail-group"><h4>SSC</h4></div>
+      ${detailItem('Board', escapeHtml(a.ssc_board || '—'))}
+      ${detailItem('Year', a.ssc_year || '—')}
+      ${detailItem('GPA', a.ssc_gpa || '—')}
+      ${detailItem('Certificate', certLink(a.ssc_certificate_url, 'View file'))}
+
+      <div class="detail-group"><h4>HSC</h4></div>
+      ${detailItem('Board', escapeHtml(a.hsc_board || '—'))}
+      ${detailItem('Year', a.hsc_year || '—')}
+      ${detailItem('GPA', a.hsc_gpa || '—')}
+      ${detailItem('Certificate', certLink(a.hsc_certificate_url, 'View file'))}
+
+      <div class="detail-group"><h4>Honours</h4></div>
+      ${detailItem('Subject', escapeHtml(a.honours_subject || '—'))}
+      ${detailItem('Institution', escapeHtml(a.honours_institution || '—'))}
+      ${detailItem('Result', escapeHtml(a.honours_result || '—'))}
+      ${detailItem('Year', a.honours_year || '—')}
+      ${detailItem('Certificate', certLink(a.honours_certificate_url, 'View file'))}
+
+      <div class="detail-group"><h4>Master's</h4></div>
+      ${detailItem('Subject', escapeHtml(a.masters_subject || '—'))}
+      ${detailItem('Institution', escapeHtml(a.masters_institution || '—'))}
+      ${detailItem('Result', escapeHtml(a.masters_result || '—'))}
+      ${detailItem('Year', a.masters_year || '—')}
+      ${detailItem('Certificate', certLink(a.masters_certificate_url, 'View file'))}
+    `;
+    $('#detailModal').classList.add('open');
+  }
+
+  $('#modalClose').addEventListener('click', () => $('#detailModal').classList.remove('open'));
+  $('#detailModal').addEventListener('click', (e) => {
+    if (e.target === $('#detailModal')) $('#detailModal').classList.remove('open');
+  });
+
+  // ---------------- Contacts ----------------
+  async function loadContacts() {
+    const tbody = $('#contactsTableBody');
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Loading messages…</td></tr>`;
+    try {
+      const res = await apiFetch('/admin/contacts');
+      if (!res.ok) throw new Error('Failed to load contact messages.');
+      contacts = await res.json();
+      renderContacts();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">${err.message}</td></tr>`;
+    }
+  }
+
+  function renderContacts() {
+    const tbody = $('#contactsTableBody');
+    const search = $('#contactSearch').value.trim().toLowerCase();
+    let rows = contacts.filter((c) =>
+      !search || c.name.toLowerCase().includes(search) || c.email.toLowerCase().includes(search)
+    );
+
+    if (rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No messages found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map((c) => `
+      <tr>
+        <td class="row-name">${escapeHtml(c.name)}</td>
+        <td>${escapeHtml(c.email)}</td>
+        <td>${escapeHtml(c.phone || '—')}</td>
+        <td style="max-width:280px;">${escapeHtml((c.message || '').slice(0, 90))}${(c.message||'').length > 90 ? '…' : ''}</td>
+        <td>${fmtDate(c.created_at)}</td>
+        <td><button class="icon-btn danger" data-delete-contact="${c.id}">Delete</button></td>
+      </tr>
+    `).join('');
+  }
+
+  $('#contactSearch').addEventListener('input', renderContacts);
+  $('#refreshContactsBtn').addEventListener('click', loadContacts);
+
+  $('#contactsTableBody').addEventListener('click', async (e) => {
+    const deleteId = e.target.dataset.deleteContact;
+    if (!deleteId) return;
+    if (!confirm('Delete this message permanently?')) return;
+    try {
+      const res = await apiFetch(`/admin/contacts/${deleteId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not delete message.');
+      contacts = contacts.filter((c) => c.id !== Number(deleteId));
+      renderContacts();
+      loadStats();
+      toast('Message deleted.');
+    } catch (err) {
+      toast(err.message, true);
+    }
+  });
+
+  // ---------------- Export ----------------
+  $('#exportBtn').addEventListener('click', async () => {
+    const btn = $('#exportBtn');
+    btn.disabled = true;
+    btn.textContent = 'Exporting…';
+    try {
+      const res = await apiFetch('/admin/export-applications');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Export failed.');
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `student-applications-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast('Excel file downloaded.');
+    } catch (err) {
+      toast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '⬇ Export to Excel';
+    }
+  });
+
+  // ---------------- Events ----------------
+  let events = [];
+
+  async function loadEvents() {
+    const tbody = $('#eventsTableBody');
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Loading events…</td></tr>`;
+    try {
+      const res = await apiFetch('/admin/events');
+      if (!res.ok) throw new Error('Failed to load events.');
+      events = await res.json();
+      renderEvents();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">${err.message}</td></tr>`;
+    }
+  }
+
+  function renderEvents() {
+    const tbody = $('#eventsTableBody');
+    const search = $('#eventSearch').value.trim().toLowerCase();
+    const rows = events.filter(ev => !search || ev.title.toLowerCase().includes(search));
+
+    if (rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No events found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map(ev => `
+      <tr>
+        <td>${ev.image_url ? `<img src="${ev.image_url}" alt="" style="width:64px;height:44px;object-fit:cover;border-radius:6px;" />` : '—'}</td>
+        <td>
+          <div class="row-name">${escapeHtml(ev.title)}</div>
+          <div class="row-sub">${escapeHtml(ev.subtitle || '')}</div>
+        </td>
+        <td>
+          ${ev.event_date ? fmtDate(ev.event_date) : '—'}${ev.location ? ` · ${escapeHtml(ev.location)}` : ''}
+        </td>
+        <td>${ev.display_order}</td>
+        <td>
+          <span class="status-pill ${ev.is_active ? 'status-approved' : 'status-rejected'}">${ev.is_active ? 'Active' : 'Hidden'}</span>
+        </td>
+        <td style="white-space:nowrap;">
+          <button class="icon-btn" data-toggle-event="${ev.id}">${ev.is_active ? 'Hide' : 'Show'}</button>
+          <button class="icon-btn" data-edit-event="${ev.id}">Edit</button>
+          <button class="icon-btn danger" data-delete-event="${ev.id}">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  $('#eventSearch').addEventListener('input', renderEvents);
+  $('#refreshEventsBtn').addEventListener('click', loadEvents);
+
+  function resetEventForm() {
+    $('#eventForm').reset();
+    $('#ev_id').value = '';
+    $('#ev_active').checked = true;
+    $('#ev_order').value = 0;
+    $('#ev_image_preview').style.display = 'none';
+    $('#ev_image_preview').src = '';
+    $('#eventFormStatus').textContent = '';
+    $('#eventModalTitle').textContent = 'Add event';
+  }
+
+  function openEventModal(ev) {
+    resetEventForm();
+    if (ev) {
+      $('#eventModalTitle').textContent = 'Edit event';
+      $('#ev_id').value = ev.id;
+      $('#ev_title').value = ev.title || '';
+      $('#ev_subtitle').value = ev.subtitle || '';
+      $('#ev_description').value = ev.description || '';
+      $('#ev_date').value = ev.event_date ? new Date(ev.event_date).toISOString().slice(0, 10) : '';
+      $('#ev_time').value = ev.event_time || '';
+      $('#ev_location').value = ev.location || '';
+      $('#ev_badge').value = ev.badge_label || '';
+      $('#ev_cta_label').value = ev.cta_label || '';
+      $('#ev_cta_link').value = ev.cta_link || '';
+      $('#ev_order').value = ev.display_order || 0;
+      $('#ev_active').checked = !!ev.is_active;
+      if (ev.image_url) {
+        $('#ev_image_preview').src = ev.image_url;
+        $('#ev_image_preview').style.display = 'block';
+      }
+    }
+    $('#eventModal').classList.add('open');
+  }
+
+  $('#addEventBtn').addEventListener('click', () => openEventModal(null));
+  $('#eventModalClose').addEventListener('click', () => $('#eventModal').classList.remove('open'));
+  $('#eventModal').addEventListener('click', (e) => {
+    if (e.target === $('#eventModal')) $('#eventModal').classList.remove('open');
+  });
+
+  $('#ev_image').addEventListener('change', () => {
+    const file = $('#ev_image').files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      $('#ev_image_preview').src = reader.result;
+      $('#ev_image_preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  $('#eventForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = $('#ev_id').value;
+    const status = $('#eventFormStatus');
+    const btn = $('#eventSaveBtn');
+    btn.disabled = true;
+    status.textContent = 'Saving…';
+
+    const formData = new FormData();
+    formData.append('title', $('#ev_title').value);
+    formData.append('subtitle', $('#ev_subtitle').value);
+    formData.append('description', $('#ev_description').value);
+    formData.append('event_date', $('#ev_date').value);
+    formData.append('event_time', $('#ev_time').value);
+    formData.append('location', $('#ev_location').value);
+    formData.append('badge_label', $('#ev_badge').value);
+    formData.append('cta_label', $('#ev_cta_label').value);
+    formData.append('cta_link', $('#ev_cta_link').value);
+    formData.append('display_order', $('#ev_order').value);
+    formData.append('is_active', $('#ev_active').checked);
+    const file = $('#ev_image').files[0];
+    if (file) formData.append('image', file);
+
+    try {
+      const res = await apiFetch(id ? `/admin/events/${id}` : '/admin/events', {
+        method: id ? 'PUT' : 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not save event.');
+      $('#eventModal').classList.remove('open');
+      toast(id ? 'Event updated.' : 'Event created.');
+      loadEvents();
+    } catch (err) {
+      status.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('#eventsTableBody').addEventListener('click', async (e) => {
+    const editId = e.target.dataset.editEvent;
+    const deleteId = e.target.dataset.deleteEvent;
+    const toggleId = e.target.dataset.toggleEvent;
+
+    if (editId) {
+      const ev = events.find(x => x.id === Number(editId));
+      if (ev) openEventModal(ev);
+    }
+
+    if (toggleId) {
+      try {
+        const res = await apiFetch(`/admin/events/${toggleId}/toggle`, { method: 'PATCH' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not update event.');
+        const ev = events.find(x => x.id === Number(toggleId));
+        if (ev) ev.is_active = data.is_active;
+        renderEvents();
+        toast('Event visibility updated.');
+      } catch (err) {
+        toast(err.message, true);
+      }
+    }
+
+    if (deleteId) {
+      if (!confirm('Delete this event permanently?')) return;
+      try {
+        const res = await apiFetch(`/admin/events/${deleteId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not delete event.');
+        events = events.filter(x => x.id !== Number(deleteId));
+        renderEvents();
+        toast('Event deleted.');
+      } catch (err) {
+        toast(err.message, true);
+      }
+    }
+  });
+
+  // ---------------- Settings ----------------
+  async function loadSettings() {
+    try {
+      const res = await apiFetch('/admin/settings');
+      if (!res.ok) return;
+      const s = await res.json();
+      $('#waEnabled').checked = !!s.whatsapp_enabled;
+      $('#waNumber').value = s.whatsapp_number || '';
+      $('#waMessage').value = s.whatsapp_message || '';
+    } catch { /* handled by apiFetch */ }
+  }
+
+  $('#settingsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('#saveSettingsBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      const res = await apiFetch('/admin/settings', {
+        method: 'PUT',
+        body: JSON.stringify({
+          whatsapp_enabled: $('#waEnabled').checked,
+          whatsapp_number: $('#waNumber').value.trim(),
+          whatsapp_message: $('#waMessage').value.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not save settings.');
+      toast('Settings saved.');
+    } catch (err) {
+      toast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save settings';
+    }
+  });
+
+  // ---------------- Utils ----------------
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function loadEverything() {
+    loadStats();
+    loadApplications();
+    loadContacts();
+  }
+
+  verifySession();
+</script>
+</body>
+</html>
