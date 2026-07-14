@@ -53,6 +53,7 @@ const certificateUpload = upload.fields([
   { name: 'hsc_certificate', maxCount: 1 },
   { name: 'honours_certificate', maxCount: 1 },
   { name: 'masters_certificate', maxCount: 1 },
+  { name: 'ielts_certificate', maxCount: 1 },
 ]);
 
 // Separate storage/upload config for event banner images (own Cloudinary folder).
@@ -67,6 +68,25 @@ const eventImageStorage = new CloudinaryStorage({
 
 const eventImageUpload = multer({
   storage: eventImageStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype);
+    cb(ok ? null : new Error('Only JPG, PNG, or WEBP images are allowed.'), ok);
+  },
+}).single('image');
+
+// Separate storage/upload config for destination photos (own Cloudinary folder).
+const destinationImageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'nextstep-destinations',
+    resource_type: 'image',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+  },
+});
+
+const destinationImageUpload = multer({
+  storage: destinationImageStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype);
@@ -114,9 +134,21 @@ const eventImageUpload = multer({
         masters_result TEXT,
         masters_year INTEGER,
         masters_certificate_url TEXT,
+        ielts_score TEXT,
+        ielts_test_date DATE,
+        ielts_certificate_url TEXT,
         status TEXT NOT NULL DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT NOW()
       );
+    `);
+
+    // Safe migration for databases that already had student_applications
+    // before the IELTS fields were introduced.
+    await pool.query(`
+      ALTER TABLE student_applications
+        ADD COLUMN IF NOT EXISTS ielts_score TEXT,
+        ADD COLUMN IF NOT EXISTS ielts_test_date DATE,
+        ADD COLUMN IF NOT EXISTS ielts_certificate_url TEXT;
     `);
 
     await pool.query(`
@@ -139,13 +171,50 @@ const eventImageUpload = multer({
     `);
 
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS destinations (
+        id SERIAL PRIMARY KEY,
+        country TEXT NOT NULL,
+        flag_emoji TEXT,
+        title TEXT NOT NULL,
+        description TEXT,
+        rating NUMERIC(2,1),
+        image_url TEXT,
+        cta_label TEXT DEFAULT 'View tour',
+        cta_link TEXT,
+        is_active BOOLEAN NOT NULL DEFAULT true,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS site_settings (
         key TEXT PRIMARY KEY,
         value TEXT
       );
     `);
 
-    console.log('Connected to PostgreSQL — contacts, student_applications, events & site_settings tables ready.');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS invoices (
+        id SERIAL PRIMARY KEY,
+        invoice_number TEXT NOT NULL UNIQUE,
+        invoice_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        due_date DATE,
+        client_name TEXT NOT NULL,
+        client_email TEXT,
+        client_phone TEXT,
+        client_address TEXT,
+        items JSONB NOT NULL DEFAULT '[]',
+        discount NUMERIC(12,2) NOT NULL DEFAULT 0,
+        tax_percent NUMERIC(5,2) NOT NULL DEFAULT 0,
+        currency TEXT NOT NULL DEFAULT 'BDT',
+        notes TEXT,
+        status TEXT NOT NULL DEFAULT 'unpaid',
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    console.log('Connected to PostgreSQL — contacts, student_applications, events, destinations, site_settings & invoices tables ready.');
   } catch (err) {
     console.error('Database connection/setup error:', err.message);
   }
@@ -273,6 +342,25 @@ router.get('/events', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Public: popular destinations
+// ---------------------------------------------------------------------------
+router.get('/destinations', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, country, flag_emoji, title, description, rating,
+              image_url, cta_label, cta_link
+       FROM destinations
+       WHERE is_active = true
+       ORDER BY display_order ASC, created_at ASC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch public destinations error:', err.message);
+    res.status(500).json({ error: 'Could not load destinations.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Public: site settings (currently just WhatsApp chat config)
 // ---------------------------------------------------------------------------
 router.get('/settings', async (req, res) => {
@@ -320,8 +408,9 @@ router.post('/student-application', (req, res) => {
            ssc_board, ssc_year, ssc_gpa, ssc_certificate_url,
            hsc_board, hsc_year, hsc_gpa, hsc_certificate_url,
            honours_subject, honours_institution, honours_result, honours_year, honours_certificate_url,
-           masters_subject, masters_institution, masters_result, masters_year, masters_certificate_url)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+           masters_subject, masters_institution, masters_result, masters_year, masters_certificate_url,
+           ielts_score, ielts_test_date, ielts_certificate_url)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
          RETURNING id`,
         [
           b.full_name, b.email, b.phone || null,
@@ -329,6 +418,7 @@ router.post('/student-application', (req, res) => {
           b.hsc_board || null, toIntOrNull(b.hsc_year), toNumOrNull(b.hsc_gpa), urlOf('hsc_certificate'),
           b.honours_subject || null, b.honours_institution || null, b.honours_result || null, toIntOrNull(b.honours_year), urlOf('honours_certificate'),
           b.masters_subject || null, b.masters_institution || null, b.masters_result || null, toIntOrNull(b.masters_year), urlOf('masters_certificate'),
+          b.ielts_score || null, b.ielts_test_date || null, urlOf('ielts_certificate'),
         ]
       );
 
@@ -467,6 +557,7 @@ router.get('/admin/export-applications', requireAdmin, async (req, res) => {
               hsc_board, hsc_year, hsc_gpa, hsc_certificate_url,
               honours_subject, honours_institution, honours_result, honours_year, honours_certificate_url,
               masters_subject, masters_institution, masters_result, masters_year, masters_certificate_url,
+              ielts_score, ielts_test_date, ielts_certificate_url,
               status, created_at
        FROM student_applications
        ORDER BY created_at DESC`
@@ -501,6 +592,9 @@ router.get('/admin/export-applications', requireAdmin, async (req, res) => {
       { header: "Master's Result", key: 'masters_result', width: 16 },
       { header: "Master's Year", key: 'masters_year', width: 12 },
       { header: "Master's Certificate", key: 'masters_certificate_url', width: 30 },
+      { header: 'IELTS Score', key: 'ielts_score', width: 12 },
+      { header: 'IELTS Test Date', key: 'ielts_test_date', width: 16 },
+      { header: 'IELTS Certificate', key: 'ielts_certificate_url', width: 30 },
       { header: 'Status', key: 'status', width: 12 },
       { header: 'Submitted At', key: 'created_at', width: 20 },
     ];
@@ -511,6 +605,7 @@ router.get('/admin/export-applications', requireAdmin, async (req, res) => {
     rows.forEach((r) => {
       sheet.addRow({
         ...r,
+        ielts_test_date: r.ielts_test_date ? new Date(r.ielts_test_date).toLocaleDateString() : '',
         created_at: r.created_at ? new Date(r.created_at).toLocaleString() : '',
       });
     });
@@ -665,6 +760,137 @@ router.delete('/admin/events/:id', requireAdmin, async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Admin (protected): popular destinations
+// ---------------------------------------------------------------------------
+router.get('/admin/destinations', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM destinations ORDER BY display_order ASC, created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch admin destinations error:', err.message);
+    res.status(500).json({ error: 'Could not fetch destinations.' });
+  }
+});
+
+router.post('/admin/destinations', requireAdmin, (req, res) => {
+  destinationImageUpload(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      console.error('Destination image upload error:', uploadErr.message);
+      const message = uploadErr.code === 'LIMIT_FILE_SIZE'
+        ? 'Image is larger than 5MB.'
+        : uploadErr.message || 'Image upload failed.';
+      return res.status(400).json({ error: message });
+    }
+
+    const b = req.body;
+    if (!b.country || !b.title) {
+      return res.status(400).json({ error: 'Country and title are required.' });
+    }
+
+    try {
+      const imageUrl = req.file ? req.file.path : (b.image_url || null);
+      const result = await pool.query(
+        `INSERT INTO destinations
+          (country, flag_emoji, title, description, rating, image_url,
+           cta_label, cta_link, is_active, display_order)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+         RETURNING *`,
+        [
+          b.country,
+          b.flag_emoji || null,
+          b.title,
+          b.description || null,
+          b.rating === '' || b.rating === undefined ? null : Number(b.rating),
+          imageUrl,
+          b.cta_label || 'View tour',
+          b.cta_link || null,
+          b.is_active === undefined ? true : b.is_active === 'true' || b.is_active === true,
+          Number.isFinite(Number(b.display_order)) ? Number(b.display_order) : 0,
+        ]
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error('Create destination error:', err.message);
+      res.status(500).json({ error: 'Could not create destination.' });
+    }
+  });
+});
+
+router.put('/admin/destinations/:id', requireAdmin, (req, res) => {
+  destinationImageUpload(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      console.error('Destination image upload error:', uploadErr.message);
+      const message = uploadErr.code === 'LIMIT_FILE_SIZE'
+        ? 'Image is larger than 5MB.'
+        : uploadErr.message || 'Image upload failed.';
+      return res.status(400).json({ error: message });
+    }
+
+    const b = req.body;
+    if (!b.country || !b.title) {
+      return res.status(400).json({ error: 'Country and title are required.' });
+    }
+
+    try {
+      const existing = await pool.query('SELECT image_url FROM destinations WHERE id = $1', [req.params.id]);
+      if (existing.rows.length === 0) return res.status(404).json({ error: 'Destination not found.' });
+
+      const imageUrl = req.file ? req.file.path : (b.image_url || existing.rows[0].image_url);
+
+      const result = await pool.query(
+        `UPDATE destinations SET
+          country=$1, flag_emoji=$2, title=$3, description=$4, rating=$5,
+          image_url=$6, cta_label=$7, cta_link=$8, is_active=$9, display_order=$10
+         WHERE id=$11
+         RETURNING *`,
+        [
+          b.country,
+          b.flag_emoji || null,
+          b.title,
+          b.description || null,
+          b.rating === '' || b.rating === undefined ? null : Number(b.rating),
+          imageUrl,
+          b.cta_label || 'View tour',
+          b.cta_link || null,
+          b.is_active === undefined ? true : b.is_active === 'true' || b.is_active === true,
+          Number.isFinite(Number(b.display_order)) ? Number(b.display_order) : 0,
+          req.params.id,
+        ]
+      );
+      res.json(result.rows[0]);
+    } catch (err) {
+      console.error('Update destination error:', err.message);
+      res.status(500).json({ error: 'Could not update destination.' });
+    }
+  });
+});
+
+router.patch('/admin/destinations/:id/toggle', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'UPDATE destinations SET is_active = NOT is_active WHERE id = $1 RETURNING *',
+      [req.params.id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Destination not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Toggle destination error:', err.message);
+    res.status(500).json({ error: 'Could not update destination.' });
+  }
+});
+
+router.delete('/admin/destinations/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM destinations WHERE id = $1 RETURNING id', [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Destination not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete destination error:', err.message);
+    res.status(500).json({ error: 'Could not delete destination.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Admin (protected): site settings (WhatsApp chat config)
 // ---------------------------------------------------------------------------
 router.get('/admin/settings', requireAdmin, async (req, res) => {
@@ -701,6 +927,143 @@ router.put('/admin/settings', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('Update settings error:', err.message);
     res.status(500).json({ error: 'Could not update settings.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Admin (protected): invoices
+// ---------------------------------------------------------------------------
+const VALID_INVOICE_STATUSES = ['unpaid', 'paid', 'overdue', 'draft'];
+
+function computeInvoiceTotal(items, discount, taxPercent) {
+  const subtotal = (items || []).reduce(
+    (sum, it) => sum + (Number(it.qty) || 0) * (Number(it.unit_price) || 0),
+    0
+  );
+  const afterDiscount = Math.max(subtotal - (Number(discount) || 0), 0);
+  const total = afterDiscount + (afterDiscount * (Number(taxPercent) || 0)) / 100;
+  return Math.round(total * 100) / 100;
+}
+
+router.get('/admin/invoices', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM invoices ORDER BY invoice_date DESC, id DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch admin invoices error:', err.message);
+    res.status(500).json({ error: 'Could not fetch invoices.' });
+  }
+});
+
+// Suggests the next sequential invoice number, e.g. INV-0001 -> INV-0002.
+router.get('/admin/invoices/next-number', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT invoice_number FROM invoices ORDER BY id DESC LIMIT 1`
+    );
+    let nextNum = 1;
+    if (result.rows.length) {
+      const match = result.rows[0].invoice_number.match(/(\d+)$/);
+      if (match) nextNum = parseInt(match[1], 10) + 1;
+    }
+    res.json({ invoice_number: `INV-${String(nextNum).padStart(4, '0')}` });
+  } catch (err) {
+    console.error('Next invoice number error:', err.message);
+    res.status(500).json({ error: 'Could not generate invoice number.' });
+  }
+});
+
+router.post('/admin/invoices', requireAdmin, async (req, res) => {
+  const b = req.body;
+  if (!b.invoice_number || !b.client_name || !Array.isArray(b.items) || b.items.length === 0) {
+    return res.status(400).json({ error: 'Invoice number, client name, and at least one item are required.' });
+  }
+  const status = VALID_INVOICE_STATUSES.includes(b.status) ? b.status : 'unpaid';
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO invoices
+        (invoice_number, invoice_date, due_date, client_name, client_email, client_phone,
+         client_address, items, discount, tax_percent, currency, notes, status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       RETURNING *`,
+      [
+        b.invoice_number,
+        b.invoice_date || new Date().toISOString().slice(0, 10),
+        b.due_date || null,
+        b.client_name,
+        b.client_email || null,
+        b.client_phone || null,
+        b.client_address || null,
+        JSON.stringify(b.items),
+        Number(b.discount) || 0,
+        Number(b.tax_percent) || 0,
+        b.currency || 'BDT',
+        b.notes || null,
+        status,
+      ]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Create invoice error:', err.message);
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'An invoice with that number already exists.' });
+    }
+    res.status(500).json({ error: 'Could not create invoice.' });
+  }
+});
+
+router.put('/admin/invoices/:id', requireAdmin, async (req, res) => {
+  const b = req.body;
+  if (!b.invoice_number || !b.client_name || !Array.isArray(b.items) || b.items.length === 0) {
+    return res.status(400).json({ error: 'Invoice number, client name, and at least one item are required.' });
+  }
+  const status = VALID_INVOICE_STATUSES.includes(b.status) ? b.status : 'unpaid';
+
+  try {
+    const result = await pool.query(
+      `UPDATE invoices SET
+        invoice_number=$1, invoice_date=$2, due_date=$3, client_name=$4, client_email=$5,
+        client_phone=$6, client_address=$7, items=$8, discount=$9, tax_percent=$10,
+        currency=$11, notes=$12, status=$13
+       WHERE id=$14
+       RETURNING *`,
+      [
+        b.invoice_number,
+        b.invoice_date || new Date().toISOString().slice(0, 10),
+        b.due_date || null,
+        b.client_name,
+        b.client_email || null,
+        b.client_phone || null,
+        b.client_address || null,
+        JSON.stringify(b.items),
+        Number(b.discount) || 0,
+        Number(b.tax_percent) || 0,
+        b.currency || 'BDT',
+        b.notes || null,
+        status,
+        req.params.id,
+      ]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Invoice not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update invoice error:', err.message);
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'An invoice with that number already exists.' });
+    }
+    res.status(500).json({ error: 'Could not update invoice.' });
+  }
+});
+
+router.delete('/admin/invoices/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM invoices WHERE id = $1 RETURNING id', [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Invoice not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete invoice error:', err.message);
+    res.status(500).json({ error: 'Could not delete invoice.' });
   }
 });
 
