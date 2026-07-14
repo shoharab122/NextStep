@@ -75,24 +75,43 @@ const eventImageUpload = multer({
   },
 }).single('image');
 
-// Separate storage/upload config for destination photos (own Cloudinary folder).
-const destinationImageStorage = new CloudinaryStorage({
+// Combined storage/upload config for destinations: a photo (image) AND an
+// optional process document (pdf). Cloudinary folder/resource_type is picked
+// per-file based on which field it came in on.
+const destinationStorage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: 'nextstep-destinations',
-    resource_type: 'image',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+  params: async (req, file) => {
+    if (file.fieldname === 'pdf') {
+      return {
+        folder: 'nextstep-destinations-pdfs',
+        resource_type: 'raw',
+        allowed_formats: ['pdf'],
+        format: 'pdf',
+      };
+    }
+    return {
+      folder: 'nextstep-destinations',
+      resource_type: 'image',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    };
   },
 });
 
-const destinationImageUpload = multer({
-  storage: destinationImageStorage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+const destinationUpload = multer({
+  storage: destinationStorage,
+  limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
+    if (file.fieldname === 'pdf') {
+      const ok = file.mimetype === 'application/pdf';
+      return cb(ok ? null : new Error('The process document must be a PDF file.'), ok);
+    }
     const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype);
     cb(ok ? null : new Error('Only JPG, PNG, or WEBP images are allowed.'), ok);
   },
-}).single('image');
+}).fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'pdf', maxCount: 1 },
+]);
 
 // ---------------------------------------------------------------------------
 // Table setup
@@ -179,12 +198,20 @@ const destinationImageUpload = multer({
         description TEXT,
         rating NUMERIC(2,1),
         image_url TEXT,
+        pdf_url TEXT,
         cta_label TEXT DEFAULT 'View tour',
         cta_link TEXT,
         is_active BOOLEAN NOT NULL DEFAULT true,
         display_order INTEGER NOT NULL DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW()
       );
+    `);
+
+    // Safe migration for databases that already had destinations before the
+    // per-destination process-document (PDF) field was introduced.
+    await pool.query(`
+      ALTER TABLE destinations
+        ADD COLUMN IF NOT EXISTS pdf_url TEXT;
     `);
 
     await pool.query(`
@@ -348,7 +375,7 @@ router.get('/destinations', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT id, country, flag_emoji, title, description, rating,
-              image_url, cta_label, cta_link
+              image_url, pdf_url, cta_label, cta_link
        FROM destinations
        WHERE is_active = true
        ORDER BY display_order ASC, created_at ASC`
@@ -773,12 +800,12 @@ router.get('/admin/destinations', requireAdmin, async (req, res) => {
 });
 
 router.post('/admin/destinations', requireAdmin, (req, res) => {
-  destinationImageUpload(req, res, async (uploadErr) => {
+  destinationUpload(req, res, async (uploadErr) => {
     if (uploadErr) {
-      console.error('Destination image upload error:', uploadErr.message);
+      console.error('Destination upload error:', uploadErr.message);
       const message = uploadErr.code === 'LIMIT_FILE_SIZE'
-        ? 'Image is larger than 5MB.'
-        : uploadErr.message || 'Image upload failed.';
+        ? 'File is larger than 8MB.'
+        : uploadErr.message || 'Upload failed.';
       return res.status(400).json({ error: message });
     }
 
@@ -788,12 +815,15 @@ router.post('/admin/destinations', requireAdmin, (req, res) => {
     }
 
     try {
-      const imageUrl = req.file ? req.file.path : (b.image_url || null);
+      const imageFile = req.files && req.files.image ? req.files.image[0] : null;
+      const pdfFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
+      const imageUrl = imageFile ? imageFile.path : (b.image_url || null);
+      const pdfUrl = pdfFile ? pdfFile.path : (b.pdf_url || null);
       const result = await pool.query(
         `INSERT INTO destinations
-          (country, flag_emoji, title, description, rating, image_url,
+          (country, flag_emoji, title, description, rating, image_url, pdf_url,
            cta_label, cta_link, is_active, display_order)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
          RETURNING *`,
         [
           b.country,
@@ -802,6 +832,7 @@ router.post('/admin/destinations', requireAdmin, (req, res) => {
           b.description || null,
           b.rating === '' || b.rating === undefined ? null : Number(b.rating),
           imageUrl,
+          pdfUrl,
           b.cta_label || 'View tour',
           b.cta_link || null,
           b.is_active === undefined ? true : b.is_active === 'true' || b.is_active === true,
@@ -817,12 +848,12 @@ router.post('/admin/destinations', requireAdmin, (req, res) => {
 });
 
 router.put('/admin/destinations/:id', requireAdmin, (req, res) => {
-  destinationImageUpload(req, res, async (uploadErr) => {
+  destinationUpload(req, res, async (uploadErr) => {
     if (uploadErr) {
-      console.error('Destination image upload error:', uploadErr.message);
+      console.error('Destination upload error:', uploadErr.message);
       const message = uploadErr.code === 'LIMIT_FILE_SIZE'
-        ? 'Image is larger than 5MB.'
-        : uploadErr.message || 'Image upload failed.';
+        ? 'File is larger than 8MB.'
+        : uploadErr.message || 'Upload failed.';
       return res.status(400).json({ error: message });
     }
 
@@ -832,16 +863,19 @@ router.put('/admin/destinations/:id', requireAdmin, (req, res) => {
     }
 
     try {
-      const existing = await pool.query('SELECT image_url FROM destinations WHERE id = $1', [req.params.id]);
+      const existing = await pool.query('SELECT image_url, pdf_url FROM destinations WHERE id = $1', [req.params.id]);
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Destination not found.' });
 
-      const imageUrl = req.file ? req.file.path : (b.image_url || existing.rows[0].image_url);
+      const imageFile = req.files && req.files.image ? req.files.image[0] : null;
+      const pdfFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
+      const imageUrl = imageFile ? imageFile.path : (b.image_url || existing.rows[0].image_url);
+      const pdfUrl = pdfFile ? pdfFile.path : (b.pdf_url || existing.rows[0].pdf_url);
 
       const result = await pool.query(
         `UPDATE destinations SET
           country=$1, flag_emoji=$2, title=$3, description=$4, rating=$5,
-          image_url=$6, cta_label=$7, cta_link=$8, is_active=$9, display_order=$10
-         WHERE id=$11
+          image_url=$6, pdf_url=$7, cta_label=$8, cta_link=$9, is_active=$10, display_order=$11
+         WHERE id=$12
          RETURNING *`,
         [
           b.country,
@@ -850,6 +884,7 @@ router.put('/admin/destinations/:id', requireAdmin, (req, res) => {
           b.description || null,
           b.rating === '' || b.rating === undefined ? null : Number(b.rating),
           imageUrl,
+          pdfUrl,
           b.cta_label || 'View tour',
           b.cta_link || null,
           b.is_active === undefined ? true : b.is_active === 'true' || b.is_active === true,
