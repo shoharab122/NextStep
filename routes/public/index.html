@@ -26,7 +26,7 @@
   }
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
-  html, body{ max-width:100%; overflow-x:hidden; }
+  html, body{ max-width:100%; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
   body{
     margin:0; background:var(--paper); color:var(--ink);
     font-family:'Inter', system-ui, sans-serif; line-height:1.55;
@@ -42,9 +42,10 @@
 
   header{
     position:fixed; top:0; left:0; right:0; z-index:200;
-    background:rgba(246,244,238,0.88); backdrop-filter: blur(10px);
+    background:rgba(246,244,238,0.88); backdrop-filter: blur(6px);
     border-bottom:1px solid var(--line);
     transition:background .25s ease, box-shadow .25s ease;
+    transform:translateZ(0); will-change:transform;
   }
   header.is-scrolled{
     background:rgba(246,244,238,0.98);
@@ -592,7 +593,7 @@
   }
 
   /* ---------- Scroll-reveal animation system ---------- */
-  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.2,.7,.3,1), transform .7s cubic-bezier(.2,.7,.3,1); }
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .45s cubic-bezier(.2,.7,.3,1), transform .45s cubic-bezier(.2,.7,.3,1); will-change:opacity, transform; }
   .reveal.is-visible{ opacity:1; transform:translateY(0); }
   .reveal-stagger.is-visible > *{ animation:revealPop .6s cubic-bezier(.2,.7,.3,1) both; }
   .reveal-stagger.is-visible > *:nth-child(1){ animation-delay:.05s; }
@@ -617,7 +618,7 @@
     transform:skewX(-20deg); transition:left .6s ease;
   }
   .btn-primary:hover::after{ left:130%; }
-  .logo span{ background:linear-gradient(120deg, var(--brand-red), #F0655C, var(--brand-red)); background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shimmerText 5s linear infinite; }
+  .logo span{ background:linear-gradient(120deg, var(--brand-red), #F0655C, var(--brand-red)); background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shimmerText 5s linear infinite; will-change:background-position; }
   @keyframes shimmerText{ to{ background-position:200% center; } }
   .welcome-social-icon, .footer-social-icon{ animation:none; }
   .welcome-social-icon:hover, .footer-social-icon:hover{ box-shadow:0 6px 18px -6px rgba(184,134,46,0.55); }
