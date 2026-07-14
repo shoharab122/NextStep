@@ -330,15 +330,26 @@
   .destination-modal-pdf-wrap iframe{ width:100%; height:65vh; border:0; display:block; }
   .destination-modal-actions{ display:flex; flex-wrap:wrap; gap:0.7rem; }
   .destination-modal-actions a{
-    display:inline-flex; align-items:center; gap:0.4rem; background:var(--ink); color:var(--paper);
-    font-size:0.85rem; font-weight:600; padding:0.65rem 1.2rem; border-radius:999px;
+    display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; background:var(--ink); color:var(--paper);
+    font-size:0.9rem; font-weight:700; padding:0.8rem 1.3rem; border-radius:999px;
+    flex:1 1 auto; min-width:150px; text-align:center;
   }
-  .destination-modal-actions a.secondary{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+  .destination-modal-actions a.secondary{ background:transparent; color:var(--ink); border:1.5px solid var(--line); }
   .destination-modal-empty{ color:#5B6884; font-size:0.9rem; text-align:center; padding:1.5rem 0; }
+  .destination-modal-pdf-fallback{
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:0.6rem;
+    border:1px solid var(--line); border-radius:10px; padding:2rem 1.25rem; background:var(--paper-2);
+  }
+  .destination-modal-pdf-fallback .dm-pdf-icon{ font-size:2.4rem; line-height:1; }
+  .destination-modal-pdf-fallback p{ margin:0; color:#3D4A63; font-size:0.9rem; }
   @media (max-width:640px){
-    .destination-modal-pdf-wrap iframe{ height:50vh; }
     #destinationModalOverlay{ padding:0; }
-    .destination-modal{ border-radius:0; min-height:100vh; }
+    #destinationModalOverlay.open{ align-items:stretch; }
+    .destination-modal{ border-radius:0; min-height:100vh; display:flex; flex-direction:column; }
+    .destination-modal-head{ position:sticky; top:0; z-index:2; }
+    .destination-modal-body{ flex:1; padding:1.1rem; }
+    .destination-modal-photo{ max-height:220px; }
+    .destination-modal-actions{ position:sticky; bottom:0; background:var(--paper); padding:0.8rem 0 0.2rem; margin:0 -1.1rem -1.1rem; padding-left:1.1rem; padding-right:1.1rem; padding-bottom:1rem; border-top:1px solid var(--line); }
   }
 
   /* Floating WhatsApp chat button */
@@ -1418,6 +1429,17 @@
   }
 
   // ---------- Destination detail modal (picture + process PDF) ----------
+  // Cloudinary lets us force a real download (works on mobile too) by inserting
+  // fl_attachment into the delivery URL, instead of relying on the `download`
+  // attribute, which mobile browsers often ignore for cross-origin files.
+  function toForceDownloadUrl(url) {
+    if (!url) return url;
+    if (url.includes('/upload/') && !url.includes('fl_attachment')) {
+      return url.replace('/upload/', '/upload/fl_attachment/');
+    }
+    return url;
+  }
+
   function openDestinationModal(d) {
     const overlay = document.getElementById('destinationModalOverlay');
     const title = document.getElementById('destinationModalTitle');
@@ -1428,25 +1450,51 @@
     title.textContent = `${d.flag_emoji ? d.flag_emoji + ' ' : ''}${d.title || d.country}`;
     sub.textContent = d.country || '';
 
+    const isMobile = window.matchMedia('(max-width: 640px)').matches;
     let html = '';
+
     if (d.image_url) {
       html += `<img class="destination-modal-photo" src="${escapeHtml(d.image_url)}" alt="${escapeHtml(d.title || d.country)}" />`;
+      if (!d.pdf_url) {
+        html += `
+          <div class="destination-modal-actions">
+            <a href="${escapeHtml(toForceDownloadUrl(d.image_url))}" download="${escapeHtml((d.title || d.country || 'photo'))}.jpg">Download photo</a>
+          </div>`;
+      }
     }
+
     if (d.pdf_url) {
+      const viewUrl = escapeHtml(d.pdf_url);
+      const downloadUrl = escapeHtml(toForceDownloadUrl(d.pdf_url));
+
+      if (isMobile) {
+        // Mobile browsers frequently show a blank page when a PDF is embedded
+        // in an iframe, so on small screens we skip the embed entirely and
+        // give large, reliable tap targets instead.
+        html += `
+          <div class="destination-modal-pdf-fallback">
+            <div class="dm-pdf-icon">📄</div>
+            <p>Process document for ${escapeHtml(d.title || d.country)}</p>
+          </div>`;
+      } else {
+        html += `
+          <div class="destination-modal-pdf-wrap">
+            <iframe src="${viewUrl}" title="${escapeHtml(d.title || d.country)} process document"></iframe>
+          </div>`;
+      }
+
       html += `
-        <div class="destination-modal-pdf-wrap">
-          <iframe src="${escapeHtml(d.pdf_url)}" title="${escapeHtml(d.title || d.country)} process document"></iframe>
-        </div>
         <div class="destination-modal-actions">
-          <a href="${escapeHtml(d.pdf_url)}" target="_blank" rel="noopener">Open PDF in new tab</a>
-          <a class="secondary" href="${escapeHtml(d.pdf_url)}" download>Download PDF</a>
+          <a href="${viewUrl}" target="_blank" rel="noopener">Open PDF</a>
+          <a class="secondary" href="${downloadUrl}" download="${escapeHtml((d.title || d.country || 'process') + '.pdf')}">Download PDF</a>
         </div>`;
     }
+
     if (!d.image_url && !d.pdf_url) {
       html = '<p class="destination-modal-empty">Details for this destination are coming soon.</p>';
     }
-    body.innerHTML = html;
 
+    body.innerHTML = html;
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
