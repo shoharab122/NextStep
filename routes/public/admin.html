@@ -519,13 +519,14 @@
               <th>Country</th>
               <th>Title</th>
               <th>Rating</th>
+              <th>PDF</th>
               <th>Order</th>
               <th>Status</th>
               <th></th>
             </tr>
           </thead>
           <tbody id="destinationsTableBody">
-            <tr><td colspan="7" class="empty-state">Loading destinations…</td></tr>
+            <tr><td colspan="8" class="empty-state">Loading destinations…</td></tr>
           </tbody>
         </table>
       </div>
@@ -793,6 +794,13 @@
         <label for="dest_image">Destination photo</label>
         <input type="file" id="dest_image" accept=".jpg,.jpeg,.png,.webp" />
         <img id="dest_image_preview" style="display:none; max-width:100%; margin-top:0.5rem; border-radius:8px;" />
+      </div>
+      <div class="field">
+        <label for="dest_pdf">Process document (PDF)</label>
+        <input type="file" id="dest_pdf" accept="application/pdf" />
+        <p id="dest_pdf_current" class="row-sub" style="display:none; margin-top:0.35rem;">
+          Current file: <a id="dest_pdf_current_link" href="#" target="_blank" rel="noopener">View current PDF</a>
+        </p>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:end;">
         <div class="field">
@@ -1317,7 +1325,7 @@
     );
 
     if (rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No destinations found.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="empty-state">No destinations found.</td></tr>`;
       return;
     }
 
@@ -1330,6 +1338,7 @@
           <div class="row-sub">${escapeHtml(d.description || '')}</div>
         </td>
         <td>${d.rating ? Number(d.rating).toFixed(1) + ' ★' : '—'}</td>
+        <td>${d.pdf_url ? `<a href="${d.pdf_url}" target="_blank" rel="noopener">View</a>` : '—'}</td>
         <td>${d.display_order}</td>
         <td>
           <span class="status-pill ${d.is_active ? 'status-approved' : 'status-rejected'}">${d.is_active ? 'Active' : 'Hidden'}</span>
@@ -1353,6 +1362,8 @@
     $('#dest_order').value = 0;
     $('#dest_image_preview').style.display = 'none';
     $('#dest_image_preview').src = '';
+    $('#dest_pdf_current').style.display = 'none';
+    $('#dest_pdf_current_link').href = '#';
     $('#destinationFormStatus').textContent = '';
     $('#destinationModalTitle').textContent = 'Add destination';
   }
@@ -1374,6 +1385,10 @@
       if (d.image_url) {
         $('#dest_image_preview').src = d.image_url;
         $('#dest_image_preview').style.display = 'block';
+      }
+      if (d.pdf_url) {
+        $('#dest_pdf_current_link').href = d.pdf_url;
+        $('#dest_pdf_current').style.display = 'block';
       }
     }
     $('#destinationModal').classList.add('open');
@@ -1416,6 +1431,8 @@
     formData.append('is_active', $('#dest_active').checked);
     const file = $('#dest_image').files[0];
     if (file) formData.append('image', file);
+    const pdfFile = $('#dest_pdf').files[0];
+    if (pdfFile) formData.append('pdf', pdfFile);
 
     try {
       const res = await apiFetch(id ? `/admin/destinations/${id}` : '/admin/destinations', {
