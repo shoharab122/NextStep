@@ -82,11 +82,23 @@ const destinationStorage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
     if (file.fieldname === 'pdf') {
+      // Raw resources on Cloudinary do NOT auto-append a file extension to
+      // the delivery URL the way images do — the "format" option here is
+      // ignored for naming. Without an explicit ".pdf" in the public_id,
+      // downloaded files have no extension, so phones/apps can't tell what
+      // they are and refuse to open them (shows as "unrecognized format").
+      // Building the public_id ourselves guarantees the URL, and therefore
+      // the downloaded file name, always ends in .pdf.
+      const base = (file.originalname || 'document')
+        .replace(/\.pdf$/i, '')
+        .replace(/[^a-zA-Z0-9-_]+/g, '-')
+        .slice(0, 60);
       return {
         folder: 'nextstep-destinations-pdfs',
         resource_type: 'raw',
-        allowed_formats: ['pdf'],
-        format: 'pdf',
+        public_id: `${base}-${Date.now()}.pdf`,
+        use_filename: false,
+        unique_filename: false,
       };
     }
     return {
