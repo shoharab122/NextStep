@@ -1,4 +1,6 @@
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
 const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
@@ -75,42 +77,41 @@ const eventImageUpload = multer({
   },
 }).single('image');
 
-// Combined storage/upload config for destinations: a photo (image) AND an
-// optional process document (pdf). Cloudinary folder/resource_type is picked
-// per-file based on which field it came in on.
-const destinationStorage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => {
+// Destinations: photo (image) + process document (pdf). PDFs are served
+// directly from our own server disk rather than Cloudinary. Many Cloudinary
+// accounts restrict delivery of "raw" resources (which is what PDFs upload
+// as) for security by default — that restriction returns an error page
+// instead of the file, which is why downloads showed up as an unrecognized,
+// extension-less file. Serving locally sidesteps that entirely and gives
+// us full control over the filename and extension.
+const destinationsImageDir = path.join(__dirname, 'public', 'uploads', 'destinations');
+const destinationsPdfDir = path.join(__dirname, 'public', 'uploads', 'destinations-pdfs');
+fs.mkdirSync(destinationsImageDir, { recursive: true });
+fs.mkdirSync(destinationsPdfDir, { recursive: true });
+
+function safeFileBase(originalName, fallback) {
+  const noExt = originalName ? originalName.replace(/\.[^/.]+$/, '') : fallback;
+  return (noExt || fallback).replace(/[^a-zA-Z0-9-_]+/g, '-').slice(0, 60) || fallback;
+}
+
+const destinationDiskStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, file.fieldname === 'pdf' ? destinationsPdfDir : destinationsImageDir);
+  },
+  filename: (req, file, cb) => {
     if (file.fieldname === 'pdf') {
-      // Raw resources on Cloudinary do NOT auto-append a file extension to
-      // the delivery URL the way images do — the "format" option here is
-      // ignored for naming. Without an explicit ".pdf" in the public_id,
-      // downloaded files have no extension, so phones/apps can't tell what
-      // they are and refuse to open them (shows as "unrecognized format").
-      // Building the public_id ourselves guarantees the URL, and therefore
-      // the downloaded file name, always ends in .pdf.
-      const base = (file.originalname || 'document')
-        .replace(/\.pdf$/i, '')
-        .replace(/[^a-zA-Z0-9-_]+/g, '-')
-        .slice(0, 60);
-      return {
-        folder: 'nextstep-destinations-pdfs',
-        resource_type: 'raw',
-        public_id: `${base}-${Date.now()}.pdf`,
-        use_filename: false,
-        unique_filename: false,
-      };
+      const base = safeFileBase(file.originalname, 'document');
+      cb(null, `${base}-${Date.now()}.pdf`);
+    } else {
+      const ext = (path.extname(file.originalname) || '.jpg').toLowerCase();
+      const base = safeFileBase(file.originalname, 'photo');
+      cb(null, `${base}-${Date.now()}${ext}`);
     }
-    return {
-      folder: 'nextstep-destinations',
-      resource_type: 'image',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    };
   },
 });
 
 const destinationUpload = multer({
-  storage: destinationStorage,
+  storage: destinationDiskStorage,
   limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.fieldname === 'pdf') {
@@ -829,8 +830,8 @@ router.post('/admin/destinations', requireAdmin, (req, res) => {
     try {
       const imageFile = req.files && req.files.image ? req.files.image[0] : null;
       const pdfFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
-      const imageUrl = imageFile ? imageFile.path : (b.image_url || null);
-      const pdfUrl = pdfFile ? pdfFile.path : (b.pdf_url || null);
+      const imageUrl = imageFile ? `/uploads/destinations/${imageFile.filename}` : (b.image_url || null);
+      const pdfUrl = pdfFile ? `/uploads/destinations-pdfs/${pdfFile.filename}` : (b.pdf_url || null);
       const result = await pool.query(
         `INSERT INTO destinations
           (country, flag_emoji, title, description, rating, image_url, pdf_url,
@@ -880,8 +881,8 @@ router.put('/admin/destinations/:id', requireAdmin, (req, res) => {
 
       const imageFile = req.files && req.files.image ? req.files.image[0] : null;
       const pdfFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
-      const imageUrl = imageFile ? imageFile.path : (b.image_url || existing.rows[0].image_url);
-      const pdfUrl = pdfFile ? pdfFile.path : (b.pdf_url || existing.rows[0].pdf_url);
+      const imageUrl = imageFile ? `/uploads/destinations/${imageFile.filename}` : (b.image_url || existing.rows[0].image_url);
+      const pdfUrl = pdfFile ? `/uploads/destinations-pdfs/${pdfFile.filename}` : (b.pdf_url || existing.rows[0].pdf_url);
 
       const result = await pool.query(
         `UPDATE destinations SET
@@ -928,8 +929,21 @@ router.patch('/admin/destinations/:id/toggle', requireAdmin, async (req, res) =>
 
 router.delete('/admin/destinations/:id', requireAdmin, async (req, res) => {
   try {
-    const result = await pool.query('DELETE FROM destinations WHERE id = $1 RETURNING id', [req.params.id]);
+    const result = await pool.query('DELETE FROM destinations WHERE id = $1 RETURNING *', [req.params.id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Destination not found.' });
+
+    // Clean up the locally-stored files so deleted destinations don't leave
+    // orphaned images/PDFs behind on disk.
+    const deleted = result.rows[0];
+    [
+      deleted.image_url && path.join(destinationsImageDir, path.basename(deleted.image_url)),
+      deleted.pdf_url && path.join(destinationsPdfDir, path.basename(deleted.pdf_url)),
+    ].filter(Boolean).forEach((filePath) => {
+      fs.unlink(filePath, (err) => {
+        if (err && err.code !== 'ENOENT') console.error('Could not remove destination file:', err.message);
+      });
+    });
+
     res.json({ success: true });
   } catch (err) {
     console.error('Delete destination error:', err.message);
