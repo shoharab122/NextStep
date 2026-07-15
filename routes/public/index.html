@@ -295,6 +295,45 @@
   @media (max-width:900px){ .destinations-grid{ grid-template-columns:1fr 1fr; } }
   @media (max-width:640px){ .destinations-grid{ grid-template-columns:1fr; } }
 
+  /* Belgium & Italy file processing */
+  #file-processing{ background:var(--paper); }
+  .fp-tabs{ display:flex; gap:0.75rem; margin-bottom:2rem; flex-wrap:wrap; }
+  .fp-tab-btn{
+    display:inline-flex; align-items:center; gap:0.5rem; padding:0.75rem 1.5rem;
+    border-radius:999px; border:1px solid var(--line); background:var(--paper-2);
+    color:var(--ink); font-weight:600; font-size:0.95rem; cursor:pointer;
+    transition:background .2s ease, border-color .2s ease, color .2s ease;
+    font-family:'Inter', sans-serif;
+  }
+  .fp-tab-btn:hover{ border-color:var(--brass); }
+  .fp-tab-btn.active{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .fp-panel{
+    border:1px solid var(--line); border-radius:var(--radius); background:#fff;
+    padding:2.25rem; box-shadow:0 14px 30px -20px rgba(18,33,59,0.18);
+  }
+  .fp-doc-title{
+    font-family:'Fraunces', serif; font-size:1.4rem; font-weight:700; color:var(--ink);
+    margin-bottom:0.25rem;
+  }
+  .fp-doc-kicker{ font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--brass); font-weight:600; margin-bottom:1.75rem; }
+  .fp-block{ margin-bottom:2rem; }
+  .fp-block:last-child{ margin-bottom:0; }
+  .fp-block h4{
+    font-family:'Fraunces', serif; font-size:1.05rem; font-weight:700; color:var(--ink);
+    margin-bottom:0.75rem; padding-bottom:0.5rem; border-bottom:2px dashed var(--line);
+  }
+  .fp-block p{ font-size:0.95rem; margin-bottom:0.6rem; }
+  .fp-block ul, .fp-block ol{ margin:0 0 0.6rem; padding-left:1.25rem; }
+  .fp-block li{ font-size:0.95rem; color:#3D4A63; margin-bottom:0.45rem; line-height:1.5; }
+  .fp-note{ font-size:0.88rem; color:#5B6884; font-style:italic; margin-top:0.4rem; }
+  .fp-contact{ background:var(--paper-2); border-radius:12px; padding:1.25rem 1.5rem; }
+  .fp-contact p{ margin-bottom:0.35rem; font-size:0.95rem; }
+  .fp-contact p:last-child{ margin-bottom:0; }
+  @media (max-width:640px){
+    .fp-panel{ padding:1.5rem; }
+    .fp-tab-btn{ flex:1; justify-content:center; padding:0.7rem 1rem; font-size:0.9rem; }
+  }
+
   /* Floating WhatsApp chat button */
   #waFloat{
     position:fixed; right:1.4rem; bottom:1.4rem; z-index:500;
@@ -1018,6 +1057,214 @@
     </div>
   </section>
 
+  <section id="file-processing">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Know before you go</div>
+        <h2>Belgium &amp; Italy file processing.</h2>
+        <p>The complete process, expenses, and services for our two most popular student visa destinations.</p>
+      </div>
+
+      <div class="fp-tabs">
+        <button type="button" class="fp-tab-btn" data-fp-target="fp-belgium">🇧🇪 Belgium</button>
+        <button type="button" class="fp-tab-btn" data-fp-target="fp-italy">🇮🇹 Italy</button>
+      </div>
+
+      <p id="fpHint" class="fp-note" style="margin-bottom:1.5rem;">Select a country above to view the full file processing details.</p>
+
+      <div class="fp-panel" id="fp-belgium" style="display:none;">
+        <div class="fp-doc-kicker">Student Visa – Full Process by NSI</div>
+        <div class="fp-doc-title">BELGIUM STUDENT VISA – FULL PROCESS BY NSI (NextStep Immigration)</div>
+
+        <div class="fp-block">
+          <h4>Estimated Expenses Until Your Visa Approval</h4>
+          <p>The following costs will be paid directly by you:</p>
+          <ul>
+            <li>University Application Fee: Depends on the university (90-150 euros).</li>
+            <li>Tuition Deposit : 7k-9k euros</li>
+            <li>Health Insurance: 200 euros - 30k BDT</li>
+            <li>Visa Fee: 250 euros</li>
+            <li>Document Legalization/Translation (if required): 5000tk</li>
+            <li>Police clearance</li>
+            <li>Medical - 8000 tk</li>
+            <li>BLOCK - 13200 EUROS(SEPTEMBER INTAKE)</li>
+            <li>7000 EUROS(FEBRUARY INTAKE)</li>
+          </ul>
+          <p>TUITION FEES - 7K-9K EUROS MASTERS - 2K-5K EUROS</p>
+          <p class="fp-note">These are your personal expenses.</p>
+        </div>
+
+        <div class="fp-block">
+          <h4>Subject</h4>
+          <p>BACHELOR - COMPUTER SCIENCE, MECHANICAL ENGINEERING, DATA SCIENCE, CYBER SECURITY, BUSINESS MANAGEMENT, INTERNATION BUSINESS, AVIATION</p>
+          <p>MASTERS - AQUACULTIRE, BUSINESS MANAGEMENT, COMPUTER SCIENCE, BOTANICAL ENGINEER, BUSINESS LINGUISTICS AND LITERATURE,</p>
+        </div>
+
+        <div class="fp-block">
+          <h4>Our Service Charges</h4>
+          <ul>
+            <li>Initial Payment (File Opening): BDT 10,000</li>
+            <li>After Visa Approval: BDT 90,000</li>
+          </ul>
+        </div>
+
+        <div class="fp-block">
+          <h4>Our Services Include</h4>
+          <ul>
+            <li>University and program selection</li>
+            <li>Admission eligibility assessment</li>
+            <li>Complete university application</li>
+            <li>Motivation letter (Statement of Purpose)</li>
+            <li>Professional CV preparation</li>
+            <li>Recommendation letter guidance</li>
+            <li>Scholarship application guidance</li>
+            <li>Financial document guidance</li>
+            <li>Blocked account/proof of sufficient financial means guidance (where applicable)</li>
+            <li>Visa document checklist</li>
+            <li>Visa application form completion</li>
+            <li>Visa appointment booking</li>
+            <li>Questionnaire preparation</li>
+            <li>Visa file preparation</li>
+            <li>Health insurance guidance</li>
+            <li>Accommodation assistance</li>
+            <li>Flight ticket booking</li>
+            <li>Pre-departure briefing</li>
+          </ul>
+        </div>
+
+        <div class="fp-block">
+          <h4>Intakes</h4>
+          <ul>
+            <li>September Intake (Main Intake) - Application open after January</li>
+            <li>February Intake (Available at selected universities and programs)- Starts from september</li>
+          </ul>
+          <p class="fp-note">Contact us early to maximize your admission and visa success.</p>
+        </div>
+
+        <div class="fp-block">
+          <h4>After Visa Approval – Estimated Expenses</h4>
+          <p>The following expenses will be your responsibility after your visa is approved:</p>
+          <ul>
+            <li>Flight ticket-100,000</li>
+            <li>Initial accommodation (room rent/deposit)- 1000-1200 euros</li>
+            <li>Daily living expenses</li>
+            <li>Personal shopping and settlement costs</li>
+          </ul>
+        </div>
+
+        <div class="fp-block">
+          <h4>Our Post-Visa Support</h4>
+          <p>After your visa approval, we continue supporting you until you settle in Belgium.</p>
+          <ul>
+            <li>✈️ Flight ticket booking at the best available price</li>
+            <li>📅 Travel date selection according to your university's orientation and class schedule</li>
+            <li>🏠 Accommodation assistance before arrival</li>
+            <li>🗺️ Airport-to-accommodation guidance</li>
+            <li>🤝 Local support from our team in Belgium</li>
+            <li>📞 Assistance with municipality registration guidance</li>
+            <li>🏦 Guidance for opening a Belgian bank account</li>
+            <li>📱 SIM card and basic settlement guidance</li>
+            <li>🎓 Guidance before your first day of classes</li>
+          </ul>
+        </div>
+
+        <div class="fp-block fp-contact">
+          <h4 style="border-bottom:none; margin-bottom:0.5rem;">Contact Us</h4>
+          <p>NextStep immigration</p>
+          <p>📱 WhatsApp: +8801805-723581</p>
+          <p>Facebook &amp; Instagram: NextStep Immigration</p>
+          <p>Office Location: Chawkbazar, Chattogram, Bangladesh</p>
+          <p class="fp-note">(Office renovation status may apply.)</p>
+          <p style="margin-top:0.75rem;"><strong>Founder</strong><br>Minhaj Uddin Jesan<br>Facebook: Minhaj in EU</p>
+        </div>
+      </div>
+
+      <div class="fp-panel" id="fp-italy" style="display:none;">
+        <div class="fp-doc-kicker">NextStep Immigration</div>
+        <div class="fp-doc-title">ITALY FULL PROCESS BY NSI</div>
+
+        <div class="fp-block">
+          <h4>Estimated Expenses Until Your Visa Approval</h4>
+          <p>The following costs will be paid directly by you:</p>
+          <ol>
+            <li>University Application Fee: BDT 15,000 (for applications to 2–3 universities)</li>
+            <li>SIMIA Fee: €300 (approximately BDT 42,500)</li>
+            <li>Health Insurance: €150 (approximately BDT 22,000)</li>
+            <li>Visa Fee: BDT 12,500–15,000</li>
+          </ol>
+          <p class="fp-note">These are your personal expenses.</p>
+        </div>
+
+        <div class="fp-block">
+          <h4>Our Service Charges</h4>
+          <ul>
+            <li>Initial Payment: BDT 15,000(File opening charge)</li>
+            <li>After offer letter: 5000 tk</li>
+            <li>After Visa Approval: BDT 160,000(after visa)</li>
+          </ul>
+          <p><strong>Total Service Charge: BDT 180,000</strong></p>
+        </div>
+
+        <div class="fp-block">
+          <h4>Our Services Include</h4>
+          <ul>
+            <li>University and course selection</li>
+            <li>Motivation letter preparation</li>
+            <li>CV preparation</li>
+            <li>Pre-enrollment application</li>
+            <li>Cover letter preparation</li>
+            <li>Sponsor letter preparation</li>
+            <li>Bank statement guidance - 20 LAKS TOTAL(8LAK SPONSER, 12 LAK APPLICANT)</li>
+            <li>Visa application form completion</li>
+            <li>Visa application processing</li>
+            <li>SIMIA registration</li>
+            <li>Health insurance arrangement</li>
+            <li>Accommodation assistance</li>
+            <li>Flight ticket booking</li>
+            <li>Scholarship application assistance and guidance</li>
+          </ul>
+          <p>Only september intake is available.</p>
+          <p>Application portal opens in november.</p>
+          <p class="fp-note">Contact with us before November to make your visa done.</p>
+          <p>Nextstep Immigration - whatsapp number - +8801805-723581</p>
+        </div>
+
+        <div class="fp-block">
+          <h4>After Visa Approval – Estimated Expenses</h4>
+          <p>The following expenses will be your responsibility after your visa is approved:</p>
+          <ol>
+            <li>Flight Ticket: The cost depends on the airline and travel season.</li>
+            <li>Accommodation (Room Rent): You will need to pay your room rent according to your accommodation agreement.</li>
+            <li>Marketing: Its on you.</li>
+          </ol>
+        </div>
+
+        <div class="fp-block">
+          <h4>Our Post-Visa Support Includes</h4>
+          <p>After your visa approval, we continue to support you until you settle in Italy.</p>
+          <ul>
+            <li>✈️ Flight ticket booking at the best available price.</li>
+            <li>📅 Choosing the most suitable travel date based on your university's class schedule.</li>
+            <li>🏠 Assistance in securing suitable accommodation.</li>
+            <li>🗺 Guidance and directions from the airport to your accommodation.</li>
+            <li>🤝 Personal support from our team in Belgium to help you settle in.</li>
+            <li>📞 Ongoing assistance with any initial issues after your arrival.</li>
+            <li>🎓 Guidance to ensure you are ready before your classes begin.</li>
+          </ul>
+          <p>Our goal is to make your journey to Belgium smooth, safe, and stress-free—from visa approval until you successfully start your studies.</p>
+        </div>
+
+        <div class="fp-block fp-contact">
+          <h4 style="border-bottom:none; margin-bottom:0.5rem;">Contact</h4>
+          <p>NextStep immigration - Facebook, instagram</p>
+          <p>OFFICE LOCATION - STILL IN RENOVATION - AS OF 10TH JULY</p>
+          <p>CHAWKBAZAR, CHATTOGRAM, BANGLADESH.</p>
+          <p style="margin-top:0.75rem;"><strong>FOUNDER</strong>- MINHAJ UDDIN JESAN - Minhaj in Eu(Facebook)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="events">
     <div class="container">
       <div class="section-head">
@@ -1349,6 +1596,31 @@
   loadDestinations();
   loadEvents();
 
+  // ---------- Belgium / Italy file processing tabs (static content, no backend) ----------
+  (function(){
+    var tabButtons = document.querySelectorAll('.fp-tab-btn');
+    var fpHint = document.getElementById('fpHint');
+    if (!tabButtons.length) return;
+    tabButtons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var targetId = btn.getAttribute('data-fp-target');
+        var alreadyActive = btn.classList.contains('active');
+        tabButtons.forEach(function(b){ b.classList.remove('active'); });
+        document.querySelectorAll('.fp-panel').forEach(function(panel){ panel.style.display = 'none'; });
+
+        if (alreadyActive) {
+          // Clicked the same button twice: collapse back to nothing selected
+          if (fpHint) fpHint.style.display = 'block';
+        } else {
+          btn.classList.add('active');
+          if (fpHint) fpHint.style.display = 'none';
+          var target = document.getElementById(targetId);
+          if (target) target.style.display = 'block';
+        }
+      });
+    });
+  })();
+
   // ---------- WhatsApp floating chat button (admin-controlled) ----------
   async function loadWhatsApp() {
     const btn = document.getElementById('waFloat');
@@ -1388,7 +1660,7 @@
 <script>
   (function(){
     // Auto-tag key elements for scroll-reveal animation (additive, no markup edits needed)
-    var sectionSelectors = ['#about', '#services', '#problems', '#apply', '#destinations', '#events', '#testimonials', '#contact', 'footer'];
+    var sectionSelectors = ['#about', '#services', '#problems', '#apply', '#destinations', '#file-processing', '#events', '#testimonials', '#contact', 'footer'];
     sectionSelectors.forEach(function(sel){
       var el = document.querySelector(sel);
       if (el) el.classList.add('reveal');
