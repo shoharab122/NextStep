@@ -521,6 +521,47 @@
     .about-figures{ grid-template-columns:1fr 1fr; }
     section{ padding:3rem 0; }
   }
+  /* European university partner logo marquee */
+  #uni-partners{ padding-bottom:4rem; }
+  #uni-partners .section-head{ margin-bottom:2.25rem; }
+  .uni-marquee-wrap{
+    position:relative; overflow:hidden; width:100%;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  }
+  .uni-marquee-fade{ position:absolute; top:0; bottom:0; width:70px; z-index:2; pointer-events:none; }
+  .uni-marquee-fade--l{ left:0; background:linear-gradient(90deg, var(--paper), rgba(246,244,238,0)); }
+  .uni-marquee-fade--r{ right:0; background:linear-gradient(270deg, var(--paper), rgba(246,244,238,0)); }
+  .uni-marquee-track{ display:flex; width:max-content; animation: uni-scroll 34s linear infinite; }
+  .uni-marquee-wrap:hover .uni-marquee-track{ animation-play-state:paused; }
+  .uni-marquee-group{ display:flex; align-items:stretch; gap:1.1rem; padding:0 0.55rem; flex-shrink:0; }
+  .uni-logo{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:0.35rem; min-width:168px; height:104px; padding:0.9rem 1.1rem;
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:0 4px 16px -10px rgba(18,33,59,0.18);
+    transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+  }
+  .uni-logo:hover{ transform:translateY(-4px); box-shadow:0 10px 24px -12px rgba(18,33,59,0.28); border-color:var(--brass-light); }
+  .uni-logo span{
+    font-family:'Fraunces', Georgia, serif; font-weight:600; font-size:1.02rem;
+    color:var(--ink); letter-spacing:-0.01em; text-align:center; line-height:1.15;
+  }
+  .uni-logo small{ font-size:0.72rem; color:#6B7690; letter-spacing:0.02em; text-align:center; }
+  @keyframes uni-scroll{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+  @media (max-width: 720px){
+    .uni-logo{ min-width:138px; height:92px; padding:0.7rem 0.85rem; }
+    .uni-logo span{ font-size:0.92rem; }
+    .uni-marquee-track{ animation-duration:24s; }
+    .uni-marquee-fade{ width:40px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .uni-marquee-track{ animation:none; }
+    .uni-marquee-wrap{ overflow-x:auto; }
+  }
   @media (max-width: 420px){
     .hero-stats{ gap:1rem 1.25rem; }
     .stat{ min-width:calc(50% - 0.625rem); }
@@ -801,7 +842,7 @@
     <div class="container about-grid">
       <div>
         <div class="eyebrow">Who we are</div>
-        <h2>Certified consultants, Three years in the field.</h2>
+        <h2>Certified consultants, ten years in the field.</h2>
         <p>We're a team of certified immigration consultants who've spent over a decade guiding students, professionals, and families through the paperwork of relocating abroad. No jargon, no guesswork — just a clear plan for your specific case.</p>
       </div>
       <div class="about-figures">
@@ -809,6 +850,50 @@
         <div class="figure-card"><b>5</b><span>Partner universities</span></div>
         <div class="figure-card"><b>6</b><span>Countries covered</span></div>
         <div class="figure-card"><b>94%</b><span>Approved on first try</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="uni-partners">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Study destinations</div>
+        <h2>Universities across Europe.</h2>
+        <p>A glimpse of the European institutions our students have been placed with.</p>
+      </div>
+    </div>
+    <div class="uni-marquee-wrap">
+      <div class="uni-marquee-fade uni-marquee-fade--l"></div>
+      <div class="uni-marquee-fade uni-marquee-fade--r"></div>
+      <div class="uni-marquee-track">
+        <div class="uni-marquee-group">
+          <div class="uni-logo"><span>Sorbonne</span><small>Paris, France</small></div>
+          <div class="uni-logo"><span>TU Munich</span><small>Munich, Germany</small></div>
+          <div class="uni-logo"><span>Bocconi</span><small>Milan, Italy</small></div>
+          <div class="uni-logo"><span>KU Leuven</span><small>Leuven, Belgium</small></div>
+          <div class="uni-logo"><span>Uni Amsterdam</span><small>Amsterdam, Netherlands</small></div>
+          <div class="uni-logo"><span>ETH Zurich</span><small>Zurich, Switzerland</small></div>
+          <div class="uni-logo"><span>Trinity College</span><small>Dublin, Ireland</small></div>
+          <div class="uni-logo"><span>Uni Helsinki</span><small>Helsinki, Finland</small></div>
+          <div class="uni-logo"><span>Uni Barcelona</span><small>Barcelona, Spain</small></div>
+          <div class="uni-logo"><span>Uppsala Uni</span><small>Uppsala, Sweden</small></div>
+          <div class="uni-logo"><span>Charles Uni</span><small>Prague, Czechia</small></div>
+          <div class="uni-logo"><span>Uni Warsaw</span><small>Warsaw, Poland</small></div>
+        </div>
+        <div class="uni-marquee-group" aria-hidden="true">
+          <div class="uni-logo"><span>Sorbonne</span><small>Paris, France</small></div>
+          <div class="uni-logo"><span>TU Munich</span><small>Munich, Germany</small></div>
+          <div class="uni-logo"><span>Bocconi</span><small>Milan, Italy</small></div>
+          <div class="uni-logo"><span>KU Leuven</span><small>Leuven, Belgium</small></div>
+          <div class="uni-logo"><span>Uni Amsterdam</span><small>Amsterdam, Netherlands</small></div>
+          <div class="uni-logo"><span>ETH Zurich</span><small>Zurich, Switzerland</small></div>
+          <div class="uni-logo"><span>Trinity College</span><small>Dublin, Ireland</small></div>
+          <div class="uni-logo"><span>Uni Helsinki</span><small>Helsinki, Finland</small></div>
+          <div class="uni-logo"><span>Uni Barcelona</span><small>Barcelona, Spain</small></div>
+          <div class="uni-logo"><span>Uppsala Uni</span><small>Uppsala, Sweden</small></div>
+          <div class="uni-logo"><span>Charles Uni</span><small>Prague, Czechia</small></div>
+          <div class="uni-logo"><span>Uni Warsaw</span><small>Warsaw, Poland</small></div>
+        </div>
       </div>
     </div>
   </section>
