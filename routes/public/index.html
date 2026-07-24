@@ -498,13 +498,12 @@
   .apply-progress-label{ display:flex; justify-content:space-between; font-size:0.78rem; color:#5B6884; margin-top:0.5rem; font-weight:600; }
   .apply-progress-label span.pct{ color:var(--brass); }
 
-  .apply-form{ max-width:780px; contain:layout style; }
+  .apply-form{ max-width:780px; }
   .apply-form fieldset{
     position:relative; border:1.5px solid var(--line); border-radius:calc(var(--radius) + 2px);
     padding:1.75rem 1.75rem 1.75rem 4.25rem; margin:0 0 1.5rem; background:var(--paper);
     box-shadow:0 18px 40px -30px rgba(18,33,59,0.35);
-    transition:border-color .2s ease, box-shadow .2s ease;
-    contain:layout paint style;
+    transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
   }
   .apply-form fieldset:hover, .apply-form fieldset:focus-within{
     border-color:var(--brass); box-shadow:0 20px 40px -24px rgba(184,134,46,0.28);
@@ -518,13 +517,11 @@
     color:var(--ink); font-family:'Fraunces', serif; font-weight:700; font-size:1.02rem;
     display:flex; align-items:center; justify-content:center;
     box-shadow:0 6px 14px -6px rgba(184,134,46,0.55);
-    flex-shrink:0;
   }
   .apply-form{ counter-reset: apply-step; }
   .apply-form legend{
     font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem;
     padding:0 0.5rem; color:var(--ink); margin-left:-1.25rem;
-    max-width:calc(100% - 1rem); overflow-wrap:break-word; word-break:break-word;
   }
   .apply-form .row{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
   .apply-form .row .field{ margin-bottom:0; }
@@ -555,21 +552,10 @@
   #applyStatus{ font-size:0.88rem; margin:1rem 0 0; min-height:1.2em; color:var(--brass); font-weight:600; text-align:center; }
 
   @media (max-width:640px){
-    /* Step number moves out of the legend's way entirely on mobile: legend no
-       longer uses a negative margin, so long titles can never collide with
-       the counter circle regardless of text length or viewport width. */
     .apply-form .row{ grid-template-columns:1fr; }
-    .apply-form fieldset{
-      padding:3.4rem 1.15rem 1.35rem 1.15rem;
-      box-shadow:0 8px 18px -14px rgba(18,33,59,0.3);
-    }
-    .apply-form fieldset::before{
-      left:1.15rem; top:1.15rem; width:26px; height:26px; font-size:0.85rem;
-    }
-    .apply-form legend{
-      position:absolute; top:1.05rem; left:3.35rem; right:1.15rem;
-      margin-left:0; padding:0; font-size:1rem; line-height:1.25;
-    }
+    .apply-form fieldset{ padding:1.5rem 1.15rem 1.35rem 3.5rem; }
+    .apply-form fieldset::before{ left:1rem; top:1.6rem; width:28px; height:28px; font-size:0.9rem; }
+    .apply-form legend{ font-size:1.02rem; margin-left:-0.9rem; }
     .apply-progress-wrap{ top:60px; }
   }
   /* Sticky submit bar on small screens, only in the isolated full-page apply view */
@@ -583,8 +569,7 @@
     }
   }
 
-  /* Extra mobile refinements for the Apply section: lighter shadows/effects
-     and touch tuning so scrolling and taps feel immediate on phones. */
+  /* Extra mobile refinements for the Apply section */
   @media (max-width:640px){
     #apply .section-head p{ font-size:0.92rem; }
     .apply-progress-wrap{ padding:0.75rem 0 0.9rem; margin-bottom:1.35rem; }
@@ -593,27 +578,16 @@
     .apply-form .row{ gap:0.85rem; }
     .apply-form .field{ margin-bottom:0.85rem; }
     .apply-form label{ font-size:0.8rem; margin-bottom:0.35rem; }
-    .apply-form input, .apply-form select{
-      padding:0.8rem 0.9rem; min-height:46px;
-      transition:border-color .15s ease, box-shadow .15s ease;
-      touch-action:manipulation; -webkit-tap-highlight-color:transparent;
-    }
+    .apply-form input, .apply-form select{ padding:0.8rem 0.9rem; min-height:46px; }
     .apply-form input[type="file"]{ padding:0.75rem 0.6rem; min-height:46px; font-size:0.82rem; }
     .apply-form input[type="date"]{ padding-right:0.6rem; }
-    .apply-form button[type="submit"]{
-      min-height:50px; font-size:0.98rem;
-      touch-action:manipulation; -webkit-tap-highlight-color:transparent;
-    }
-    .apply-back-link{ margin-bottom:1rem; touch-action:manipulation; }
-    /* Hovering doesn't exist on touch, and the transform/shadow hover effect
-       was costing an extra paint on every tap; drop it on touch devices. */
-    .apply-form fieldset:hover{ border-color:var(--line); box-shadow:0 8px 18px -14px rgba(18,33,59,0.3); }
-    .apply-form fieldset:focus-within{ border-color:var(--brass); box-shadow:0 10px 20px -12px rgba(184,134,46,0.25); }
+    .apply-form button[type="submit"]{ min-height:50px; font-size:0.98rem; }
+    .apply-back-link{ margin-bottom:1rem; }
   }
   @media (max-width:420px){
-    .apply-form fieldset{ padding-top:3.2rem; }
-    .apply-form fieldset::before{ width:24px; height:24px; font-size:0.8rem; top:1.1rem; left:1rem; }
-    .apply-form legend{ font-size:0.94rem; left:3.1rem; right:1rem; }
+    .apply-form fieldset{ padding:1.35rem 1rem 1.2rem 3.15rem; }
+    .apply-form fieldset::before{ left:0.85rem; top:1.5rem; width:26px; height:26px; font-size:0.85rem; }
+    .apply-form legend{ font-size:0.96rem; margin-left:-0.55rem; }
     .apply-form .file-hint{ font-size:0.72rem; }
   }
 
