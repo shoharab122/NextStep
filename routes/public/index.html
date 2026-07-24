@@ -505,36 +505,27 @@
   .apply-form{ max-width:780px; }
   .apply-form fieldset{
     position:relative; border:1.5px solid var(--line); border-radius:calc(var(--radius) + 2px);
-    padding:1.75rem; margin:0 0 1.5rem; background:var(--paper);
+    padding:1.75rem 1.75rem 1.75rem 4.25rem; margin:0 0 1.5rem; background:var(--paper);
     box-shadow:0 18px 40px -30px rgba(18,33,59,0.35);
     transition:border-color .16s ease, box-shadow .16s ease, transform .16s ease;
   }
   .apply-form fieldset:hover, .apply-form fieldset:focus-within{
     border-color:var(--brass); box-shadow:0 20px 40px -24px rgba(184,134,46,0.28);
   }
-  .apply-form{ counter-reset: apply-step; }
-  /* The number badge is anchored to the legend itself (position:relative on
-     the legend, badge absolutely positioned at its top-left) instead of to
-     the fieldset. That way the badge always tracks the legend's real
-     position and the legend's own left padding reserves room for it on
-     every wrapped line — it can never drift onto the fields below when the
-     title wraps to 2 lines. */
-  .apply-form legend{
-    position:relative;
-    font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem; line-height:1.25;
-    padding:0 0.5rem 0 3.15rem; color:var(--ink); margin-left:-0.5rem;
-    max-width:calc(100% - 0.5rem);
-    overflow-wrap:break-word; word-break:break-word;
-  }
-  .apply-form legend::before{
+  .apply-form fieldset::before{
     counter-increment: apply-step;
     content: counter(apply-step);
-    position:absolute; left:0; top:50%; transform:translateY(-50%);
+    position:absolute; left:1.5rem; top:1.85rem;
     width:34px; height:34px; border-radius:50%;
     background:linear-gradient(155deg, var(--brass-light), var(--brass));
     color:var(--ink); font-family:'Fraunces', serif; font-weight:700; font-size:1.02rem;
     display:flex; align-items:center; justify-content:center;
     box-shadow:0 6px 14px -6px rgba(184,134,46,0.55);
+  }
+  .apply-form{ counter-reset: apply-step; }
+  .apply-form legend{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem;
+    padding:0 0.5rem; color:var(--ink); margin-left:-1.25rem;
   }
   .apply-form .row{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
   .apply-form .row .field{ margin-bottom:0; }
@@ -566,9 +557,9 @@
 
   @media (max-width:640px){
     .apply-form .row{ grid-template-columns:1fr; }
-    .apply-form fieldset{ padding:1.5rem 1.15rem 1.35rem; }
-    .apply-form legend{ font-size:1.02rem; padding-left:2.6rem; margin-left:-0.35rem; }
-    .apply-form legend::before{ width:28px; height:28px; font-size:0.9rem; }
+    .apply-form fieldset{ padding:1.5rem 1.15rem 1.35rem 3.5rem; }
+    .apply-form fieldset::before{ left:1rem; top:1.6rem; width:28px; height:28px; font-size:0.9rem; }
+    .apply-form legend{ font-size:1.02rem; margin-left:-0.9rem; }
     .apply-progress-wrap{ top:60px; }
   }
   /* Sticky submit bar on small screens, only in the isolated full-page apply view */
@@ -598,14 +589,21 @@
     .apply-back-link{ margin-bottom:1rem; }
   }
   @media (max-width:420px){
-    .apply-form fieldset{ padding:1.35rem 1rem 1.2rem; }
-    .apply-form legend{ font-size:0.96rem; padding-left:2.35rem; margin-left:-0.2rem; }
-    .apply-form legend::before{ width:26px; height:26px; font-size:0.85rem; }
+    .apply-form fieldset{ padding:1.35rem 1rem 1.2rem 3.15rem; }
+    .apply-form fieldset::before{ left:0.85rem; top:1.5rem; width:26px; height:26px; font-size:0.85rem; }
+    .apply-form legend{ font-size:0.96rem; margin-left:-0.55rem; }
     .apply-form .file-hint{ font-size:0.72rem; }
   }
 
   /* --- Extra mobile collision fixes for the Apply section --- */
   @media (max-width:640px){
+    /* Prevent legend text from ever touching/overlapping the numbered badge */
+    .apply-form legend{
+      max-width:calc(100% - 0.5rem);
+      overflow-wrap:break-word;
+      word-break:break-word;
+      line-height:1.25;
+    }
     /* Keep progress bar label from overlapping the percentage on narrow screens */
     .apply-progress-label{
       flex-wrap:wrap;
@@ -633,9 +631,9 @@
   }
 
   @media (max-width:380px){
-    .apply-form fieldset{ padding:1.25rem 0.85rem 1.1rem; }
-    .apply-form legend{ font-size:0.9rem; padding-left:2.15rem; margin-left:-0.1rem; }
-    .apply-form legend::before{ width:24px; height:24px; font-size:0.8rem; }
+    .apply-form fieldset{ padding:1.25rem 0.85rem 1.1rem 2.85rem; }
+    .apply-form fieldset::before{ left:0.7rem; top:1.4rem; width:24px; height:24px; font-size:0.8rem; }
+    .apply-form legend{ font-size:0.9rem; margin-left:-0.35rem; }
     .apply-progress-label{ font-size:0.7rem; }
     .apply-form label{ font-size:0.76rem; }
   }
