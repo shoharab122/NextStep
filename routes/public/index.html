@@ -362,22 +362,51 @@
   .t-card h4{ font-family:'Inter', sans-serif; font-weight:600; font-size:0.88rem; color:var(--brass-light); margin:0.75rem 0 0; }
   .quote-mark{ font-family:'Fraunces', serif; font-size:2rem; color:var(--brass-light); display:block; line-height:1; margin-bottom:0.5rem; }
 
-  .contact-grid{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:3.5rem; }
-  .contact-info .info-row{ display:flex; gap:1rem; margin-bottom:1.5rem; align-items:flex-start; }
-  .info-row .ico{ width:40px; height:40px; border-radius:10px; background:var(--paper-2); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem; }
-  .info-row b{ display:block; font-size:0.95rem; }
-  .info-row span{ font-size:0.9rem; color:#5B6884; }
-
-  form#contactForm{ background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); padding:2rem; display:flex; flex-direction:column; gap:1rem; }
-  .field{ display:flex; flex-direction:column; gap:0.4rem; }
-  .field label{ font-size:0.82rem; font-weight:600; color:var(--ink); }
-  input, textarea{
-    font-family:'Inter', sans-serif; font-size:0.95rem; padding:0.85rem 1rem;
-    border-radius:9px; border:1px solid var(--line); background:var(--paper); color:var(--ink); resize:vertical;
+  .contact-grid{ display:grid; grid-template-columns:0.85fr 1.15fr; gap:3.5rem; align-items:start; }
+  .contact-info .info-row{
+    display:flex; gap:1rem; margin-bottom:1.1rem; align-items:flex-start;
+    background:var(--paper); border:1px solid var(--line); border-radius:12px;
+    padding:1rem 1.1rem; transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
   }
-  input:focus, textarea:focus{ outline:2px solid var(--brass); outline-offset:1px; border-color:var(--brass); }
+  .contact-info .info-row:hover{ border-color:var(--brass); transform:translateY(-2px); box-shadow:0 12px 24px -16px rgba(18,33,59,0.25); }
+  .info-row .ico{ width:42px; height:42px; border-radius:10px; background:linear-gradient(155deg, var(--brass-light), var(--brass)); color:var(--ink); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.15rem; }
+  .info-row b{ display:block; font-size:0.95rem; }
+  .info-row span{ font-size:0.9rem; color:#5B6884; word-break:break-word; }
+
+  form#contactForm{
+    position:relative; overflow:hidden;
+    background:linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+    border:1px solid var(--line); border-radius:calc(var(--radius) + 4px);
+    padding:2.25rem; display:flex; flex-direction:column; gap:1.15rem;
+    box-shadow: 0 30px 60px -32px rgba(18,33,59,0.28);
+  }
+  form#contactForm::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:4px;
+    background:linear-gradient(90deg, var(--brass), var(--brass-light), var(--brass));
+  }
+  .form-heading{ display:flex; align-items:center; gap:0.6rem; margin-bottom:0.25rem; }
+  .form-heading .eyebrow{ margin:0; }
+  .field{ display:flex; flex-direction:column; gap:0.4rem; position:relative; }
+  .field label{ font-size:0.82rem; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:0.35rem; }
+  .field-row-2{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  input, textarea, select{
+    font-family:'Inter', sans-serif; font-size:0.95rem; padding:0.85rem 1rem;
+    border-radius:10px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); resize:vertical;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease;
+    width:100%;
+  }
+  input:focus, textarea:focus, select:focus{
+    outline:none; border-color:var(--brass); box-shadow:0 0 0 4px rgba(184,134,46,0.15);
+  }
+  input:hover, textarea:hover{ border-color:rgba(184,134,46,0.5); }
   input::placeholder, textarea::placeholder{ color:#8B96AC; }
-  #formStatus{ font-size:0.88rem; margin:0; min-height:1.2em; color:var(--brass); font-weight:600; }
+  form#contactForm button[type="submit"]{ position:relative; overflow:hidden; }
+  #formStatus{ font-size:0.88rem; margin:0; min-height:1.2em; color:var(--brass); font-weight:600; transition:opacity .2s ease; }
+  @media (max-width:640px){
+    .contact-info .info-row{ padding:0.9rem 1rem; }
+    form#contactForm{ padding:1.5rem; border-radius:var(--radius); }
+    .field-row-2{ grid-template-columns:1fr; }
+  }
 
   #apply{ background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
 
@@ -401,7 +430,7 @@
   @media (max-width:520px){
     .problems-grid{ grid-template-columns:1fr; }
   }
-  .apply-back-link{ display:inline-block; margin-bottom:1.25rem; font-weight:600; color:var(--brass); text-decoration:none; }
+  .apply-back-link{ display:inline-flex; align-items:center; gap:0.4rem; margin-bottom:1.25rem; font-weight:600; color:var(--brass); text-decoration:none; }
   .apply-back-link:hover{ text-decoration:underline; }
   /* Isolated Apply view: hide every other section + hero so only #apply shows */
   body.apply-view main section:not(#apply),
@@ -409,31 +438,89 @@
   body.apply-view #apply{ border-top:none; min-height:calc(100vh - 80px); }
   #apply{ display:none; }
   body.apply-view #apply{ display:block; }
-  .apply-form{ max-width:760px; }
-  .apply-form fieldset{
-    border:1px solid var(--line); border-radius:var(--radius);
-    padding:1.75rem; margin:0 0 1.5rem; background:var(--paper);
+
+  /* Sticky progress indicator for the application form */
+  .apply-progress-wrap{
+    position:sticky; top:72px; z-index:20; background:var(--paper-2);
+    padding:0.9rem 0 1.1rem; margin-bottom:1.75rem; border-bottom:1px solid var(--line);
   }
+  .apply-progress-bar{ height:6px; border-radius:999px; background:rgba(18,33,59,0.08); overflow:hidden; }
+  .apply-progress-fill{
+    height:100%; width:0%; border-radius:999px;
+    background:linear-gradient(90deg, var(--brass), var(--brass-light));
+    transition:width .35s ease;
+  }
+  .apply-progress-label{ display:flex; justify-content:space-between; font-size:0.78rem; color:#5B6884; margin-top:0.5rem; font-weight:600; }
+  .apply-progress-label span.pct{ color:var(--brass); }
+
+  .apply-form{ max-width:780px; }
+  .apply-form fieldset{
+    position:relative; border:1.5px solid var(--line); border-radius:calc(var(--radius) + 2px);
+    padding:1.75rem 1.75rem 1.75rem 4.25rem; margin:0 0 1.5rem; background:var(--paper);
+    box-shadow:0 18px 40px -30px rgba(18,33,59,0.35);
+    transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+  }
+  .apply-form fieldset:hover, .apply-form fieldset:focus-within{
+    border-color:var(--brass); box-shadow:0 20px 40px -24px rgba(184,134,46,0.28);
+  }
+  .apply-form fieldset::before{
+    counter-increment: apply-step;
+    content: counter(apply-step);
+    position:absolute; left:1.5rem; top:1.85rem;
+    width:34px; height:34px; border-radius:50%;
+    background:linear-gradient(155deg, var(--brass-light), var(--brass));
+    color:var(--ink); font-family:'Fraunces', serif; font-weight:700; font-size:1.02rem;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 14px -6px rgba(184,134,46,0.55);
+  }
+  .apply-form{ counter-reset: apply-step; }
   .apply-form legend{
-    font-family:'Fraunces', serif; font-weight:600; font-size:1.1rem;
-    padding:0 0.5rem; color:var(--ink);
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem;
+    padding:0 0.5rem; color:var(--ink); margin-left:-1.25rem;
   }
   .apply-form .row{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
   .apply-form .row .field{ margin-bottom:0; }
   .apply-form .field{ margin-bottom:1rem; }
   .apply-form .field:last-child{ margin-bottom:0; }
+  .apply-form label{ font-size:0.82rem; font-weight:600; color:var(--ink); display:block; margin-bottom:0.4rem; }
   .apply-form select{
     font-family:'Inter', sans-serif; font-size:0.95rem; padding:0.85rem 1rem;
-    border-radius:9px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    border-radius:10px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink);
+    width:100%; transition:border-color .2s ease, box-shadow .2s ease;
+    -webkit-appearance:none; appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%235B6884'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 0.9rem center; background-size:1.1rem;
+    padding-right:2.4rem;
   }
-  .apply-form select:focus{ outline:2px solid var(--brass); outline-offset:1px; border-color:var(--brass); }
-  .apply-form input[type="file"]{ padding:0.5rem; border:1px solid var(--line); border-radius:9px; background:var(--paper); font-size:0.9rem; }
+  .apply-form select:focus{ outline:none; border-color:var(--brass); box-shadow:0 0 0 4px rgba(184,134,46,0.15); }
+  .apply-form input:focus{ box-shadow:0 0 0 4px rgba(184,134,46,0.15); }
+  .apply-form input[type="file"]{
+    padding:0.6rem; border:1.5px dashed var(--line); border-radius:10px; background:var(--paper-2);
+    font-size:0.88rem; width:100%; cursor:pointer; transition:border-color .2s ease, background .2s ease;
+  }
+  .apply-form input[type="file"]:hover{ border-color:var(--brass); background:rgba(184,134,46,0.06); }
   .apply-form .file-hint{ font-size:0.78rem; color:#5B6884; margin-top:0.35rem; display:block; }
+  .apply-form button[type="submit"]{
+    width:100%; box-shadow:0 16px 32px -14px rgba(18,33,59,0.4);
+  }
   .apply-form button[type="submit"]:disabled{ opacity:0.6; cursor:not-allowed; }
-  #applyStatus{ font-size:0.88rem; margin:1rem 0 0; min-height:1.2em; color:var(--brass); font-weight:600; }
+  #applyStatus{ font-size:0.88rem; margin:1rem 0 0; min-height:1.2em; color:var(--brass); font-weight:600; text-align:center; }
+
   @media (max-width:640px){
     .apply-form .row{ grid-template-columns:1fr; }
-    .apply-form fieldset{ padding:1.25rem; }
+    .apply-form fieldset{ padding:1.5rem 1.15rem 1.35rem 3.5rem; }
+    .apply-form fieldset::before{ left:1rem; top:1.6rem; width:28px; height:28px; font-size:0.9rem; }
+    .apply-form legend{ font-size:1.02rem; margin-left:-0.9rem; }
+    .apply-progress-wrap{ top:60px; }
+  }
+  /* Sticky submit bar on small screens, only in the isolated full-page apply view */
+  @media (max-width:640px){
+    body.apply-view .apply-form{ padding-bottom:5.5rem; padding-left:1rem; padding-right:1rem; }
+    body.apply-view .apply-form > button[type="submit"]{
+      position:fixed; left:0; right:0; bottom:0; z-index:60;
+      margin:0; border-radius:0; padding:1rem 1.25rem;
+      box-shadow:0 -8px 24px -12px rgba(18,33,59,0.35);
+    }
   }
 
   footer{
@@ -969,6 +1056,11 @@
         <p>Share your academic history and upload your certificates. Fields you don't have yet (e.g. Master's) can be left blank.</p>
       </div>
 
+      <div class="apply-progress-wrap">
+        <div class="apply-progress-bar"><div class="apply-progress-fill" id="applyProgressFill"></div></div>
+        <div class="apply-progress-label"><span>Application progress</span><span class="pct" id="applyProgressPct">0%</span></div>
+      </div>
+
       <form id="studentForm" class="apply-form" enctype="multipart/form-data">
 
         <fieldset>
@@ -1411,6 +1503,10 @@
       </div>
 
       <form id="contactForm">
+        <div class="form-heading">
+          <div style="width:36px;height:36px;font-size:1rem;border-radius:10px;background:linear-gradient(155deg, var(--brass-light), var(--brass));display:flex;align-items:center;justify-content:center;flex-shrink:0;">✉️</div>
+          <h3 style="margin:0;font-size:1.15rem;">Book a free consultation</h3>
+        </div>
         <div class="field">
           <label for="name">Full name</label>
           <input type="text" id="name" name="name" placeholder="Your full name" required />
@@ -1536,6 +1632,30 @@
       navToggle.setAttribute('aria-expanded', 'false');
     });
   });
+
+  // ---------- Live progress indicator for the application form (purely visual, additive) ----------
+  (function(){
+    var form = document.getElementById('studentForm');
+    var fill = document.getElementById('applyProgressFill');
+    var pct = document.getElementById('applyProgressPct');
+    if (!form || !fill || !pct) return;
+    function updateProgress(){
+      var fields = form.querySelectorAll('input, select, textarea');
+      var total = 0, filled = 0;
+      fields.forEach(function(f){
+        if (f.type === 'submit' || f.type === 'button') return;
+        total++;
+        if (f.type === 'file'){ if (f.files && f.files.length) filled++; }
+        else if (f.value && String(f.value).trim() !== '') filled++;
+      });
+      var percent = total ? Math.round((filled / total) * 100) : 0;
+      fill.style.width = percent + '%';
+      pct.textContent = percent + '%';
+    }
+    form.addEventListener('input', updateProgress);
+    form.addEventListener('change', updateProgress);
+    updateProgress();
+  })();
 
   document.getElementById('studentForm').addEventListener('submit', async (e) => {
     e.preventDefault();
