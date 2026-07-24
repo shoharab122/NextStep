@@ -26,12 +26,7 @@
   }
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; scroll-padding-top:88px; -webkit-text-size-adjust:100%; }
-  html, body{ -webkit-overflow-scrolling:touch; overscroll-behavior-y:none; }
-  /* Scroll & render performance: let the browser skip layout/paint work for
-     offscreen sections, and hint the compositor for elements that animate. */
-  section{ content-visibility:auto; contain-intrinsic-size:1px 900px; }
   .reveal, .reveal-stagger > *{ will-change:opacity, transform; }
-  img, video{ content-visibility:auto; }
   html, body{ max-width:100%; overflow-x:hidden; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
   body{
     margin:0; background:var(--paper); color:var(--ink);
