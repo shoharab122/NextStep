@@ -214,7 +214,22 @@ const destinationImageUpload = multer({
       );
     `);
 
-    console.log('Connected to PostgreSQL — contacts, student_applications, events, destinations, site_settings & invoices tables ready.');
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS todos (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        description TEXT,
+        assigned_to TEXT,
+        priority TEXT NOT NULL DEFAULT 'medium',
+        status TEXT NOT NULL DEFAULT 'pending',
+        due_date DATE,
+        created_by TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    console.log('Connected to PostgreSQL — contacts, student_applications, events, destinations, site_settings, invoices & todos tables ready.');
   } catch (err) {
     console.error('Database connection/setup error:', err.message);
   }
@@ -1064,6 +1079,117 @@ router.delete('/admin/invoices/:id', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('Delete invoice error:', err.message);
     res.status(500).json({ error: 'Could not delete invoice.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Admin (protected): staff to-do list
+// ---------------------------------------------------------------------------
+const VALID_TODO_PRIORITIES = ['low', 'medium', 'high'];
+const VALID_TODO_STATUSES = ['pending', 'in_progress', 'done'];
+
+router.get('/admin/todos', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM todos ORDER BY
+        CASE status WHEN 'pending' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END,
+        CASE priority WHEN 'high' THEN 0 WHEN 'medium' THEN 1 ELSE 2 END,
+        due_date NULLS LAST, id DESC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch todos error:', err.message);
+    res.status(500).json({ error: 'Could not fetch to-do list.' });
+  }
+});
+
+router.post('/admin/todos', requireAdmin, async (req, res) => {
+  const b = req.body;
+  if (!b.title || !b.title.trim()) {
+    return res.status(400).json({ error: 'A task title is required.' });
+  }
+  const priority = VALID_TODO_PRIORITIES.includes(b.priority) ? b.priority : 'medium';
+  const status = VALID_TODO_STATUSES.includes(b.status) ? b.status : 'pending';
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO todos (title, description, assigned_to, priority, status, due_date, created_by)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)
+       RETURNING *`,
+      [
+        b.title.trim(),
+        b.description || null,
+        b.assigned_to || null,
+        priority,
+        status,
+        b.due_date || null,
+        req.admin?.username || null,
+      ]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Create todo error:', err.message);
+    res.status(500).json({ error: 'Could not create the task.' });
+  }
+});
+
+router.put('/admin/todos/:id', requireAdmin, async (req, res) => {
+  const b = req.body;
+  if (!b.title || !b.title.trim()) {
+    return res.status(400).json({ error: 'A task title is required.' });
+  }
+  const priority = VALID_TODO_PRIORITIES.includes(b.priority) ? b.priority : 'medium';
+  const status = VALID_TODO_STATUSES.includes(b.status) ? b.status : 'pending';
+
+  try {
+    const result = await pool.query(
+      `UPDATE todos SET
+        title=$1, description=$2, assigned_to=$3, priority=$4, status=$5, due_date=$6, updated_at=NOW()
+       WHERE id=$7
+       RETURNING *`,
+      [
+        b.title.trim(),
+        b.description || null,
+        b.assigned_to || null,
+        priority,
+        status,
+        b.due_date || null,
+        req.params.id,
+      ]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Task not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update todo error:', err.message);
+    res.status(500).json({ error: 'Could not update the task.' });
+  }
+});
+
+router.patch('/admin/todos/:id/status', requireAdmin, async (req, res) => {
+  const status = VALID_TODO_STATUSES.includes(req.body.status) ? req.body.status : null;
+  if (!status) return res.status(400).json({ error: 'Invalid status.' });
+
+  try {
+    const result = await pool.query(
+      `UPDATE todos SET status=$1, updated_at=NOW() WHERE id=$2 RETURNING *`,
+      [status, req.params.id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Task not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update todo status error:', err.message);
+    res.status(500).json({ error: 'Could not update the task status.' });
+  }
+});
+
+router.delete('/admin/todos/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM todos WHERE id = $1 RETURNING id', [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Task not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete todo error:', err.message);
+    res.status(500).json({ error: 'Could not delete the task.' });
   }
 });
 
