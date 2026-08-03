@@ -587,23 +587,52 @@
 
   /* ---------- Higher Ratio (visa-ready shortlist) ---------- */
   .hr-toolbar{
-    display:flex; flex-wrap:wrap; align-items:center; gap:0.7rem; margin-bottom:1rem;
-    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
-    padding:0.9rem 1rem; box-shadow:var(--shadow-sm);
+    display:flex; flex-wrap:wrap; align-items:flex-end; gap:1.1rem; margin-bottom:1rem;
+    background:linear-gradient(155deg, #fff 0%, var(--paper) 100%); border:1px solid var(--line); border-radius:var(--radius);
+    padding:1.1rem 1.2rem; box-shadow:var(--shadow-sm);
   }
-  .hr-toolbar .hr-field{ display:flex; flex-direction:column; gap:0.28rem; }
+  .hr-toolbar .hr-field{ display:flex; flex-direction:column; gap:0.32rem; }
   .hr-toolbar label{ font-size:0.7rem; font-weight:700; color:#5B6884; text-transform:uppercase; letter-spacing:0.03em; }
   .hr-toolbar input[type="number"]{ width:84px; }
   .hr-toolbar input, .hr-toolbar select{
     padding:0.5rem 0.65rem; border:1px solid var(--line); border-radius:8px; font-size:0.85rem; background:#fff;
   }
+  .hr-slider-field{ min-width:190px; }
+  .hr-slider-row{ display:flex; align-items:center; gap:0.6rem; }
+  .hr-slider-row input[type="range"]{
+    -webkit-appearance:none; appearance:none; flex:1; height:5px; border-radius:999px;
+    background:linear-gradient(90deg, var(--brass) 0%, var(--brass) var(--fill,50%), rgba(18,33,59,0.12) var(--fill,50%), rgba(18,33,59,0.12) 100%);
+    outline:none; cursor:pointer;
+  }
+  .hr-slider-row input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:17px; height:17px; border-radius:50%;
+    background:var(--ink); border:2.5px solid #fff; box-shadow:0 1px 4px rgba(18,33,59,0.4); cursor:pointer;
+  }
+  .hr-slider-row input[type="range"]::-moz-range-thumb{
+    width:17px; height:17px; border-radius:50%; background:var(--ink); border:2.5px solid #fff;
+    box-shadow:0 1px 4px rgba(18,33,59,0.4); cursor:pointer;
+  }
+  .hr-slider-val{ font-weight:800; color:var(--brand-blue); font-size:0.9rem; min-width:34px; text-align:right; }
+  .hr-presets{ display:flex; gap:0.4rem; flex-wrap:wrap; }
+  .hr-preset-btn{
+    font-size:0.72rem; font-weight:700; padding:0.35rem 0.7rem; border-radius:999px;
+    border:1px solid var(--line); background:#fff; color:var(--ink-2); cursor:pointer;
+    transition:border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .hr-preset-btn:hover{ border-color:var(--brass); color:var(--brass); }
+  .hr-preset-btn.active{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
   .hr-gpa-options{ display:flex; gap:0.9rem; align-items:center; }
   .hr-gpa-options label{ display:flex; align-items:center; gap:0.35rem; font-size:0.78rem; font-weight:600; color:var(--ink-2); text-transform:none; letter-spacing:0; }
   .hr-summary{
     margin-left:auto; display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--ink-2);
   }
   .hr-summary b{ font-size:1.2rem; color:var(--brand-blue); }
-  .hr-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1rem; }
+  .hr-criteria-note{
+    flex-basis:100%; font-size:0.78rem; color:#5B6884; background:rgba(184,134,46,0.08);
+    border:1px dashed rgba(184,134,46,0.35); border-radius:8px; padding:0.5rem 0.7rem; margin-top:-0.2rem;
+  }
+  .hr-criteria-note b{ color:var(--brass); }
+  .hr-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(310px, 1fr)); gap:1rem; }
   .hr-grid > .empty-state{ grid-column:1/-1; }
   .hr-card{
     position:relative; background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
@@ -625,12 +654,29 @@
     font-weight:800; font-size:0.95rem; line-height:1;
   }
   .hr-score-badge span{ font-size:0.55rem; font-weight:700; text-transform:uppercase; opacity:0.75; margin-top:2px; }
+  .hr-match-ring{
+    flex-shrink:0; width:50px; height:50px; border-radius:50%; position:relative;
+    display:flex; align-items:center; justify-content:center;
+    background: conic-gradient(var(--ring-color, var(--success)) calc(var(--match, 0) * 1%), rgba(18,33,59,0.08) 0);
+  }
+  .hr-match-ring::after{
+    content:''; position:absolute; inset:4px; border-radius:50%; background:var(--paper);
+  }
+  .hr-match-ring .hr-match-val{
+    position:relative; z-index:1; font-weight:800; font-size:0.78rem; color:var(--ink);
+  }
   .hr-metrics{ display:grid; grid-template-columns:repeat(3, 1fr); gap:0.5rem; }
   .hr-metric{ background:rgba(18,33,59,0.03); border-radius:8px; padding:0.45rem 0.5rem; text-align:center; }
   .hr-metric .v{ font-weight:800; color:var(--ink); font-size:0.95rem; }
   .hr-metric .l{ font-size:0.65rem; color:#5B6884; text-transform:uppercase; letter-spacing:0.02em; }
+  .hr-metric-bar{ height:4px; border-radius:999px; background:rgba(18,33,59,0.08); margin-top:0.35rem; overflow:hidden; }
+  .hr-metric-bar > i{ display:block; height:100%; border-radius:999px; background:var(--success); }
   .hr-contact-row{ display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; font-size:0.82rem; color:var(--ink-2); }
   .hr-card-foot{ display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin-top:auto; }
+  @media (max-width:640px){
+    .hr-toolbar{ align-items:stretch; }
+    .hr-summary{ margin-left:0; }
+  }
 
   /* ---------- To-Do list: card grid ---------- */
   .todo-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1rem; }
@@ -1076,7 +1122,7 @@
     <section class="panel" id="panel-higher-ratio">
       <div class="panel-header">
         <h2>Higher Ratio</h2>
-        <p>Students with the strongest visa-approval profile — high IELTS band and a 4.00 or 5.00 GPA in SSC &amp; HSC — ready to be contacted and have their file opened.</p>
+        <p>Students with the strongest visa-approval profile — a GPA of <b>3.5–5.00</b> in both SSC &amp; HSC and an IELTS band of <b>6.0+</b> — ready to be contacted and have their file opened.</p>
       </div>
 
       <div class="hr-toolbar">
@@ -1088,11 +1134,19 @@
           <label for="hrMinIelts">Min. IELTS band</label>
           <input type="number" id="hrMinIelts" min="0" max="9" step="0.5" value="6" />
         </div>
+        <div class="hr-field hr-slider-field">
+          <label for="hrMinGpa">Min. SSC &amp; HSC GPA</label>
+          <div class="hr-slider-row">
+            <input type="range" id="hrMinGpa" min="3.5" max="5" step="0.05" value="3.5" />
+            <span class="hr-slider-val" id="hrMinGpaVal">3.50</span>
+          </div>
+        </div>
         <div class="hr-field">
-          <label>SSC &amp; HSC GPA</label>
-          <div class="hr-gpa-options">
-            <label><input type="checkbox" id="hrGpa4" checked /> 4.00</label>
-            <label><input type="checkbox" id="hrGpa5" checked /> 5.00</label>
+          <label>Quick presets</label>
+          <div class="hr-presets">
+            <button type="button" class="hr-preset-btn active" data-preset="standard">Standard (3.5 · IELTS 6)</button>
+            <button type="button" class="hr-preset-btn" data-preset="strict">Strict (4.5 · IELTS 7)</button>
+            <button type="button" class="hr-preset-btn" data-preset="perfect">Perfect (5.0 · IELTS 8)</button>
           </div>
         </div>
         <div class="hr-field">
@@ -1112,6 +1166,7 @@
           <button class="btn-ghost" id="hrRefreshBtn">Refresh</button>
           <button class="btn-brass" id="hrExportBtn">⬇ Export to Excel</button>
         </div>
+        <div class="hr-criteria-note">Showing students with <b>SSC GPA</b> and <b>HSC GPA</b> both at or above the slider value (range 3.50–5.00), and an average <b>IELTS band</b> at or above the minimum set — the profile combination most likely to clear a visa interview.</div>
       </div>
 
       <div class="hr-grid" id="hrTableBody">
@@ -2063,21 +2118,19 @@
     return Math.round(avg * 10) / 10;
   }
 
-  function gpaMatches(gpa, allow4, allow5) {
+  // GPA now qualifies across the full 3.5–5.00 "Higher Ratio" band, not just an exact 4.00/5.00.
+  function gpaMatches(gpa, minGpa) {
     if (gpa === undefined || gpa === null || gpa === '') return false;
     const n = Number(gpa);
     if (Number.isNaN(n)) return false;
-    const isFour = Math.abs(n - 4) <= 0.01;
-    const isFive = Math.abs(n - 5) <= 0.01;
-    return (allow4 && isFour) || (allow5 && isFive);
+    return n >= (minGpa - 0.001) && n <= 5.001;
   }
 
   function higherRatioFilters() {
     return {
       search: $('#hrSearch').value.trim().toLowerCase(),
       minIelts: parseFloat($('#hrMinIelts').value) || 0,
-      allow4: $('#hrGpa4').checked,
-      allow5: $('#hrGpa5').checked,
+      minGpa: parseFloat($('#hrMinGpa').value) || 3.5,
       status: $('#hrStatusFilter').value,
     };
   }
@@ -2085,9 +2138,8 @@
   function qualifiesHigherRatio(a, f) {
     const ieltsAvg = parseIeltsScore(a.ielts_score);
     if (ieltsAvg === null || ieltsAvg < f.minIelts) return false;
-    if (!f.allow4 && !f.allow5) return false;
-    if (!gpaMatches(a.ssc_gpa, f.allow4, f.allow5)) return false;
-    if (!gpaMatches(a.hsc_gpa, f.allow4, f.allow5)) return false;
+    if (!gpaMatches(a.ssc_gpa, f.minGpa)) return false;
+    if (!gpaMatches(a.hsc_gpa, f.minGpa)) return false;
     if (f.status && a.status !== f.status) return false;
     if (f.search) {
       const hay = `${(a.full_name || '')} ${(a.email || '')}`.toLowerCase();
@@ -2096,13 +2148,31 @@
     return true;
   }
 
+  // Composite match score (0–100), blending how far above the thresholds a student is
+  // across SSC GPA, HSC GPA and IELTS band. Purely a display/sort aid, computed client-side.
+  function higherRatioMatchScore(a, f) {
+    const ielts = parseIeltsScore(a.ielts_score);
+    const ssc = a.ssc_gpa !== undefined && a.ssc_gpa !== null && a.ssc_gpa !== '' ? Number(a.ssc_gpa) : null;
+    const hsc = a.hsc_gpa !== undefined && a.hsc_gpa !== null && a.hsc_gpa !== '' ? Number(a.hsc_gpa) : null;
+    const gpaScore = (val) => {
+      if (val === null || Number.isNaN(val)) return 0;
+      const clamped = Math.min(Math.max(val, f.minGpa), 5);
+      return Math.round(((clamped - f.minGpa) / (5 - f.minGpa || 1)) * 100);
+    };
+    const ieltsCeiling = Math.max(f.minIelts + 2, 9);
+    const ieltsScore = ielts === null ? 0 : Math.round((Math.min(Math.max(ielts, f.minIelts), 9) - f.minIelts) / (ieltsCeiling - f.minIelts) * 100);
+    const sscScore = gpaScore(ssc);
+    const hscScore = gpaScore(hsc);
+    return Math.round((sscScore + hscScore + ieltsScore) / 3);
+  }
+
   function getHigherRatioMatches() {
     const f = higherRatioFilters();
     return applications
-      .map((a) => ({ a, ielts: parseIeltsScore(a.ielts_score) }))
+      .map((a) => ({ a, ielts: parseIeltsScore(a.ielts_score), match: higherRatioMatchScore(a, f) }))
       .filter(({ a }) => qualifiesHigherRatio(a, f))
-      .sort((x, y) => (y.ielts || 0) - (x.ielts || 0))
-      .map(({ a }) => a);
+      .sort((x, y) => y.match - x.match || (y.ielts || 0) - (x.ielts || 0))
+      .map(({ a, match }) => ({ ...a, __match: match }));
   }
 
   function renderHigherRatio() {
@@ -2127,6 +2197,13 @@
       const phone = a.phone || '';
       const telHref = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : '';
       const waHref = phone ? `https://wa.me/${phone.replace(/[^\d]/g, '')}` : '';
+      const match = a.__match || 0;
+      const ringColor = match >= 75 ? 'var(--success)' : match >= 45 ? 'var(--brass)' : 'var(--danger)';
+      const barPct = (val, min) => {
+        const n = Number(val);
+        if (Number.isNaN(n)) return 0;
+        return Math.round(Math.min(Math.max(((n - min) / (5 - min || 1)) * 100, 0), 100));
+      };
       return `
       <div class="hr-card">
         <div class="hr-card-head">
@@ -2134,16 +2211,28 @@
             <div class="hr-name">${escapeHtml(a.full_name)}</div>
             <div class="hr-email">${escapeHtml(a.email)}</div>
           </div>
-          <div class="hr-score-badge" title="Average IELTS band">${ielts !== null ? ielts.toFixed(1) : '—'}<span>IELTS</span></div>
+          <div class="hr-match-ring" style="--match:${match}; --ring-color:${ringColor};" title="Higher Ratio match score">
+            <span class="hr-match-val">${match}%</span>
+          </div>
         </div>
         <div class="hr-metrics">
-          <div class="hr-metric"><div class="v">${escapeHtml(a.ssc_gpa ?? '—')}</div><div class="l">SSC GPA</div></div>
-          <div class="hr-metric"><div class="v">${escapeHtml(a.hsc_gpa ?? '—')}</div><div class="l">HSC GPA</div></div>
-          <div class="hr-metric"><div class="v">${statusLabel(a.status)}</div><div class="l">Status</div></div>
+          <div class="hr-metric">
+            <div class="v">${escapeHtml(a.ssc_gpa ?? '—')}</div><div class="l">SSC GPA</div>
+            <div class="hr-metric-bar"><i style="width:${barPct(a.ssc_gpa, 3.5)}%"></i></div>
+          </div>
+          <div class="hr-metric">
+            <div class="v">${escapeHtml(a.hsc_gpa ?? '—')}</div><div class="l">HSC GPA</div>
+            <div class="hr-metric-bar"><i style="width:${barPct(a.hsc_gpa, 3.5)}%"></i></div>
+          </div>
+          <div class="hr-metric">
+            <div class="v">${ielts !== null ? ielts.toFixed(1) : '—'}</div><div class="l">IELTS</div>
+            <div class="hr-metric-bar"><i style="width:${ielts !== null ? Math.min(Math.max((ielts - 6) / 3 * 100, 0), 100) : 0}%; background:var(--brand-blue);"></i></div>
+          </div>
         </div>
         <div class="hr-contact-row">
           <span>📞 ${phone ? `<a href="${telHref}">${escapeHtml(phone)}</a>` : '—'}</span>
           ${phone ? `<a href="${waHref}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}
+          <span>· ${statusLabel(a.status)}</span>
         </div>
         <div class="hr-card-foot">
           <span class="fact-label" style="font-size:0.72rem; color:#8B96AC;">Submitted ${fmtDate(a.created_at)} · #${a.id}</span>
@@ -2158,9 +2247,49 @@
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', renderHigherRatio);
   });
-  ['hrGpa4', 'hrGpa5', 'hrStatusFilter'].forEach((id) => {
+  ['hrStatusFilter'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', renderHigherRatio);
+  });
+
+  // Min-GPA slider: live label + re-render, and keep preset buttons in sync when dragged manually.
+  (function(){
+    const slider = document.getElementById('hrMinGpa');
+    const label = document.getElementById('hrMinGpaVal');
+    if (!slider || !label) return;
+    function syncFill(){
+      const pct = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+      slider.style.setProperty('--fill', pct + '%');
+      label.textContent = Number(slider.value).toFixed(2);
+    }
+    slider.addEventListener('input', function(){
+      syncFill();
+      document.querySelectorAll('.hr-preset-btn').forEach((b) => b.classList.remove('active'));
+      renderHigherRatio();
+    });
+    syncFill();
+  })();
+
+  // Quick presets: set both the min-GPA slider and the min-IELTS field together.
+  const HR_PRESETS = {
+    standard: { gpa: 3.5, ielts: 6 },
+    strict:   { gpa: 4.5, ielts: 7 },
+    perfect:  { gpa: 5.0, ielts: 8 },
+  };
+  document.querySelectorAll('.hr-preset-btn').forEach((btn) => {
+    btn.addEventListener('click', function(){
+      const preset = HR_PRESETS[btn.dataset.preset];
+      if (!preset) return;
+      document.querySelectorAll('.hr-preset-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const slider = document.getElementById('hrMinGpa');
+      const label = document.getElementById('hrMinGpaVal');
+      slider.value = preset.gpa;
+      slider.style.setProperty('--fill', ((preset.gpa - slider.min) / (slider.max - slider.min)) * 100 + '%');
+      label.textContent = preset.gpa.toFixed(2);
+      document.getElementById('hrMinIelts').value = preset.ielts;
+      renderHigherRatio();
+    });
   });
 
   $('#hrRefreshBtn').addEventListener('click', loadApplications);
@@ -2188,7 +2317,7 @@
 
     const headers = [
       'ID', 'Full Name', 'Email', 'Phone', 'IELTS (avg)', 'SSC GPA', 'HSC GPA',
-      'Status', 'Submitted At',
+      'Match Score', 'Status', 'Submitted At',
     ];
     const lines = [headers.join(',')];
     rows.forEach((a) => {
@@ -2201,6 +2330,7 @@
         ielts !== null ? ielts.toFixed(1) : '',
         csvEscape(a.ssc_gpa ?? ''),
         csvEscape(a.hsc_gpa ?? ''),
+        csvEscape(`${a.__match || 0}%`),
         csvEscape(statusLabel(a.status)),
         csvEscape(a.created_at ? new Date(a.created_at).toLocaleString() : ''),
       ].join(','));
