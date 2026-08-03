@@ -585,6 +585,53 @@
   .status-in_progress{ background:rgba(27,78,155,0.12); color:var(--brand-blue); }
   .status-done{ background:rgba(62,122,78,0.15); color:var(--success); }
 
+  /* ---------- Higher Ratio (visa-ready shortlist) ---------- */
+  .hr-toolbar{
+    display:flex; flex-wrap:wrap; align-items:center; gap:0.7rem; margin-bottom:1rem;
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:0.9rem 1rem; box-shadow:var(--shadow-sm);
+  }
+  .hr-toolbar .hr-field{ display:flex; flex-direction:column; gap:0.28rem; }
+  .hr-toolbar label{ font-size:0.7rem; font-weight:700; color:#5B6884; text-transform:uppercase; letter-spacing:0.03em; }
+  .hr-toolbar input[type="number"]{ width:84px; }
+  .hr-toolbar input, .hr-toolbar select{
+    padding:0.5rem 0.65rem; border:1px solid var(--line); border-radius:8px; font-size:0.85rem; background:#fff;
+  }
+  .hr-gpa-options{ display:flex; gap:0.9rem; align-items:center; }
+  .hr-gpa-options label{ display:flex; align-items:center; gap:0.35rem; font-size:0.78rem; font-weight:600; color:var(--ink-2); text-transform:none; letter-spacing:0; }
+  .hr-summary{
+    margin-left:auto; display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; color:var(--ink-2);
+  }
+  .hr-summary b{ font-size:1.2rem; color:var(--brand-blue); }
+  .hr-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1rem; }
+  .hr-grid > .empty-state{ grid-column:1/-1; }
+  .hr-card{
+    position:relative; background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:1.1rem 1.2rem; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:0.7rem;
+    transition: box-shadow .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+    animation: fadeSlideUp .4s var(--ease) both;
+  }
+  .hr-card:hover{ box-shadow:var(--shadow-md); border-color:rgba(184,134,46,0.4); transform:translateY(-2px); }
+  .hr-card::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:var(--radius) var(--radius) 0 0;
+    background:linear-gradient(90deg, var(--brass), var(--success));
+  }
+  .hr-card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:0.6rem; }
+  .hr-name{ font-weight:700; color:var(--ink); font-size:0.98rem; }
+  .hr-email{ font-size:0.78rem; color:#5B6884; word-break:break-all; }
+  .hr-score-badge{
+    flex-shrink:0; display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
+    width:46px; height:46px; border-radius:50%; background:rgba(62,122,78,0.12); color:var(--success);
+    font-weight:800; font-size:0.95rem; line-height:1;
+  }
+  .hr-score-badge span{ font-size:0.55rem; font-weight:700; text-transform:uppercase; opacity:0.75; margin-top:2px; }
+  .hr-metrics{ display:grid; grid-template-columns:repeat(3, 1fr); gap:0.5rem; }
+  .hr-metric{ background:rgba(18,33,59,0.03); border-radius:8px; padding:0.45rem 0.5rem; text-align:center; }
+  .hr-metric .v{ font-weight:800; color:var(--ink); font-size:0.95rem; }
+  .hr-metric .l{ font-size:0.65rem; color:#5B6884; text-transform:uppercase; letter-spacing:0.02em; }
+  .hr-contact-row{ display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; font-size:0.82rem; color:var(--ink-2); }
+  .hr-card-foot{ display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin-top:auto; }
+
   /* ---------- To-Do list: card grid ---------- */
   .todo-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1rem; }
   .todo-grid > .empty-state{ grid-column:1/-1; }
@@ -881,6 +928,7 @@
           <div class="tab-group" aria-label="Inbox">
             <span class="tab-group-label">Inbox</span>
             <button class="tab-btn" data-tab="applications"><span class="tab-icon">📋</span>Student Applications</button>
+            <button class="tab-btn" data-tab="higher-ratio"><span class="tab-icon">🎯</span>Higher Ratio</button>
             <button class="tab-btn" data-tab="contacts"><span class="tab-icon">✉️</span>Contact Messages</button>
           </div>
           <div class="tab-divider"></div>
@@ -1024,10 +1072,57 @@
       </div>
     </section>
 
+    <!-- Higher Ratio panel: visa-ready shortlist -->
+    <section class="panel" id="panel-higher-ratio">
+      <div class="panel-header">
+        <h2>Higher Ratio</h2>
+        <p>Students with the strongest visa-approval profile — high IELTS band and a 4.00 or 5.00 GPA in SSC &amp; HSC — ready to be contacted and have their file opened.</p>
+      </div>
+
+      <div class="hr-toolbar">
+        <div class="hr-field">
+          <label for="hrSearch">Search</label>
+          <input type="text" id="hrSearch" class="search-input" placeholder="Name or email…" style="width:200px;" />
+        </div>
+        <div class="hr-field">
+          <label for="hrMinIelts">Min. IELTS band</label>
+          <input type="number" id="hrMinIelts" min="0" max="9" step="0.5" value="6" />
+        </div>
+        <div class="hr-field">
+          <label>SSC &amp; HSC GPA</label>
+          <div class="hr-gpa-options">
+            <label><input type="checkbox" id="hrGpa4" checked /> 4.00</label>
+            <label><input type="checkbox" id="hrGpa5" checked /> 5.00</label>
+          </div>
+        </div>
+        <div class="hr-field">
+          <label for="hrStatusFilter">Status</label>
+          <select id="hrStatusFilter">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="under_review">Under review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="hr-summary">
+          Qualifying students: <b id="hrCount">0</b>
+        </div>
+        <div>
+          <button class="btn-ghost" id="hrRefreshBtn">Refresh</button>
+          <button class="btn-brass" id="hrExportBtn">⬇ Export to Excel</button>
+        </div>
+      </div>
+
+      <div class="hr-grid" id="hrTableBody">
+        <div class="empty-state">Loading…</div>
+      </div>
+    </section>
+
     <!-- To-Do List panel -->
     <section class="panel" id="panel-todos">
       <div class="panel-header">
-        <h2>To-Do List</h2>
+        <h2>Staff To-Do List</h2>
         <p>Add tasks here so any staff member knows exactly what to work on next.</p>
       </div>
       <div class="toolbar">
@@ -1839,6 +1934,7 @@
       if (!res.ok) throw new Error('Failed to load applications.');
       applications = await res.json();
       renderApplications();
+      renderHigherRatio();
       renderHomeOverview();
     } catch (err) {
       grid.innerHTML = `<div class="empty-state">${err.message}</div>`;
@@ -1945,6 +2041,182 @@
         toast(err.message, true);
       }
     }
+  });
+
+  // ---------------- Higher Ratio (visa-ready shortlist) ----------------
+  // Parses the free-text IELTS score field. Handles a plain overall band
+  // ("6.5") as well as a breakdown like "L:6 R:6.5 W:6 S:6.5 Overall:6.5"
+  // by averaging every numeric token found (falls back to Overall if present).
+  function parseIeltsScore(raw) {
+    if (raw === undefined || raw === null) return null;
+    const str = String(raw).trim();
+    if (!str) return null;
+
+    const overallMatch = str.match(/overall\s*[:\-]?\s*(\d(?:\.\d+)?)/i);
+    if (overallMatch) return parseFloat(overallMatch[1]);
+
+    const nums = str.match(/\d(?:\.\d+)?/g);
+    if (!nums || nums.length === 0) return null;
+    const values = nums.map(Number).filter((n) => n >= 0 && n <= 9);
+    if (values.length === 0) return null;
+    const avg = values.reduce((s, n) => s + n, 0) / values.length;
+    return Math.round(avg * 10) / 10;
+  }
+
+  function gpaMatches(gpa, allow4, allow5) {
+    if (gpa === undefined || gpa === null || gpa === '') return false;
+    const n = Number(gpa);
+    if (Number.isNaN(n)) return false;
+    const isFour = Math.abs(n - 4) <= 0.01;
+    const isFive = Math.abs(n - 5) <= 0.01;
+    return (allow4 && isFour) || (allow5 && isFive);
+  }
+
+  function higherRatioFilters() {
+    return {
+      search: $('#hrSearch').value.trim().toLowerCase(),
+      minIelts: parseFloat($('#hrMinIelts').value) || 0,
+      allow4: $('#hrGpa4').checked,
+      allow5: $('#hrGpa5').checked,
+      status: $('#hrStatusFilter').value,
+    };
+  }
+
+  function qualifiesHigherRatio(a, f) {
+    const ieltsAvg = parseIeltsScore(a.ielts_score);
+    if (ieltsAvg === null || ieltsAvg < f.minIelts) return false;
+    if (!f.allow4 && !f.allow5) return false;
+    if (!gpaMatches(a.ssc_gpa, f.allow4, f.allow5)) return false;
+    if (!gpaMatches(a.hsc_gpa, f.allow4, f.allow5)) return false;
+    if (f.status && a.status !== f.status) return false;
+    if (f.search) {
+      const hay = `${(a.full_name || '')} ${(a.email || '')}`.toLowerCase();
+      if (!hay.includes(f.search)) return false;
+    }
+    return true;
+  }
+
+  function getHigherRatioMatches() {
+    const f = higherRatioFilters();
+    return applications
+      .map((a) => ({ a, ielts: parseIeltsScore(a.ielts_score) }))
+      .filter(({ a }) => qualifiesHigherRatio(a, f))
+      .sort((x, y) => (y.ielts || 0) - (x.ielts || 0))
+      .map(({ a }) => a);
+  }
+
+  function renderHigherRatio() {
+    const grid = $('#hrTableBody');
+    if (!grid) return;
+    if (!applications.length) {
+      grid.innerHTML = `<div class="empty-state">Loading…</div>`;
+      $('#hrCount').textContent = '0';
+      return;
+    }
+
+    const rows = getHigherRatioMatches();
+    $('#hrCount').textContent = String(rows.length);
+
+    if (rows.length === 0) {
+      grid.innerHTML = `<div class="empty-state">No students currently match the Higher Ratio criteria.</div>`;
+      return;
+    }
+
+    grid.innerHTML = rows.map((a) => {
+      const ielts = parseIeltsScore(a.ielts_score);
+      const phone = a.phone || '';
+      const telHref = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : '';
+      const waHref = phone ? `https://wa.me/${phone.replace(/[^\d]/g, '')}` : '';
+      return `
+      <div class="hr-card">
+        <div class="hr-card-head">
+          <div>
+            <div class="hr-name">${escapeHtml(a.full_name)}</div>
+            <div class="hr-email">${escapeHtml(a.email)}</div>
+          </div>
+          <div class="hr-score-badge" title="Average IELTS band">${ielts !== null ? ielts.toFixed(1) : '—'}<span>IELTS</span></div>
+        </div>
+        <div class="hr-metrics">
+          <div class="hr-metric"><div class="v">${escapeHtml(a.ssc_gpa ?? '—')}</div><div class="l">SSC GPA</div></div>
+          <div class="hr-metric"><div class="v">${escapeHtml(a.hsc_gpa ?? '—')}</div><div class="l">HSC GPA</div></div>
+          <div class="hr-metric"><div class="v">${statusLabel(a.status)}</div><div class="l">Status</div></div>
+        </div>
+        <div class="hr-contact-row">
+          <span>📞 ${phone ? `<a href="${telHref}">${escapeHtml(phone)}</a>` : '—'}</span>
+          ${phone ? `<a href="${waHref}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}
+        </div>
+        <div class="hr-card-foot">
+          <span class="fact-label" style="font-size:0.72rem; color:#8B96AC;">Submitted ${fmtDate(a.created_at)} · #${a.id}</span>
+          <button class="icon-btn" data-hr-view="${a.id}">View</button>
+        </div>
+      </div>
+    `;
+    }).join('');
+  }
+
+  ['hrSearch', 'hrMinIelts'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', renderHigherRatio);
+  });
+  ['hrGpa4', 'hrGpa5', 'hrStatusFilter'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', renderHigherRatio);
+  });
+
+  $('#hrRefreshBtn').addEventListener('click', loadApplications);
+
+  $('#hrTableBody').addEventListener('click', (e) => {
+    const viewId = e.target.dataset.hrView;
+    if (viewId) {
+      const app = applications.find((a) => a.id === Number(viewId));
+      if (app) openApplicationModal(app);
+    }
+  });
+
+  function csvEscape(val) {
+    const s = val === undefined || val === null ? '' : String(val);
+    if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+    return s;
+  }
+
+  $('#hrExportBtn').addEventListener('click', () => {
+    const rows = getHigherRatioMatches();
+    if (rows.length === 0) {
+      toast('No qualifying students to export.', true);
+      return;
+    }
+
+    const headers = [
+      'ID', 'Full Name', 'Email', 'Phone', 'IELTS (avg)', 'SSC GPA', 'HSC GPA',
+      'Status', 'Submitted At',
+    ];
+    const lines = [headers.join(',')];
+    rows.forEach((a) => {
+      const ielts = parseIeltsScore(a.ielts_score);
+      lines.push([
+        a.id,
+        csvEscape(a.full_name),
+        csvEscape(a.email),
+        csvEscape(a.phone || ''),
+        ielts !== null ? ielts.toFixed(1) : '',
+        csvEscape(a.ssc_gpa ?? ''),
+        csvEscape(a.hsc_gpa ?? ''),
+        csvEscape(statusLabel(a.status)),
+        csvEscape(a.created_at ? new Date(a.created_at).toLocaleString() : ''),
+      ].join(','));
+    });
+
+    const csvContent = '\uFEFF' + lines.join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `higher-ratio-students-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast(`Exported ${rows.length} student${rows.length === 1 ? '' : 's'}.`);
   });
 
   function certLink(url, label) {
