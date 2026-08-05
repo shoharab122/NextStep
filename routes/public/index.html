@@ -488,6 +488,15 @@
   #apply{ display:none; }
   body.apply-view #apply{ display:block; }
 
+  /* Isolated Contact/consultation view: hide every other section so only #contact shows */
+  body.contact-view main section:not(#contact),
+  body.contact-view footer{ display:none !important; }
+  body.contact-view #contact{ border-top:none; min-height:calc(100vh - 80px); }
+  body.contact-view #contact{ display:block; }
+  .contact-back-link{ display:none; align-items:center; gap:0.4rem; margin-bottom:1.25rem; font-weight:600; color:var(--brass); text-decoration:none; }
+  .contact-back-link:hover{ text-decoration:underline; }
+  body.contact-view .contact-back-link{ display:inline-flex; }
+
   /* Sticky progress indicator for the application form */
   .apply-progress-wrap{
     position:sticky; top:72px; z-index:20; background:var(--paper-2);
@@ -1103,7 +1112,7 @@
       <a href="#destinations">Destinations</a>
       <a href="#events">Events</a>
       <a href="#testimonials">Testimonials</a>
-      <a href="#contact" class="btn-primary">Book a consultation</a>
+      <a href="#contact" class="btn-primary jump-link">Book a consultation</a>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -1123,7 +1132,7 @@
         <h1>Your <em>next step</em> starts with the right paperwork, done right.</h1>
         <p class="hero-sub">We handle the forms, deadlines, and fine print of moving abroad — so you can focus on actually getting there.</p>
         <div class="hero-ctas">
-          <a href="#contact" class="btn-primary btn-large">Book a free consultation</a>
+          <a href="#contact" class="btn-primary btn-large jump-link">Book a free consultation</a>
           <a href="#services" class="btn-ghost">See our services</a>
         </div>
         <div class="hero-stats">
@@ -1714,6 +1723,9 @@
   </section>
 
   <section id="contact">
+    <div class="container">
+      <a href="#home" id="contactBackLink" class="contact-back-link">&larr; Back to site</a>
+    </div>
     <div class="container contact-grid">
       <div class="contact-info">
         <div class="eyebrow">Get in touch</div>
@@ -1827,12 +1839,21 @@
   // Isolated Apply section view (front-end only)
   const applyBackLink = document.getElementById('applyBackLink');
   function showApplyOnly() {
+    document.body.classList.remove('contact-view');
     document.body.classList.add('apply-view');
     if (applyBackLink) applyBackLink.style.display = 'inline-block';
     window.scrollTo(0, 0);
   }
+  // Isolated Contact/consultation section view (front-end only)
+  function showContactOnly() {
+    document.body.classList.remove('apply-view');
+    if (applyBackLink) applyBackLink.style.display = 'none';
+    document.body.classList.add('contact-view');
+    window.scrollTo(0, 0);
+  }
   function showFullSite() {
     document.body.classList.remove('apply-view');
+    document.body.classList.remove('contact-view');
     if (applyBackLink) applyBackLink.style.display = 'none';
   }
   document.querySelectorAll('a[href="#apply"]').forEach(link => {
@@ -1842,14 +1863,25 @@
       history.pushState(null, '', '#apply');
     });
   });
+  document.querySelectorAll('a[href="#contact"].jump-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      showContactOnly();
+      history.pushState(null, '', '#contact');
+    });
+  });
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     if (link.getAttribute('href') === '#apply') return;
+    if (link.getAttribute('href') === '#contact' && link.classList.contains('jump-link')) return;
     link.addEventListener('click', () => {
       showFullSite();
     });
   });
   if (window.location.hash === '#apply') {
     showApplyOnly();
+  }
+  if (window.location.hash === '#contact') {
+    showContactOnly();
   }
 
   const navToggle = document.getElementById('navToggle');
@@ -2141,6 +2173,7 @@
       requestAnimationFrame(step);
     }
     document.querySelectorAll('a[href^="#"]').forEach(function(link){
+      if (link.classList.contains('jump-link')) return; // handled by the isolated contact-view script
       link.addEventListener('click', function(e){
         var hash = link.getAttribute('href');
         if (!hash || hash === '#') return;
