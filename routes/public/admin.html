@@ -1116,6 +1116,7 @@
           <div class="tab-group" aria-label="Inbox">
             <span class="tab-group-label">Inbox</span>
             <button class="tab-btn" data-tab="applications"><span class="tab-icon">📋</span>Student Applications</button>
+            <button class="tab-btn" data-tab="student-form"><span class="tab-icon">🖨️</span>Student Form</button>
             <button class="tab-btn" data-tab="higher-ratio"><span class="tab-icon">🎯</span>Higher Ratio</button>
             <button class="tab-btn" data-tab="contacts"><span class="tab-icon">✉️</span>Contact Messages</button>
           </div>
@@ -1307,7 +1308,158 @@
           </div>
         </section>
 
-    <!-- Higher Ratio panel: visa-ready shortlist -->
+        <!-- Student Form panel: blank fillable form, printable directly -->
+        <section class="panel" id="panel-student-form">
+          <div class="panel-header">
+            <h2>Student Form</h2>
+            <p>Fill in a student's details and print a clean, letterhead-style form directly — no need to create an application first.</p>
+          </div>
+
+          <div class="detail-group">
+            <h4>Personal Information</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_full_name">Full name *</label>
+                <input type="text" id="sf_full_name" placeholder="Applicant's full name" />
+              </div>
+              <div class="field">
+                <label for="sf_email">Email</label>
+                <input type="email" id="sf_email" placeholder="name@email.com" />
+              </div>
+              <div class="field">
+                <label for="sf_phone">Phone</label>
+                <input type="text" id="sf_phone" placeholder="+880 1XXXXXXXXX" />
+              </div>
+              <div class="field">
+                <label for="sf_app_id">Application ID</label>
+                <input type="text" id="sf_app_id" placeholder="Optional" />
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-group" style="border-top:1px dashed var(--line); padding-top:1rem;">
+            <h4>SSC / O-Level</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_ssc_board">Board</label>
+                <input type="text" id="sf_ssc_board" placeholder="e.g. Dhaka" />
+              </div>
+              <div class="field">
+                <label for="sf_ssc_year">Year</label>
+                <input type="text" id="sf_ssc_year" placeholder="e.g. 2021" />
+              </div>
+              <div class="field">
+                <label for="sf_ssc_gpa">GPA</label>
+                <input type="text" id="sf_ssc_gpa" placeholder="e.g. 5.00" />
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-group" style="border-top:1px dashed var(--line); padding-top:1rem;">
+            <h4>HSC / A-Level</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_hsc_board">Board</label>
+                <input type="text" id="sf_hsc_board" placeholder="e.g. Chittagong" />
+              </div>
+              <div class="field">
+                <label for="sf_hsc_year">Year</label>
+                <input type="text" id="sf_hsc_year" placeholder="e.g. 2023" />
+              </div>
+              <div class="field">
+                <label for="sf_hsc_gpa">GPA</label>
+                <input type="text" id="sf_hsc_gpa" placeholder="e.g. 5.00" />
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-group" style="border-top:1px dashed var(--line); padding-top:1rem;">
+            <h4>Honours</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_honours_subject">Subject</label>
+                <input type="text" id="sf_honours_subject" placeholder="e.g. CSE" />
+              </div>
+              <div class="field">
+                <label for="sf_honours_institution">Institution</label>
+                <input type="text" id="sf_honours_institution" placeholder="Institution name" />
+              </div>
+              <div class="field">
+                <label for="sf_honours_result">Result</label>
+                <input type="text" id="sf_honours_result" placeholder="e.g. CGPA 3.6" />
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_honours_year">Year</label>
+                <input type="text" id="sf_honours_year" placeholder="e.g. 2024" />
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-group" style="border-top:1px dashed var(--line); padding-top:1rem;">
+            <h4>Master's</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_masters_subject">Subject</label>
+                <input type="text" id="sf_masters_subject" placeholder="e.g. Data Science" />
+              </div>
+              <div class="field">
+                <label for="sf_masters_institution">Institution</label>
+                <input type="text" id="sf_masters_institution" placeholder="Institution name" />
+              </div>
+              <div class="field">
+                <label for="sf_masters_result">Result</label>
+                <input type="text" id="sf_masters_result" placeholder="e.g. CGPA 3.8" />
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_masters_year">Year</label>
+                <input type="text" id="sf_masters_year" placeholder="e.g. 2026" />
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-group" style="border-top:1px dashed var(--line); padding-top:1rem;">
+            <h4>IELTS</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_ielts_score">Overall band score</label>
+                <input type="text" id="sf_ielts_score" placeholder="e.g. 6.5" />
+              </div>
+              <div class="field">
+                <label for="sf_ielts_test_date">Test date</label>
+                <input type="date" id="sf_ielts_test_date" />
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-group" style="border-top:1px dashed var(--line); padding-top:1rem;">
+            <h4>Status</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+              <div class="field">
+                <label for="sf_status">Status</label>
+                <select id="sf_status">
+                  <option value="pending">Pending</option>
+                  <option value="under_review">Under review</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="toolbar" style="border-top:1px dashed var(--line); padding-top:1rem;">
+            <div class="left"></div>
+            <div>
+              <button class="btn-ghost" id="sfClearBtn" type="button">Clear form</button>
+              <button class="btn-brass" id="sfPrintBtn" type="button">🖨️ Print Student Form</button>
+            </div>
+          </div>
+        </section>
+
+
     <section class="panel" id="panel-higher-ratio">
       <div class="panel-header">
         <h2>Higher Ratio</h2>
@@ -1878,7 +2030,10 @@
         <h3 id="modalName">—</h3>
         <p class="row-sub" id="modalEmail">—</p>
       </div>
-      <button class="modal-close" id="modalClose">&times;</button>
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <button class="btn-brass" id="modalPrintBtn" type="button">🖨️ Print Student Form</button>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
     </div>
     <div class="detail-grid" id="modalBody"></div>
   </div>
@@ -1897,6 +2052,7 @@
   let invoices = [];
   let todos = [];
   let itemRowSeq = 0;
+  let currentModalApp = null;
 
   // ---------------- Toast ----------------
   function toast(message, isError = false) {
@@ -2427,6 +2583,7 @@
           </select>
           <div class="app-card-actions">
             <button class="icon-btn" data-view="${a.id}">View</button>
+            <button class="icon-btn" data-print-app="${a.id}">🖨️ Print</button>
             <button class="icon-btn danger" data-delete-app="${a.id}">Delete</button>
           </div>
         </div>
@@ -2461,11 +2618,17 @@
 
   $('#appsTableBody').addEventListener('click', async (e) => {
     const viewId = e.target.dataset.view;
+    const printId = e.target.dataset.printApp;
     const deleteId = e.target.dataset.deleteApp;
 
     if (viewId) {
       const app = applications.find((a) => a.id === Number(viewId));
       if (app) openApplicationModal(app);
+    }
+
+    if (printId) {
+      const app = applications.find((a) => a.id === Number(printId));
+      if (app) printStudentForm(app);
     }
 
     if (deleteId) {
@@ -2746,6 +2909,7 @@
   }
 
   function openApplicationModal(a) {
+    currentModalApp = a;
     $('#modalName').textContent = a.full_name;
     $('#modalEmail').textContent = a.email;
     $('#modalBody').innerHTML = `
@@ -2792,6 +2956,227 @@
   $('#detailModal').addEventListener('click', (e) => {
     if (e.target === $('#detailModal')) $('#detailModal').classList.remove('open');
   });
+  $('#modalPrintBtn').addEventListener('click', () => {
+    if (currentModalApp) printStudentForm(currentModalApp);
+  });
+
+  // Blank "Student Form" tab — fill in fields and print without needing an application record
+  function collectStudentFormData() {
+    return {
+      id: $('#sf_app_id').value.trim() || null,
+      full_name: $('#sf_full_name').value.trim(),
+      email: $('#sf_email').value.trim(),
+      phone: $('#sf_phone').value.trim(),
+      status: $('#sf_status').value,
+      created_at: null,
+      ssc_board: $('#sf_ssc_board').value.trim(),
+      ssc_year: $('#sf_ssc_year').value.trim(),
+      ssc_gpa: $('#sf_ssc_gpa').value.trim(),
+      hsc_board: $('#sf_hsc_board').value.trim(),
+      hsc_year: $('#sf_hsc_year').value.trim(),
+      hsc_gpa: $('#sf_hsc_gpa').value.trim(),
+      honours_subject: $('#sf_honours_subject').value.trim(),
+      honours_institution: $('#sf_honours_institution').value.trim(),
+      honours_result: $('#sf_honours_result').value.trim(),
+      honours_year: $('#sf_honours_year').value.trim(),
+      masters_subject: $('#sf_masters_subject').value.trim(),
+      masters_institution: $('#sf_masters_institution').value.trim(),
+      masters_result: $('#sf_masters_result').value.trim(),
+      masters_year: $('#sf_masters_year').value.trim(),
+      ielts_score: $('#sf_ielts_score').value.trim(),
+      ielts_test_date: $('#sf_ielts_test_date').value || null,
+    };
+  }
+
+  if ($('#sfPrintBtn')) {
+    $('#sfPrintBtn').addEventListener('click', () => {
+      const data = collectStudentFormData();
+      if (!data.full_name) {
+        toast('Please enter the student\'s full name before printing.', true);
+        $('#sf_full_name').focus();
+        return;
+      }
+      printStudentForm(data);
+    });
+  }
+
+  if ($('#sfClearBtn')) {
+    $('#sfClearBtn').addEventListener('click', () => {
+      $$('#panel-student-form input').forEach((el) => { el.value = ''; });
+      $('#sf_status').value = 'pending';
+    });
+  }
+
+  // ---------------- Student Form (print) ----------------
+  function printField(label, value) {
+    return `
+      <div class="pf-field">
+        <span class="pf-label">${label}</span>
+        <span class="pf-value">${value && String(value).trim() ? escapeHtml(String(value)) : ''}</span>
+      </div>`;
+  }
+
+  function printStudentForm(a) {
+    const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Student Form — ${escapeHtml(a.full_name || 'Applicant')}</title>
+<style>
+  @page{ size:A4; margin:16mm; }
+  *{ box-sizing:border-box; }
+  body{
+    font-family:Georgia, 'Times New Roman', serif; color:#12213B; margin:0; padding:0;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .pf-header{
+    display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid #12213B;
+    padding-bottom:12px; margin-bottom:18px;
+  }
+  .pf-brand{ font-size:1.5rem; font-weight:700; }
+  .pf-brand .blue{ color:#1B4E9B; }
+  .pf-brand .red{ color:#D0342C; font-style:italic; font-weight:500; }
+  .pf-brand-sub{ font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; color:#5B6884; margin-top:2px; }
+  .pf-doc-meta{ text-align:right; font-size:0.78rem; color:#5B6884; }
+  .pf-title{
+    text-align:center; font-size:1.15rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    margin:6px 0 20px; padding-bottom:8px; border-bottom:1px solid #B8862E;
+  }
+  .pf-photo-row{ display:flex; justify-content:flex-end; margin-bottom:-46px; }
+  .pf-photo-box{
+    width:110px; height:132px; border:1px solid #12213B; display:flex; align-items:center; justify-content:center;
+    font-size:0.68rem; color:#8892A6; text-align:center; padding:4px;
+  }
+  .pf-section{ margin-bottom:16px; page-break-inside:avoid; }
+  .pf-section-title{
+    font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:#B8862E;
+    border-bottom:1px solid #12213B; padding-bottom:4px; margin-bottom:8px;
+  }
+  .pf-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 18px; }
+  .pf-grid.cols-3{ grid-template-columns:1fr 1fr 1fr; }
+  .pf-field{ display:flex; border-bottom:1px dotted #B8B0A0; padding:5px 0; font-size:0.85rem; }
+  .pf-label{ flex:0 0 40%; font-weight:600; color:#5B6884; }
+  .pf-value{ flex:1; border-bottom:1px solid #12213B; min-height:1.1em; }
+  .pf-status-row{ display:flex; gap:14px; margin-bottom:14px; font-size:0.85rem; }
+  .pf-status-row .pf-pill{
+    border:1px solid #12213B; border-radius:999px; padding:3px 12px; font-weight:600;
+  }
+  .pf-sign-row{ display:flex; justify-content:space-between; margin-top:42px; }
+  .pf-sign{ width:42%; text-align:center; font-size:0.8rem; }
+  .pf-sign-line{ border-top:1px solid #12213B; margin-bottom:6px; padding-top:26px; }
+  .pf-footer{ margin-top:24px; font-size:0.68rem; color:#8892A6; text-align:center; }
+  @media print{
+    .pf-noprint{ display:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="pf-header">
+    <div>
+      <div class="pf-brand"><span class="blue">Nextstep</span> <span class="red">Immigration</span></div>
+      <div class="pf-brand-sub">Study Abroad &amp; Immigration Consultancy</div>
+    </div>
+    <div class="pf-doc-meta">
+      Application ID: #${a.id || '—'}<br/>
+      Printed: ${today}
+    </div>
+  </div>
+
+  <div class="pf-title">Student Application Form</div>
+
+  <div class="pf-status-row">
+    <span class="pf-pill">Status: ${escapeHtml(statusLabel(a.status))}</span>
+    <span class="pf-pill">Submitted: ${escapeHtml(fmtDate(a.created_at) || '—')}</span>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">Personal Information</div>
+    <div class="pf-grid">
+      ${printField('Full Name', a.full_name)}
+      ${printField('Email', a.email)}
+      ${printField('Phone', a.phone)}
+      ${printField('Application ID', a.id ? '#' + a.id : '')}
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">SSC / O-Level</div>
+    <div class="pf-grid cols-3">
+      ${printField('Board', a.ssc_board)}
+      ${printField('Year', a.ssc_year)}
+      ${printField('GPA', a.ssc_gpa)}
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">HSC / A-Level</div>
+    <div class="pf-grid cols-3">
+      ${printField('Board', a.hsc_board)}
+      ${printField('Year', a.hsc_year)}
+      ${printField('GPA', a.hsc_gpa)}
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">Honours</div>
+    <div class="pf-grid cols-3">
+      ${printField('Subject', a.honours_subject)}
+      ${printField('Institution', a.honours_institution)}
+      ${printField('Result', a.honours_result)}
+    </div>
+    <div class="pf-grid">
+      ${printField('Year', a.honours_year)}
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">Master's</div>
+    <div class="pf-grid cols-3">
+      ${printField('Subject', a.masters_subject)}
+      ${printField('Institution', a.masters_institution)}
+      ${printField('Result', a.masters_result)}
+    </div>
+    <div class="pf-grid">
+      ${printField('Year', a.masters_year)}
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <div class="pf-section-title">IELTS</div>
+    <div class="pf-grid">
+      ${printField('Overall Band Score', a.ielts_score)}
+      ${printField('Test Date', fmtDate(a.ielts_test_date))}
+    </div>
+  </div>
+
+  <div class="pf-sign-row">
+    <div class="pf-sign">
+      <div class="pf-sign-line">Applicant Signature</div>
+    </div>
+    <div class="pf-sign">
+      <div class="pf-sign-line">Authorized Signature — Nextstep Immigration</div>
+    </div>
+  </div>
+
+  <div class="pf-footer">This form was generated from the Nextstep Immigration admin system on ${today}.</div>
+
+  <script>
+    window.onload = function() {
+      window.focus();
+      window.print();
+    };
+  <\/script>
+</body>
+</html>`;
+    const win = window.open('', '_blank', 'width=900,height=1000');
+    if (!win) { toast('Please allow pop-ups to print the student form.', true); return; }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+  }
 
   // ---------------- Contacts ----------------
   async function loadContacts() {
