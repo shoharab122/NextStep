@@ -2141,9 +2141,9 @@
         .slice(0, 5);
       recentAppsEl.innerHTML = recent.length ? recent.map(a => `
         <div class="recent-app-row">
-          <div class="recent-app-avatar">${initials(a.name)}</div>
+          <div class="recent-app-avatar">${initials(a.full_name)}</div>
           <div class="recent-app-body">
-            <div class="recent-app-name">${escapeHtml(a.name)}</div>
+            <div class="recent-app-name">${escapeHtml(a.full_name || 'Unnamed applicant')}</div>
             <div class="recent-app-meta">${escapeHtml(highestLevel(a))}</div>
           </div>
           <div class="recent-app-right">
@@ -2289,7 +2289,7 @@
     const feedEl = $('#activityFeed');
     if (feedEl) {
       const items = [];
-      applications.forEach(a => items.push({ ts: a.created_at, icon: '📋', html: `New application from <b>${escapeHtml(a.name)}</b>` }));
+      applications.forEach(a => items.push({ ts: a.created_at, icon: '📋', html: `New application from <b>${escapeHtml(a.full_name || 'Unnamed applicant')}</b>` }));
       contacts.forEach(c => items.push({ ts: c.created_at, icon: '✉️', html: `Message from <b>${escapeHtml(c.name)}</b>` }));
       todos.forEach(t => items.push({ ts: t.created_at, icon: '🗂️', html: `Task <b>${escapeHtml(t.title)}</b> added` }));
       items.sort((x, y) => new Date(y.ts || 0) - new Date(x.ts || 0));
