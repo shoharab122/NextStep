@@ -135,20 +135,45 @@
   #dashboard{ display:none; min-height:100vh; }
   #dashboard.open{ animation: fadeIn 0.4s var(--ease) both; }
   header.topbar{
-    position:sticky; top:0; z-index:10; background:rgba(246,244,238,0.9); backdrop-filter:blur(14px) saturate(1.4);
-    border-bottom:1px solid var(--line); box-shadow:0 4px 16px -8px rgba(18,33,59,0.12);
+    position:sticky; top:0; z-index:10; overflow:hidden;
+    background:linear-gradient(180deg, rgba(250,248,242,0.96), rgba(246,244,238,0.9));
+    backdrop-filter:blur(16px) saturate(1.5);
+    border-bottom:1px solid var(--line);
+    box-shadow:0 4px 20px -8px rgba(18,33,59,0.14), inset 0 -1px 0 rgba(184,134,46,0.15);
   }
-  .topbar-inner{ display:flex; align-items:center; justify-content:space-between; height:72px; }
-  .topbar .logo{ font-family:'Fraunces', serif; font-weight:600; font-size:1.2rem; }
+  header.topbar::before{
+    content:''; position:absolute; left:0; right:0; top:0; height:3px;
+    background:linear-gradient(90deg, var(--brand-blue), var(--brass) 45%, var(--brand-red) 90%);
+    opacity:0.85;
+  }
+  .topbar-inner{ display:flex; align-items:center; justify-content:space-between; height:76px; position:relative; }
+  .topbar .logo{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.25rem; letter-spacing:0.01em;
+    display:flex; align-items:center; gap:0.55rem; position:relative;
+  }
+  .topbar .logo::before{
+    content:''; width:34px; height:34px; border-radius:9px; flex:none;
+    background:linear-gradient(135deg, var(--brand-blue), var(--ink));
+    box-shadow:0 2px 8px -2px rgba(18,33,59,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    position:relative;
+  }
+  .topbar .logo::after{
+    content:'N'; position:absolute; left:0; top:0; width:34px; height:34px; border-radius:9px;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:1rem;
+    font-family:'Fraunces', serif;
+  }
   .topbar .logo span{ color:var(--brand-red); font-style:italic; font-weight:500; }
-  .topbar .logo .brand-blue{ color:var(--brand-blue); font-style:normal; }
-  .topbar-actions{ display:flex; align-items:center; gap:0.75rem; }
+  .topbar .logo .brand-blue{ color:var(--brand-blue); font-style:normal; font-weight:700; }
+  .topbar-actions{ display:flex; align-items:center; gap:0.85rem; }
   #whoami{
-    padding:0.45rem 0.9rem 0.45rem 0.75rem; background:rgba(184,134,46,0.08); border-radius:999px; font-size:0.82rem;
-    font-weight:600; border:1px solid rgba(184,134,46,0.25); display:inline-flex; align-items:center; gap:0.5rem;
-    box-shadow:0 1px 3px rgba(18,33,59,0.04);
+    padding:0.5rem 1rem 0.5rem 0.8rem;
+    background:linear-gradient(135deg, rgba(184,134,46,0.1), rgba(184,134,46,0.04));
+    border-radius:999px; font-size:0.82rem;
+    font-weight:600; border:1px solid rgba(184,134,46,0.28); display:inline-flex; align-items:center; gap:0.55rem;
+    box-shadow:0 1px 4px rgba(18,33,59,0.05), inset 0 1px 0 rgba(255,255,255,0.4);
+    color:var(--ink);
   }
-  #whoami::before{ content:''; width:7px; height:7px; border-radius:50%; background:var(--success); box-shadow:0 0 0 3px rgba(62,122,78,0.18); animation: pulseDot 2.2s ease-in-out infinite; }
+  #whoami::before{ content:''; width:8px; height:8px; border-radius:50%; background:var(--success); box-shadow:0 0 0 3px rgba(62,122,78,0.2); animation: pulseDot 2.2s ease-in-out infinite; }
   .btn-ghost{
     display:inline-flex; align-items:center; gap:0.4rem; padding:0.6rem 1.15rem; border-radius:999px;
     font-weight:600; font-size:0.85rem; letter-spacing:0.01em; border:1px solid var(--line); background:#fff; color:var(--ink);
@@ -1974,6 +1999,9 @@
     if (panel) panel.classList.add('active');
     const statsGrid = $('#statsGrid');
     if (statsGrid) statsGrid.style.display = (tabName === 'home') ? 'none' : '';
+    // Home should always show fresh data pulled straight from the server,
+    // not whatever was last cached in memory from another tab.
+    if (tabName === 'home') loadEverything();
   }
 
   $$('.tab-btn').forEach((btn) => {
@@ -2292,11 +2320,8 @@
       applications.forEach(a => items.push({ ts: a.created_at, icon: '📋', html: `New application from <b>${escapeHtml(a.full_name || 'Unnamed applicant')}</b>` }));
       contacts.forEach(c => items.push({ ts: c.created_at, icon: '✉️', html: `Message from <b>${escapeHtml(c.name)}</b>` }));
       todos.forEach(t => items.push({ ts: t.created_at, icon: '🗂️', html: `Task <b>${escapeHtml(t.title)}</b> added` }));
-      invoices.forEach(i => items.push({ ts: i.created_at, icon: '🧾', html: `Invoice <b>${escapeHtml(i.invoice_number || '#' + i.id)}</b> for ${escapeHtml(i.client_name || 'client')} created` }));
-      destinations.forEach(d => items.push({ ts: d.created_at, icon: '🌍', html: `Destination <b>${escapeHtml(d.name || d.title || 'entry')}</b> added` }));
-      events.forEach(ev => items.push({ ts: ev.created_at, icon: '📅', html: `Event <b>${escapeHtml(ev.title)}</b> scheduled` }));
       items.sort((x, y) => new Date(y.ts || 0) - new Date(x.ts || 0));
-      const top = items.slice(0, 8);
+      const top = items.slice(0, 6);
       feedEl.innerHTML = top.length ? top.map(it => `
         <div class="activity-row">
           <span class="activity-icon">${it.icon}</span>
