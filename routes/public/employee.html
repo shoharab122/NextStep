@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextStep Immigration - Staffing Made Simple</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #1B4E9B;
+            --blue-dark: #12213B;
+            --yellow: #B8862E;
+            --yellow-dark: #E8C77A;
+            --purple: #12213B;
+            --text: #12213B;
+            --text-secondary: #1B2F52;
+            --text-muted: #5B6884;
+            --bg: #F6F4EE;
+            --bg-light: #EEEAE0;
+            --border: #E4DFD3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .logo svg {
+            width: 36px;
+            height: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 15px;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--blue);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-login {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            transition: color 0.2s;
+        }
+
+        .nav-login:hover {
+            color: var(--blue);
+        }
+
+        .nav-divider {
+            color: #ccc;
+            font-size: 15px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-yellow {
+            background: var(--yellow);
+            color: var(--text);
+        }
+
+        .btn-yellow:hover {
+            background: var(--yellow-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 200, 66, 0.3);
+        }
+
+        .btn-blue {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-blue:hover {
+            background: var(--blue-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 125, 228, 0.3);
+        }
+
+        .btn-outline-yellow {
+            background: transparent;
+            color: var(--yellow);
+            border: 2px solid var(--yellow);
+        }
+
+        .btn-outline-yellow:hover {
+            background: var(--yellow);
+            color: var(--text);
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--text);
+        }
+
+        .btn-white:hover {
+            background: #f0f0f0;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            padding: 8px;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 60px 0 40px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-eyebrow {
+            color: var(--yellow);
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1.05;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        .hero-title .underline {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-title .underline::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 4px;
+            width: 100%;
+            height: 10px;
+            background: var(--yellow);
+            opacity: 0.7;
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        .hero-text {
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 520px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            position: relative;
+        }
+
+        .img-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .img-card img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+        }
+
+        .img-1 {
+            border-radius: 50%;
+            aspect-ratio: 1;
+        }
+
+        .img-1 img {
+            border-radius: 50%;
+            height: 280px;
+        }
+
+        .img-2, .img-3, .img-4 {
+            border-radius: 20px;
+        }
+
+        .img-2 img, .img-3 img, .img-4 img {
+            border-radius: 20px;
+            height: 280px;
+        }
+
+        .hero-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+        }
+
+        .dot {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .dot-blue {
+            width: 24px;
+            height: 24px;
+            background: var(--blue);
+            bottom: -40px;
+            left: 35%;
+        }
+
+        .dot-yellow {
+            width: 16px;
+            height: 16px;
+            background: var(--yellow);
+            bottom: -40px;
+            right: 15%;
+        }
+
+        .dot-pink {
+            width: 18px;
+            height: 18px;
+            background: #ffb6c1;
+            top: 45%;
+            left: -12px;
+        }
+
+        .proud-text {
+            text-align: center;
+            font-size: 20px;
+            color: var(--text-muted);
+            margin-top: 60px;
+            padding-bottom: 20px;
+        }
+
+        /* ===== BENEFITS SECTION ===== */
+        .benefits-section {
+            padding: 0 16px 80px;
+        }
+
+        /* ===== CONTACT ===== */
+        .contact-section {
+            padding: 90px 0;
+        }
+
+        .contact-shell {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            box-shadow: 0 30px 70px -30px rgba(18, 33, 59, 0.18);
+        }
+
+        .contact-info {
+            background: linear-gradient(155deg, #1B2F52 0%, #12213B 60%, #0E1930 100%);
+            color: #E4E9F2;
+            padding: 56px 44px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-info::before {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            right: -60px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(184,134,46,0.25), transparent 70%);
+            pointer-events: none;
+        }
+
+        .contact-info-eyebrow {
+            color: var(--yellow-dark);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 14px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .contact-info h2 {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #fff;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .contact-info > p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #AEB9D1;
+            margin-bottom: 36px;
+            position: relative;
+            max-width: 340px;
+        }
+
+        .contact-info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            margin-bottom: 36px;
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .contact-info-icon {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-info-item h5 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8E9AB8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin: 0 0 3px;
+        }
+
+        .contact-info-item a,
+        .contact-info-item span.value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .contact-info-item a:hover {
+            color: var(--yellow-dark);
+        }
+
+        .contact-info-socials {
+            display: flex;
+            gap: 10px;
+            position: relative;
+        }
+
+        .contact-info-socials a {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #E4E9F2;
+            transition: background .15s, border-color .15s, transform .15s;
+        }
+
+        .contact-info-socials a:hover {
+            background: var(--yellow);
+            border-color: var(--yellow);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .contact-form-panel {
+            padding: 56px 48px;
+        }
+
+        .contact-field {
+            margin-bottom: 20px;
+        }
+
+        .contact-field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: 0.01em;
+        }
+
+        .contact-field input,
+        .contact-field textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            background: var(--bg);
+            color: var(--text);
+            transition: border-color .15s, box-shadow .15s, background .15s;
+        }
+
+        .contact-field input:focus,
+        .contact-field textarea:focus {
+            outline: none;
+            border-color: var(--blue);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(27, 78, 155, 0.1);
+        }
+
+        .contact-field textarea {
+            resize: vertical;
+            min-height: 130px;
+        }
+
+        .contact-field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .contact-submit-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 15px 28px;
+            font-size: 15.5px;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 860px) {
+            .contact-shell {
+                grid-template-columns: 1fr;
+                border-radius: 24px;
+            }
+
+            .contact-info,
+            .contact-form-panel {
+                padding: 40px 28px;
+            }
+
+            .contact-field-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== ABOUT ===== */
+        .about-section {
+            padding: 80px 0;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-eyebrow {
+            color: var(--yellow);
+            font-weight: 600;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .about-grid h2 {
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .about-grid p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .about-figures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .about-figure-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .about-figure-card b {
+            display: block;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 6px;
+        }
+
+        .about-figure-card span {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+
+        .benefits-box {
+            background: var(--blue);
+            border-radius: 28px;
+            padding: 64px 48px;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .benefits-box::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.06' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") no-repeat bottom;
+            background-size: cover;
+            pointer-events: none;
+        }
+
+        .benefits-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 48px;
+            position: relative;
+            z-index: 1;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .benefits-header h2 {
+            font-size: 44px;
+            font-weight: 700;
+            line-height: 1.15;
+            max-width: 400px;
+            margin: 0;
+        }
+
+        .benefits-header-right {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: flex-end;
+            max-width: 380px;
+        }
+
+        .benefits-header-right p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+            text-align: right;
+            margin: 0;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .benefit-card {
+            background: white;
+            color: var(--text);
+            padding: 32px 24px;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        }
+
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .benefit-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .benefit-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* ===== APPLY SECTION ===== */
+        .apply-section {
+            padding: 80px 0;
+        }
+
+        .apply-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .apply-left {
+            position: relative;
+        }
+
+        .apply-image-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .apply-image-main {
+            width: 100%;
+            height: 520px;
+            background: linear-gradient(135deg, #B8862E 0%, #E8C77A 100%);
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .apply-image-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .happy-card {
+            position: absolute;
+            top: 50px;
+            right: -30px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+            width: 240px;
+            z-index: 10;
+        }
+
+        .happy-card h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 14px;
+        }
+
+        .avatars {
+            display: flex;
+            margin-bottom: 14px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid white;
+            margin-left: -10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .avatar:first-child {
+            margin-left: 0;
+        }
+
+        .avatar-add {
+            background: var(--yellow);
+            color: white;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--yellow);
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-2 {
+            width: 70%;
+            opacity: 0.5;
+        }
+
+        .easy-badge {
+            position: absolute;
+            bottom: 60px;
+            left: -30px;
+            background: white;
+            padding: 14px 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        .apply-right h2 {
+            font-size: 44px;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 24px;
+        }
+
+        .apply-right h2 .blue-text {
+            color: var(--blue);
+        }
+
+        .apply-right p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .apply-right .list-title {
+            font-weight: 700;
+            color: var(--text);
+            margin: 24px 0 12px;
+            font-size: 16px;
+        }
+
+        .apply-right ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 28px;
+        }
+
+        .apply-right ul li {
+            padding: 6px 0 6px 28px;
+            position: relative;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .apply-right ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 8px;
+            height: 8px;
+            background: var(--text);
+            border-radius: 50%;
+        }
+
+        /* ===== TALENT SECTION ===== */
+        .talent-section {
+            padding: 80px 0;
+        }
+
+        .talent-header h2 {
+            font-size: 44px;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 16px;
+            max-width: 700px;
+        }
+
+        .talent-header p {
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 720px;
+        }
+
+        .talent-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .talent-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 32px 24px;
+            border-radius: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .talent-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+        }
+
+        .talent-card.purple {
+            background: var(--purple);
+            color: white;
+            border: none;
+        }
+
+        .talent-card.purple p {
+            color: rgba(255,255,255,0.85);
+        }
+
+        .talent-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .talent-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .talent-card p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* ===== STAFFING BENEFITS ===== */
+        .staffing-section {
+            padding: 80px 0;
+        }
+
+        .staffing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .staffing-left {
+            position: relative;
+        }
+
+        .staffing-image-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .staffing-image-main {
+            width: 100%;
+            height: 520px;
+            background: var(--blue);
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .staffing-image-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .review-card {
+            position: absolute;
+            background: white;
+            padding: 14px 18px;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .review-1 {
+            top: 40px;
+            right: -20px;
+        }
+
+        .review-2 {
+            bottom: 80px;
+            left: -30px;
+        }
+
+        .review-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .review-info h5 {
+            margin: 0 0 2px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .review-info span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .stars {
+            color: var(--yellow);
+            font-size: 14px;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .staffing-right h2 {
+            font-size: 44px;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 24px;
+        }
+
+        .staffing-right h2 .yellow-text {
+            color: var(--yellow);
+        }
+
+        .staffing-right p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .staffing-right .list-title {
+            font-weight: 700;
+            color: var(--text);
+            margin: 24px 0 12px;
+            font-size: 16px;
+        }
+
+        .staffing-right ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 28px;
+        }
+
+        .staffing-right ul li {
+            padding: 6px 0 6px 28px;
+            position: relative;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .staffing-right ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 8px;
+            height: 8px;
+            background: var(--text);
+            border-radius: 50%;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 0 16px 80px;
+        }
+
+        .cta-box {
+            background: var(--blue);
+            border-radius: 28px;
+            padding: 64px 48px;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.06' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") no-repeat bottom;
+            background-size: cover;
+            pointer-events: none;
+        }
+
+        .cta-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-box h2 {
+            font-size: 44px;
+            font-weight: 700;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-box .btn {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: linear-gradient(180deg, #12213B 0%, #1B2F52 100%);
+            color: #B7C1D6;
+            border-top: 3px solid var(--yellow);
+            padding: 64px 0 32px;
+        }
+
+        .footer .footer-col h4,
+        .footer .footer-brand a.logo span {
+            color: #F6F4EE;
+        }
+
+        .footer .footer-col ul li a {
+            color: #B7C1D6;
+        }
+
+        .footer .footer-col ul li a:hover {
+            color: var(--yellow);
+        }
+
+        .footer-brand p {
+            color: #9AA6BE !important;
+        }
+
+        .footer-bottom {
+            color: #8A93AC !important;
+            border-top-color: rgba(255,255,255,0.12) !important;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-brand p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-top: 16px;
+            max-width: 300px;
+        }
+
+        .footer-col h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul li a {
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--blue);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: #999;
+        }
+
+        .footer-bottom a:hover {
+            color: var(--blue);
+        }
+
+        /* ===== SCROLL TO TOP ===== */
+        .scroll-top {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            background: var(--bg-light);
+            transform: translateY(-2px);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-links.show {
+                display: flex;
+                position: absolute;
+                top: 72px;
+                left: 0;
+                right: 0;
+                background: #fff;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0;
+                padding: 8px 24px 16px;
+                border-bottom: 1px solid var(--border);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+            }
+
+            .nav-links.show li {
+                width: 100%;
+            }
+
+            .nav-links.show a {
+                display: block;
+                padding: 12px 0;
+                width: 100%;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .mobile-menu-btn.open span:nth-child(1) {
+                transform: translateY(7px) rotate(45deg);
+            }
+
+            .mobile-menu-btn.open span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .mobile-menu-btn.open span:nth-child(3) {
+                transform: translateY(-7px) rotate(-45deg);
+            }
+
+            .hero-grid,
+            .apply-grid,
+            .staffing-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-images {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .hero-title {
+                font-size: 48px;
+            }
+
+            .benefits-header h2,
+            .apply-right h2,
+            .talent-header h2,
+            .staffing-right h2,
+            .cta-box h2 {
+                font-size: 36px;
+            }
+
+            .benefits-grid,
+            .talent-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .apply-left,
+            .staffing-left {
+                max-width: 440px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .benefits-grid,
+            .talent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-box,
+            .cta-box {
+                padding: 40px 24px;
+            }
+
+            .benefits-header-right {
+                align-items: flex-start;
+            }
+
+            .benefits-header-right p {
+                text-align: left;
+            }
+
+            .happy-card {
+                right: 0;
+                width: 200px;
+            }
+
+            .easy-badge {
+                left: 0;
+            }
+
+            .review-1 {
+                right: 0;
+            }
+
+            .review-2 {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-inner">
+            <a href="/" class="logo">
+                <img src="data:image/jpeg;base64,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" alt="NSI Immigration logo" class="brand-logo-img" style="height:36px;width:36px;border-radius:50%;object-fit:cover;box-shadow:0 2px 8px rgba(18,33,59,0.18);" />
+                <span style="font-family:'Inter',sans-serif;"><span style="color:var(--blue);">Nextstep</span> <em style="font-style:italic;color:var(--yellow);">Immigration</em></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About us</a></li>
+                <li><a href="#" data-open-modal="jobseeker">Jobseeker</a></li>
+                <li><a href="#" data-open-modal="employer">Employer</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#">English</a></li>
+            </ul>
+            <div class="nav-right">
+                <a href="#" class="nav-login" id="navLoginLink" data-open-modal="login">Login</a>
+                <span id="navUserMenu">
+                    <span id="navUserGreeting"></span>
+                    <button type="button" id="navLogoutBtn">Log out</button>
+                </span>
+                <span class="nav-divider">|</span>
+                <a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" class="btn btn-yellow">Join us</a>
+                <button class="mobile-menu-btn" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-left">
+                    <span class="hero-eyebrow">Work for our workers</span>
+                    <h1 class="hero-title">Staffing made <span class="underline">simple</span></h1>
+                    <p class="hero-text">NextStep simplifies the staffing process, connecting you with qualified professionals for your European projects. Our streamlined approach and extensive network ensure you find the perfect talent, quickly and efficiently.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-blue" data-open-modal="jobseeker">I am a jobseeker</button>
+                        <button class="btn btn-outline-yellow" data-open-modal="employer">I am an employer</button>
+                    </div>
+                </div>
+                <div class="hero-images">
+                    <div class="img-card img-1">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face" alt="Professional worker">
+                    </div>
+                    <div class="img-card img-2">
+                        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=400&fit=crop&crop=face" alt="Construction worker">
+                    </div>
+                    <div class="img-card img-3">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face" alt="Happy worker">
+                    </div>
+                    <div class="img-card img-4">
+                        <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=400&fit=crop&crop=face" alt="Welder">
+                    </div>
+                    <div class="hero-dots">
+                        <div class="dot dot-blue"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-pink"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="proud-text">We are proud of our customers</p>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section class="about-section" id="about">
+        <div class="container about-grid">
+            <div>
+                <span class="about-eyebrow">Who we are</span>
+                <h2>Connecting people to opportunity, the right way.</h2>
+                <p>NextStep's staffing team helps jobseekers land real roles across Europe and helps employers hire qualified, work-permit-ready candidates without the usual paperwork headaches. We handle the matching, the compliance, and the follow-through.</p>
+                <p>Whether you're looking for your next job abroad or building out a team, we work as an extension of you — not just a middleman.</p>
+            </div>
+            <div class="about-figures">
+                <div class="about-figure-card"><b>500+</b><span>Candidates placed</span></div>
+                <div class="about-figure-card"><b>120+</b><span>Partner employers</span></div>
+                <div class="about-figure-card"><b>6</b><span>Countries covered</span></div>
+                <div class="about-figure-card"><b>92%</b><span>Retention after 6 months</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits -->
+    <section class="benefits-section">
+        <div class="container">
+            <div class="benefits-box">
+                <div class="benefits-header">
+                    <h2>The benefits of working with NextStep</h2>
+                    <div class="benefits-header-right">
+                        <p>NextStep offers a unique opportunity to advance your career and gain valuable international experience.</p>
+                        <button class="btn btn-white" data-open-modal="jobseeker">Apply for your future</button>
+                    </div>
+                </div>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon" style="background:#F6F4EE;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1B4E9B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <h3>Experience in your field</h3>
+                        <p>Benefit from our extensive network of companies and gain exposure to diverse projects.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon" style="background:#EEEAE0;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#12213B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                        <h3>Network all over Europe</h3>
+                        <p>Expand your horizons, explore exciting new cultures and new work ethics.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon" style="background:#EEEAE0;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B8862E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                        <h3>Contractual flexibility</h3>
+                        <p>Enjoy the freedom to work on various projects and timeframes that suit your preferences.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon" style="background:#EEEAE0;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B8862E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2v1M12 7a5 5 0 0 1 5 5c0 2-2 3-2 5h-6c0-2-2-3-2-5a5 5 0 0 1 5-5z"/></svg>
+                        </div>
+                        <h3>Innovative solutions</h3>
+                        <p>Collaborate with talented individuals and contribute to cutting-edge initiatives.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apply -->
+    <section class="apply-section">
+        <div class="container">
+            <div class="apply-grid">
+                <div class="apply-left">
+                    <div class="apply-image-wrap">
+                        <div class="apply-image-main">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&h=700&fit=crop&crop=face" alt="Happy worker pointing">
+                        </div>
+                        <div class="happy-card">
+                            <h4>Workers happy with NextStep</h4>
+                            <div class="avatars">
+                                <div class="avatar" style="background:#B8862E;">A</div>
+                                <div class="avatar" style="background:#1B4E9B;">B</div>
+                                <div class="avatar" style="background:#12213B;">C</div>
+                                <div class="avatar" style="background:#1B4E9B;">D</div>
+                                <div class="avatar avatar-add">+</div>
+                            </div>
+                            <div class="progress-bar" style="width:100%"></div>
+                            <div class="progress-bar progress-bar-2"></div>
+                        </div>
+                        <div class="easy-badge">Easy signup process</div>
+                    </div>
+                </div>
+                <div class="apply-right">
+                    <h2>Apply today and discover your next <span class="blue-text">opportunity</span></h2>
+                    <p>NextStep offers a unique opportunity to advance your career and gain valuable international experience. Expand your horizons and explore exciting new cultures. Our network of companies provides opportunities to work in various European countries, allowing you to broaden your perspective and gain exposure to different work environments.</p>
+                    <p>Enjoy the freedom to work on various projects and timeframes that suit your preferences. Whether you're seeking a long-term contract or short-term assignments</p>
+                    <p class="list-title">By choosing NextStep, you can:</p>
+                    <ul>
+                        <li>Work all over Europe</li>
+                        <li>Enjoy the freedom to work on various projects</li>
+                        <li>Be part of an innovative environment</li>
+                    </ul>
+                    <button class="btn btn-yellow" data-open-modal="jobseeker">Apply for your future</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Talent -->
+    <section class="talent-section">
+        <div class="container">
+            <div class="talent-header">
+                <h2>Discover the ideal talent to drive your business forward</h2>
+                <p>Our network includes highly skilled professionals with expertise in engineering, IT, finance, and other specialized fields. We'll connect you with candidates who possess the qualifications and experience to drive your business forward.</p>
+            </div>
+            <div class="talent-grid">
+                <div class="talent-card">
+                    <div class="talent-icon" style="background:#F6F4EE;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B4E9B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 3-2 5-2 7h-10c0-2-2-3-2-7a7 7 0 0 1 7-7z"/><path d="M9 22h6"/></svg>
+                    </div>
+                    <h3>High-skilled employees</h3>
+                    <p>Our network includes highly skilled professionals with expertise in engineering, IT, finance, and other specialized fields.</p>
+                </div>
+                <div class="talent-card purple">
+                    <div class="talent-icon" style="background:rgba(255,255,255,0.2);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><path d="M9 20v-6h6v6"/></svg>
+                    </div>
+                    <h3>Construction employees</h3>
+                    <p>From skilled tradesmen to project managers, we can source the talent you need to complete your construction projects.</p>
+                </div>
+                <div class="talent-card">
+                    <div class="talent-icon" style="background:#F6F4EE;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B4E9B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/></svg>
+                    </div>
+                    <h3>Factory workers</h3>
+                    <p>We can provide a steady stream of factory workers with the skills and experience to meet your production needs.</p>
+                </div>
+                <div class="talent-card">
+                    <div class="talent-icon" style="background:#F6F4EE;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B8862E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/></svg>
+                    </div>
+                    <h3>Agricultural workers</h3>
+                    <p>We provide experienced professionals in the agriculture industry, including farmers, farmhands and technicians.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staffing Benefits -->
+    <section class="staffing-section">
+        <div class="container">
+            <div class="staffing-grid">
+                <div class="staffing-left">
+                    <div class="staffing-image-wrap">
+                        <div class="staffing-image-main">
+                            <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&h=700&fit=crop&crop=face" alt="Construction professional">
+                        </div>
+                        <div class="review-card review-1">
+                            <div class="review-icon" style="background:#F6F4EE;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B4E9B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                            <div class="review-info">
+                                <h5>ES Steel B.V.</h5>
+                                <span>Steel company</span>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <div class="review-card review-2">
+                            <div class="review-icon" style="background:#EEEAE0;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8862E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M4 21V10l8-6 8 6v10"/><path d="M9 21v-6h6v6"/></svg>
+                            </div>
+                            <div class="review-info">
+                                <h5>Mansaprojects B.V.</h5>
+                                <span>Construction company</span>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="staffing-right">
+                    <h2>The <span class="yellow-text">benefits</span> of staffing with NextStep</h2>
+                    <p>Partnering with NextStep offers numerous advantages for companies seeking top talent. Our dedicated team simplifies the hiring process, saving you time and resources. Tap into a pool of qualified professionals from Portugal, renowned for their technical skills, adaptability, and strong work ethic. Enjoy competitive pricing and optimize your hiring budget without compromising on quality. Our streamlined processes and efficient use of resources enable us to offer cost-effective solutions.</p>
+                    <p class="list-title">By choosing NextStep, you can:</p>
+                    <ul>
+                        <li>Access a skilled workforce</li>
+                        <li>Streamline your hiring process</li>
+                        <li>Reduce costs</li>
+                    </ul>
+                    <button class="btn btn-blue" data-open-modal="employer">Apply for your future</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact-section" id="contact">
+        <div class="container" style="max-width:1080px;">
+            <div class="contact-shell">
+                <div class="contact-info">
+                    <span class="contact-info-eyebrow">Get in touch</span>
+                    <h2>Let's talk staffing.</h2>
+                    <p>Questions about jobs, staffing, or partnering with us? Send a message and our team will get back to you shortly.</p>
+
+                    <div class="contact-info-list">
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8C77A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6l-10 7L2 6"/><path d="M2 6h20v12H2z"/></svg>
+                            </div>
+                            <div>
+                                <h5>Email</h5>
+                                <a href="mailto:support.nextstep1@gmail.com">support.nextstep1@gmail.com</a>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8C77A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            </div>
+                            <div>
+                                <h5>Phone</h5>
+                                <a href="tel:+8801805723581">+880 1805-723581</a>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8C77A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4.5 8-11.8A8 8 0 0 0 4 10.2C4 17.5 12 22 12 22z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                            <div>
+                                <h5>Response time</h5>
+                                <span class="value">Within 1 business day</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-socials">
+                        <a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" aria-label="Facebook">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.5h2.85l.43-3.32H13.5V8.05c0-.96.27-1.62 1.65-1.62h1.76V3.46C16.6 3.4 15.53 3.3 14.28 3.3c-2.6 0-4.38 1.59-4.38 4.5v2.38H7.05v3.32H9.9V22h3.6z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/nextstep.immigration.be/" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact-form-panel">
+                    <div class="ns-form-msg" id="contactFormMsg" style="margin-bottom:16px;"></div>
+                    <form id="contactForm">
+                        <div class="contact-field-row">
+                            <div class="contact-field">
+                                <label for="contact_name">Name</label>
+                                <input type="text" id="contact_name" name="name" placeholder="Your full name" required />
+                            </div>
+                            <div class="contact-field">
+                                <label for="contact_email">Email</label>
+                                <input type="email" id="contact_email" name="email" placeholder="you@example.com" required />
+                            </div>
+                        </div>
+                        <div class="contact-field">
+                            <label for="contact_phone">Phone (optional)</label>
+                            <input type="tel" id="contact_phone" name="phone" placeholder="+880 1XXX-XXXXXX" />
+                        </div>
+                        <div class="contact-field">
+                            <label for="contact_message">Message</label>
+                            <textarea id="contact_message" name="message" rows="5" placeholder="Tell us a bit about what you need..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-blue contact-submit-btn" id="contactSubmitBtn">Send message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <div class="cta-label">Easy & fast</div>
+                <h2>Ready to work with us?</h2>
+                <button class="btn btn-white" data-open-modal="employer">Let's meet</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="/" class="logo" id="footerLogoLink">
+                        <img src="data:image/jpeg;base64,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" alt="NSI Immigration logo" class="brand-logo-img" style="height:32px;width:32px;border-radius:50%;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,0.25);" />
+                        <span style="font-family:'Inter',sans-serif;"><span style="color:#8FB4E8;">Nextstep</span> <em style="font-style:italic;color:#E8C77A;">Immigration</em></span>
+                    </a>
+                    <p>Nextstep Immigration connects qualified professionals and employers across study, work &amp; residency visas. Our streamlined approach and dedicated support ensure a smooth path, every step of the way.</p>
+                    <div style="margin-top:14px;font-size:14px;line-height:1.7;">
+                        <p>📧 support.nextstep1@gmail.com</p>
+                        <p>📞 <a href="tel:+8801805723581" style="color:inherit;">+880 1805-723581</a></p>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>We are NextStep</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Branches</h4>
+                    <ul>
+                        <li><a href="#">Hospitality</a></li>
+                        <li><a href="#">Production</a></li>
+                        <li><a href="#">Construction</a></li>
+                        <li><a href="#">Logistics</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Countries</h4>
+                    <ul>
+                        <li><a href="#">Netherlands</a></li>
+                        <li><a href="#">Belgium</a></li>
+                        <li><a href="#">Germany</a></li>
+                        <li><a href="#">Portugal</a></li>
+                        <li><a href="#">See all</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Apply as</h4>
+                    <ul>
+                        <li><a href="#">Jobseeker</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>Copyright ©2024 NextStep</span>
+                <a href="#">Privacybeleid</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to top -->
+    <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+    </button>
+
+    <!-- ===================== Jobseeker Modal ===================== -->
+    <div class="ns-modal-overlay" id="jobseekerModal" aria-hidden="true">
+        <div class="ns-modal" role="dialog" aria-modal="true" aria-labelledby="jobseekerModalTitle">
+            <button class="ns-modal-close" type="button" data-close-modal aria-label="Close">&times;</button>
+            <h3 id="jobseekerModalTitle">Tell us a little about yourself!</h3>
+            <p class="ns-modal-sub">Create your jobseeker account and we'll match you with the right opportunity.</p>
+            <div class="ns-form-msg" id="jobseekerFormMsg"></div>
+
+            <div class="ns-google-btn-wrap">
+                <div id="googleJobseekerBtn" class="ns-google-btn" data-role="jobseeker"></div>
+            </div>
+            <div class="ns-or-divider"><span>or fill in your details</span></div>
+
+            <form id="jobseekerForm">
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label for="js_first_name">What's your first name?</label>
+                        <input type="text" id="js_first_name" name="first_name" placeholder="First Name" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label for="js_last_name">And your last name?</label>
+                        <input type="text" id="js_last_name" name="last_name" placeholder="Last Name" required />
+                    </div>
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label for="js_email">How can we reach you by email?</label>
+                        <input type="email" id="js_email" name="email" placeholder="you@example.com" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label for="js_phone">Your phone number (optional, but helpful!):</label>
+                        <input type="tel" id="js_phone" name="phone" placeholder="Phone Number" />
+                    </div>
+                </div>
+
+                <h4 class="ns-form-subhead">Which sector do you have experience in?</h4>
+                <div class="ns-checkbox-row">
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Construction" /><span>🏗️ Construction</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Elderly care" /><span>👵 Elderly care</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Agriculture" /><span>🌾 Agriculture</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Warehousing & logistics" /><span>📦 Warehousing & logistics</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Cleaning" /><span>🧹 Cleaning</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Transport" /><span>🚛 Transport</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Skilled trades" /><span>🛠️ Skilled trades</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Recycling/waste" /><span>♻️ Recycling/waste</span></label>
+                </div>
+
+                <div class="ns-form-group">
+                    <label for="js_job_title">What's your current job title?</label>
+                    <input type="text" id="js_job_title" name="job_title" placeholder="Job Title" />
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label for="js_password">Choose a password *</label>
+                        <input type="password" id="js_password" name="password" placeholder="At least 6 characters" minlength="6" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label for="js_password_confirm">Confirm password *</label>
+                        <input type="password" id="js_password_confirm" name="password_confirm" placeholder="Re-enter password" minlength="6" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-blue" id="jobseekerSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Create account</button>
+                <p class="ns-form-switch">Already have an account? <a href="#" data-switch-to="login">Log in</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== Employer Modal ===================== -->
+    <div class="ns-modal-overlay" id="employerModal" aria-hidden="true">
+        <div class="ns-modal" role="dialog" aria-modal="true" aria-labelledby="employerModalTitle">
+            <button class="ns-modal-close" type="button" data-close-modal aria-label="Close">&times;</button>
+            <h3 id="employerModalTitle">Create your employer account</h3>
+            <p class="ns-modal-sub">Tell us about your company and staffing needs.</p>
+            <div class="ns-form-msg" id="employerFormMsg"></div>
+
+            <div class="ns-google-btn-wrap">
+                <div id="googleEmployerBtn" class="ns-google-btn" data-role="employer"></div>
+            </div>
+            <div class="ns-or-divider"><span>or fill in your details</span></div>
+
+            <form id="employerForm">
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label for="em_company">Company name *</label>
+                        <input type="text" id="em_company" name="company_name" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label for="em_contact_name">Contact person *</label>
+                        <input type="text" id="em_contact_name" name="contact_name" required />
+                    </div>
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label for="em_email">Email *</label>
+                        <input type="email" id="em_email" name="email" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label for="em_phone">Phone number</label>
+                        <input type="tel" id="em_phone" name="phone" />
+                    </div>
+                </div>
+
+                <h4 class="ns-form-subhead">Which sector are you hiring for?</h4>
+                <div class="ns-checkbox-row">
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Construction" /><span>🏗️ Construction</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Elderly care" /><span>👵 Elderly care</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Agriculture" /><span>🌾 Agriculture</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Warehousing & logistics" /><span>📦 Warehousing & logistics</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Cleaning" /><span>🧹 Cleaning</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Transport" /><span>🚛 Transport</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Skilled trades" /><span>🛠️ Skilled trades</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Recycling/waste" /><span>♻️ Recycling/waste</span></label>
+                </div>
+
+                <div class="ns-form-group">
+                    <label for="em_headcount">Number of workers needed</label>
+                    <input type="number" id="em_headcount" name="headcount" min="1" />
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label for="em_password">Choose a password *</label>
+                        <input type="password" id="em_password" name="password" placeholder="At least 6 characters" minlength="6" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label for="em_password_confirm">Confirm password *</label>
+                        <input type="password" id="em_password_confirm" name="password_confirm" placeholder="Re-enter password" minlength="6" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-blue" id="employerSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Create account</button>
+                <p class="ns-form-switch">Already have an account? <a href="#" data-switch-to="login">Log in</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== Login Modal ===================== -->
+    <div class="ns-modal-overlay" id="loginModal" aria-hidden="true">
+        <div class="ns-modal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle" style="max-width:420px;">
+            <button class="ns-modal-close" type="button" data-close-modal aria-label="Close">&times;</button>
+            <h3 id="loginModalTitle">Log in</h3>
+            <p class="ns-modal-sub">Welcome back — log in to your NextStep account.</p>
+            <div class="ns-form-msg" id="loginFormMsg"></div>
+
+            <div class="ns-google-btn-wrap">
+                <div id="googleLoginBtn" class="ns-google-btn" data-role="jobseeker"></div>
+            </div>
+            <div class="ns-or-divider"><span>or</span></div>
+
+            <form id="loginForm">
+                <div class="ns-form-group">
+                    <label for="login_email">Email *</label>
+                    <input type="email" id="login_email" name="email" required />
+                </div>
+                <div class="ns-form-group">
+                    <label for="login_password">Password *</label>
+                    <input type="password" id="login_password" name="password" required />
+                </div>
+                <button type="submit" class="btn btn-blue" id="loginSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Log in</button>
+                <p class="ns-form-switch">New here? <a href="#" data-switch-to="jobseeker">Create a jobseeker account</a> or <a href="#" data-switch-to="employer">an employer account</a></p>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .ns-modal-overlay{ display:none; position:fixed; inset:0; background:rgba(18,33,59,0.55); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
+        .ns-modal-overlay.open{ display:flex; }
+        .ns-modal{ background:#fff; border-radius:14px; padding:1.75rem; width:100%; max-width:560px; max-height:90vh; overflow-y:auto; position:relative; box-shadow:0 20px 60px -20px rgba(0,0,0,0.4); }
+        .ns-modal h3{ margin:0 0 0.3rem; font-size:1.35rem; color:var(--text); }
+        .ns-modal-sub{ color:var(--text-muted); font-size:0.9rem; margin-bottom:1.1rem; }
+        .ns-modal-close{ position:absolute; top:0.85rem; right:0.9rem; background:none; border:none; font-size:1.5rem; line-height:1; cursor:pointer; color:var(--text-muted); }
+        .ns-form-row{ display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; }
+        @media (max-width:520px){ .ns-form-row{ grid-template-columns:1fr; } }
+        .ns-form-group{ margin-bottom:0.85rem; display:flex; flex-direction:column; gap:0.3rem; }
+        .ns-form-group label{ font-size:0.82rem; font-weight:600; color:var(--text); }
+        .ns-form-group input, .ns-form-group textarea{ font-family:inherit; font-size:0.92rem; padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); }
+        .ns-form-group input:focus, .ns-form-group textarea:focus{ outline:none; border-color:var(--blue); }
+        .ns-form-msg{ display:none; padding:0.6rem 0.8rem; border-radius:8px; font-size:0.85rem; margin-bottom:0.9rem; }
+        .ns-form-msg.show{ display:block; }
+        .ns-form-msg.success{ background:#E6F4EA; color:#1E7A3B; }
+        .ns-form-msg.error{ background:#FBE7E6; color:#B3261E; }
+        .ns-form-subhead{ font-size:0.95rem; font-weight:700; color:var(--text); margin:0.4rem 0 0.7rem; }
+        .ns-checkbox-row{ display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; }
+        .ns-checkbox-pill{ display:inline-flex; align-items:center; gap:0.4rem; padding:0.4rem 0.8rem; border:1px solid var(--border); border-radius:999px; font-size:0.85rem; cursor:pointer; background:var(--bg); transition:border-color .15s, background .15s; }
+        .ns-checkbox-pill input{ accent-color:var(--blue); width:16px; height:16px; margin:0; }
+        .ns-checkbox-pill:has(input:checked){ border-color:var(--blue); background:#E9F0FB; }
+        .ns-form-switch{ text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:1rem; }
+        .ns-form-switch a{ color:var(--blue); font-weight:600; text-decoration:none; }
+        .ns-form-switch a:hover{ text-decoration:underline; }
+        #navUserMenu{ display:none; align-items:center; gap:0.6rem; }
+        #navUserMenu.show{ display:inline-flex; }
+        #navUserGreeting{ font-weight:600; font-size:0.9rem; color:var(--text); }
+        #navLogoutBtn{ background:none; border:none; color:var(--text-muted); font-size:0.85rem; cursor:pointer; text-decoration:underline; padding:0; }
+        .ns-google-btn-wrap{ display:flex; justify-content:center; margin-bottom:0.9rem; }
+        .ns-google-btn{ width:100%; display:flex; justify-content:center; }
+        .ns-or-divider{ display:flex; align-items:center; text-align:center; color:var(--text-muted); font-size:0.8rem; margin:0 0 1rem; }
+        .ns-or-divider::before, .ns-or-divider::after{ content:""; flex:1; border-bottom:1px solid var(--border); }
+        .ns-or-divider span{ padding:0 0.75rem; }
+    </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <script>
+        // ---------------- Modal open/close ----------------
+        const modals = {
+            jobseeker: document.getElementById('jobseekerModal'),
+            employer: document.getElementById('employerModal'),
+            login: document.getElementById('loginModal'),
+        };
+
+        function openModal(name) {
+            const modal = modals[name];
+            if (!modal) return;
+            Object.values(modals).forEach((m) => closeModal(m));
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        function closeAllModals() {
+            Object.values(modals).forEach((m) => closeModal(m));
+        }
+
+        document.querySelectorAll('[data-open-modal]').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(btn.getAttribute('data-open-modal'));
+            });
+        });
+
+        document.querySelectorAll('[data-switch-to]').forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(link.getAttribute('data-switch-to'));
+            });
+        });
+
+        document.querySelectorAll('.ns-modal-overlay').forEach((overlay) => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeModal(overlay);
+            });
+            overlay.querySelectorAll('[data-close-modal]').forEach((btn) => {
+                btn.addEventListener('click', () => closeModal(overlay));
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeAllModals();
+        });
+
+        function showFormMsg(el, text, type) {
+            el.textContent = text;
+            el.className = 'ns-form-msg show ' + type;
+        }
+
+        // ---------------- Session / account state ----------------
+        const TOKEN_KEY = 'ns_auth_token';
+        const navLoginLink = document.getElementById('navLoginLink');
+        const navUserMenu = document.getElementById('navUserMenu');
+        const navUserGreeting = document.getElementById('navUserGreeting');
+        const navLogoutBtn = document.getElementById('navLogoutBtn');
+
+        function getToken() {
+            return localStorage.getItem(TOKEN_KEY);
+        }
+
+        function setSession(token) {
+            localStorage.setItem(TOKEN_KEY, token);
+        }
+
+        function clearSession() {
+            localStorage.removeItem(TOKEN_KEY);
+            navUserMenu.classList.remove('show');
+            navLoginLink.style.display = '';
+        }
+
+        function applyLoggedInUI(user) {
+            const name = user.role === 'employer' ? (user.company_name || user.contact_name) : user.full_name;
+            navUserGreeting.textContent = `Hi, ${name}`;
+            navUserMenu.classList.add('show');
+            navLoginLink.style.display = 'none';
+        }
+
+        async function refreshSession() {
+            const token = getToken();
+            if (!token) return;
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!res.ok) { clearSession(); return; }
+                const data = await res.json();
+                applyLoggedInUI(data.user);
+            } catch (err) {
+                console.error('Session check failed:', err.message);
+            }
+        }
+
+        navLogoutBtn.addEventListener('click', () => {
+            clearSession();
+        });
+
+        refreshSession();
+
+        // ---------------- Google Sign-In ----------------
+        // Replace with your real OAuth 2.0 Client ID from https://console.cloud.google.com/apis/credentials
+        const GOOGLE_CLIENT_ID = '1051633368223-0j6dl2ie2bbpikuvqefabjk3ku0omieo.apps.googleusercontent.com';
+
+        async function handleGoogleCredential(response, msgEl) {
+            const role = (response.role || 'jobseeker');
+            try {
+                const res = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: response.credential, role }),
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    setSession(data.token);
+                    applyLoggedInUI(data.user);
+                    if (msgEl) showFormMsg(msgEl, 'Logged in with Google!', 'success');
+                    window.setTimeout(() => closeAllModals(), 900);
+                } else if (msgEl) {
+                    showFormMsg(msgEl, data.error || 'Google sign-in failed. Please try again.', 'error');
+                }
+            } catch (err) {
+                if (msgEl) showFormMsg(msgEl, 'Network error. Please check your connection and try again.', 'error');
+            }
+        }
+
+        function initGoogleButton(containerId, msgEl) {
+            const container = document.getElementById(containerId);
+            if (!container || !window.google || !google.accounts || !google.accounts.id) return;
+            const role = container.getAttribute('data-role') || 'jobseeker';
+
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: (resp) => handleGoogleCredential({ credential: resp.credential, role }, msgEl),
+            });
+
+            google.accounts.id.renderButton(container, {
+                type: 'standard',
+                theme: 'outline',
+                size: 'large',
+                width: 340,
+                text: role === 'employer' ? 'signup_with' : 'continue_with',
+            });
+        }
+
+        window.addEventListener('load', () => {
+            initGoogleButton('googleLoginBtn', loginMsgEarly());
+            initGoogleButton('googleJobseekerBtn', jobseekerMsgEarly());
+            initGoogleButton('googleEmployerBtn', employerMsgEarly());
+        });
+
+        // Small helpers so init can run before the msg elements are declared further below
+        function loginMsgEarly() { return document.getElementById('loginFormMsg'); }
+        function jobseekerMsgEarly() { return document.getElementById('jobseekerFormMsg'); }
+        function employerMsgEarly() { return document.getElementById('employerFormMsg'); }
+
+        // ---------------- Jobseeker signup ----------------
+        const jobseekerForm = document.getElementById('jobseekerForm');
+        const jobseekerMsg = document.getElementById('jobseekerFormMsg');
+        const jobseekerBtn = document.getElementById('jobseekerSubmitBtn');
+
+        jobseekerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            jobseekerMsg.className = 'ns-form-msg';
+
+            const password = jobseekerForm.password.value;
+            const confirm = jobseekerForm.password_confirm.value;
+            if (password !== confirm) {
+                showFormMsg(jobseekerMsg, 'Passwords do not match.', 'error');
+                return;
+            }
+
+            jobseekerBtn.disabled = true;
+            jobseekerBtn.textContent = 'Creating account...';
+
+            try {
+                const industries = Array.from(jobseekerForm.querySelectorAll('input[name="industries"]:checked')).map(el => el.value);
+                const payload = {
+                    first_name: jobseekerForm.first_name.value,
+                    last_name: jobseekerForm.last_name.value,
+                    email: jobseekerForm.email.value,
+                    phone: jobseekerForm.phone.value,
+                    job_title: jobseekerForm.job_title.value,
+                    password,
+                    industries,
+                };
+                const res = await fetch('/api/auth/jobseeker/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    setSession(data.token);
+                    applyLoggedInUI(data.user);
+                    showFormMsg(jobseekerMsg, 'Account created! Welcome to NextStep.', 'success');
+                    jobseekerForm.reset();
+                    window.setTimeout(() => closeAllModals(), 1200);
+                } else {
+                    showFormMsg(jobseekerMsg, data.error || 'Something went wrong. Please try again.', 'error');
+                }
+            } catch (err) {
+                showFormMsg(jobseekerMsg, 'Network error. Please check your connection and try again.', 'error');
+            } finally {
+                jobseekerBtn.disabled = false;
+                jobseekerBtn.textContent = 'Create account';
+            }
+        });
+
+        // ---------------- Employer signup ----------------
+        const employerForm = document.getElementById('employerForm');
+        const employerMsg = document.getElementById('employerFormMsg');
+        const employerBtn = document.getElementById('employerSubmitBtn');
+
+        employerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            employerMsg.className = 'ns-form-msg';
+
+            const password = employerForm.password.value;
+            const confirm = employerForm.password_confirm.value;
+            if (password !== confirm) {
+                showFormMsg(employerMsg, 'Passwords do not match.', 'error');
+                return;
+            }
+
+            employerBtn.disabled = true;
+            employerBtn.textContent = 'Creating account...';
+
+            try {
+                const industries = Array.from(employerForm.querySelectorAll('input[name="industries"]:checked')).map(el => el.value);
+                const payload = {
+                    company_name: employerForm.company_name.value,
+                    contact_name: employerForm.contact_name.value,
+                    email: employerForm.email.value,
+                    phone: employerForm.phone.value,
+                    headcount: employerForm.headcount.value,
+                    password,
+                    industries,
+                };
+                const res = await fetch('/api/auth/employer/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    setSession(data.token);
+                    applyLoggedInUI(data.user);
+                    showFormMsg(employerMsg, 'Account created! Welcome to NextStep.', 'success');
+                    employerForm.reset();
+                    window.setTimeout(() => closeAllModals(), 1200);
+                } else {
+                    showFormMsg(employerMsg, data.error || 'Something went wrong. Please try again.', 'error');
+                }
+            } catch (err) {
+                showFormMsg(employerMsg, 'Network error. Please check your connection and try again.', 'error');
+            } finally {
+                employerBtn.disabled = false;
+                employerBtn.textContent = 'Create account';
+            }
+        });
+
+        // ---------------- Contact form ----------------
+        const contactForm = document.getElementById('contactForm');
+        const contactMsg = document.getElementById('contactFormMsg');
+        const contactBtn = document.getElementById('contactSubmitBtn');
+
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            contactMsg.className = 'ns-form-msg';
+            contactBtn.disabled = true;
+            contactBtn.textContent = 'Sending...';
+
+            try {
+                const payload = {
+                    name: contactForm.name.value,
+                    email: contactForm.email.value,
+                    phone: contactForm.phone.value,
+                    message: contactForm.message.value,
+                };
+                const res = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (res.ok && (data.success || data.id)) {
+                    showFormMsg(contactMsg, 'Message sent! We\'ll get back to you soon.', 'success');
+                    contactForm.reset();
+                } else {
+                    showFormMsg(contactMsg, data.error || 'Something went wrong. Please try again.', 'error');
+                }
+            } catch (err) {
+                showFormMsg(contactMsg, 'Network error. Please check your connection and try again.', 'error');
+            } finally {
+                contactBtn.disabled = false;
+                contactBtn.textContent = 'Send message';
+            }
+        });
+
+        // ---------------- Login ----------------
+        const loginForm = document.getElementById('loginForm');
+        const loginMsg = document.getElementById('loginFormMsg');
+        const loginBtn = document.getElementById('loginSubmitBtn');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginMsg.className = 'ns-form-msg';
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+
+            try {
+                const payload = {
+                    email: loginForm.email.value,
+                    password: loginForm.password.value,
+                };
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    setSession(data.token);
+                    applyLoggedInUI(data.user);
+                    showFormMsg(loginMsg, 'Logged in successfully!', 'success');
+                    loginForm.reset();
+                    window.setTimeout(() => closeAllModals(), 900);
+                } else {
+                    showFormMsg(loginMsg, data.error || 'Invalid email or password.', 'error');
+                }
+            } catch (err) {
+                showFormMsg(loginMsg, 'Network error. Please check your connection and try again.', 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Log in';
+            }
+        });
+    </script>
+
+    <script>
+        // Scroll to top visibility
+        const scrollTopBtn = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#' || this.hasAttribute('data-open-modal')) return;
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinksList = document.querySelector('.nav-links');
+        if (mobileMenuBtn && navLinksList) {
+            mobileMenuBtn.addEventListener('click', () => {
+                navLinksList.classList.toggle('show');
+                mobileMenuBtn.classList.toggle('open');
+            });
+            navLinksList.querySelectorAll('a').forEach((link) => {
+                link.addEventListener('click', () => {
+                    navLinksList.classList.remove('show');
+                    mobileMenuBtn.classList.remove('open');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
