@@ -30,6 +30,9 @@ app.get('/contact', (req, res) => {
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'routes', 'public', 'admin.html'));
 });
+app.get('/employee', (req, res) => {
+  res.sendFile(path.join(__dirname, 'routes', 'public', 'employee.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`NextStep Immigration server running at http://localhost:${PORT}`);
