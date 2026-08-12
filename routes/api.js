@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { OAuth2Client } = require('google-auth-library');
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
@@ -93,6 +94,29 @@ const destinationImageUpload = multer({
     cb(ok ? null : new Error('Only JPG, PNG, or WEBP images are allowed.'), ok);
   },
 }).single('image');
+
+// Separate storage/upload config for jobseeker resumes (own Cloudinary folder).
+const resumeStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'nextstep-resumes',
+    resource_type: 'auto', // PDFs and Word docs
+    allowed_formats: ['pdf', 'doc', 'docx'],
+  },
+});
+
+const resumeUpload = multer({
+  storage: resumeStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ].includes(file.mimetype);
+    cb(ok ? null : new Error('Only PDF, DOC, or DOCX files are allowed.'), ok);
+  },
+}).single('resume');
 
 // ---------------------------------------------------------------------------
 // Table setup
@@ -215,6 +239,37 @@ const destinationImageUpload = multer({
     `);
 
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS jobseeker_applications (
+        id SERIAL PRIMARY KEY,
+        full_name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT,
+        country TEXT,
+        field TEXT,
+        experience_years INTEGER,
+        message TEXT,
+        resume_url TEXT,
+        status TEXT NOT NULL DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS employer_inquiries (
+        id SERIAL PRIMARY KEY,
+        company_name TEXT NOT NULL,
+        contact_name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT,
+        industry TEXT,
+        headcount INTEGER,
+        message TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS todos (
         id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
@@ -229,7 +284,7 @@ const destinationImageUpload = multer({
       );
     `);
 
-    console.log('Connected to PostgreSQL — contacts, student_applications, events, destinations, site_settings, invoices & todos tables ready.');
+    console.log('Connected to PostgreSQL — contacts, student_applications, jobseeker_applications, employer_inquiries, events, destinations, site_settings, invoices & todos tables ready.');
   } catch (err) {
     console.error('Database connection/setup error:', err.message);
   }
@@ -305,6 +360,91 @@ router.post('/admin/login', async (req, res) => {
 // Lets the admin panel verify a stored token is still valid on page load.
 router.get('/admin/me', requireAdmin, (req, res) => {
   res.json({ username: req.admin.username });
+});
+
+// ---------------------------------------------------------------------------
+// Jobseeker / Employer: Google login
+//
+// Set in .env:
+//   GOOGLE_CLIENT_ID=<OAuth 2.0 Web Client ID from Google Cloud Console>
+//
+// NOTE: This assumes a `users` table shared by jobseekers and employers with
+// (at least) these columns: id, role ('jobseeker' | 'employer'), email,
+// full_name, company_name, contact_name, google_id, password_hash (nullable
+// for Google-only accounts). Adjust the column names/queries below to match
+// your actual schema — this file didn't include the existing
+// /auth/login /auth/jobseeker/signup /auth/employer/signup /auth/me routes,
+// so this endpoint is written to match the shape employee.html expects
+// (a { token, user } JSON response, same as the password login).
+// ---------------------------------------------------------------------------
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+router.post('/auth/google', async (req, res) => {
+  const { credential, role } = req.body;
+
+  if (!credential) {
+    return res.status(400).json({ error: 'Missing Google credential.' });
+  }
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.JWT_SECRET) {
+    console.error('Google login is not configured — missing GOOGLE_CLIENT_ID / JWT_SECRET.');
+    return res.status(500).json({ error: 'Google login is not configured on the server.' });
+  }
+  const safeRole = role === 'employer' ? 'employer' : 'jobseeker';
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name, email_verified } = payload;
+
+    if (!email_verified) {
+      return res.status(401).json({ error: 'Google account email is not verified.' });
+    }
+
+    // Look up by google_id first, then fall back to matching email
+    // (lets someone who already signed up with a password link their account).
+    let { rows } = await pool.query(
+      'SELECT * FROM users WHERE google_id = $1 OR email = $2 LIMIT 1',
+      [googleId, email]
+    );
+    let user = rows[0];
+
+    if (!user) {
+      const insertResult = await pool.query(
+        `INSERT INTO users (role, email, google_id, full_name, company_name, contact_name, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, NOW())
+         RETURNING *`,
+        [
+          safeRole,
+          email,
+          googleId,
+          safeRole === 'jobseeker' ? name : null,
+          safeRole === 'employer' ? name : null,
+          safeRole === 'employer' ? name : null,
+        ]
+      );
+      user = insertResult.rows[0];
+    } else if (!user.google_id) {
+      // Existing password account signing in with Google for the first time — link it.
+      const updateResult = await pool.query(
+        'UPDATE users SET google_id = $1 WHERE id = $2 RETURNING *',
+        [googleId, user.id]
+      );
+      user = updateResult.rows[0];
+    }
+
+    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: '7d',
+    });
+
+    delete user.password_hash;
+    res.json({ success: true, token, user });
+  } catch (err) {
+    console.error('Google login error:', err.message);
+    res.status(401).json({ error: 'Google sign-in failed. Please try again.' });
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -450,6 +590,167 @@ router.post('/student-application', (req, res) => {
       res.status(500).json({ error: 'Something went wrong. Please try again later.' });
     }
   });
+});
+
+// ---------------------------------------------------------------------------
+// Public: jobseeker application (with resume upload to Cloudinary)
+// ---------------------------------------------------------------------------
+router.post('/jobseeker-application', (req, res) => {
+  resumeUpload(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      console.error('Resume upload error:', uploadErr.message);
+      const message = uploadErr.code === 'LIMIT_FILE_SIZE'
+        ? 'Your resume file is larger than 5MB.'
+        : uploadErr.message || 'File upload failed.';
+      return res.status(400).json({ error: message });
+    }
+
+    const b = req.body;
+    if (!b.full_name || !b.email) {
+      return res.status(400).json({ error: 'Full name and email are required.' });
+    }
+
+    const toIntOrNull = (v) => (v === undefined || v === null || v === '' ? null : parseInt(v, 10));
+    const resumeUrl = req.file ? req.file.path : null;
+
+    try {
+      const result = await pool.query(
+        `INSERT INTO jobseeker_applications
+          (full_name, email, phone, country, field, experience_years, message, resume_url)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+         RETURNING id`,
+        [
+          b.full_name, b.email, b.phone || null, b.country || null,
+          b.field || null, toIntOrNull(b.experience_years), b.message || null, resumeUrl,
+        ]
+      );
+
+      transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: process.env.EMAIL_USER,
+        subject: `New Jobseeker Application — ${b.full_name}`,
+        text: `New jobseeker application #${result.rows[0].id}\nName: ${b.full_name}\nEmail: ${b.email}\nPhone: ${b.phone || 'N/A'}\nField: ${b.field || 'N/A'}\nExperience: ${b.experience_years || 'N/A'} years\nResume: ${resumeUrl || 'Not attached'}`
+      }).catch(err => console.error('Jobseeker notification email failed:', err.message));
+
+      res.status(200).json({ success: true, id: result.rows[0].id });
+    } catch (err) {
+      console.error('Jobseeker application error:', err.message);
+      res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Public: employer inquiry (staffing request, no file upload)
+// ---------------------------------------------------------------------------
+router.post('/employer-inquiry', async (req, res) => {
+  const { company_name, contact_name, email, phone, industry, headcount, message } = req.body;
+
+  if (!company_name || !contact_name || !email || !message) {
+    return res.status(400).json({ error: 'Company name, contact name, email, and message are required.' });
+  }
+
+  const toIntOrNull = (v) => (v === undefined || v === null || v === '' ? null : parseInt(v, 10));
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO employer_inquiries
+        (company_name, contact_name, email, phone, industry, headcount, message)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)
+       RETURNING id`,
+      [company_name, contact_name, email, phone || null, industry || null, toIntOrNull(headcount), message]
+    );
+
+    transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      subject: `New Employer Inquiry — ${company_name}`,
+      text: `New employer inquiry #${result.rows[0].id}\nCompany: ${company_name}\nContact: ${contact_name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nIndustry: ${industry || 'N/A'}\nHeadcount needed: ${headcount || 'N/A'}\n\nMessage:\n${message}`
+    }).catch(err => console.error('Employer inquiry notification email failed:', err.message));
+
+    res.status(200).json({ success: true, id: result.rows[0].id });
+  } catch (err) {
+    console.error('Employer inquiry error:', err.message);
+    res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Admin (protected): jobseeker applications
+// ---------------------------------------------------------------------------
+router.get('/admin/jobseeker-applications', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM jobseeker_applications ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch jobseeker applications error:', err.message);
+    res.status(500).json({ error: 'Could not load jobseeker applications.' });
+  }
+});
+
+router.patch('/admin/jobseeker-applications/:id/status', requireAdmin, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const result = await pool.query(
+      'UPDATE jobseeker_applications SET status = $1 WHERE id = $2 RETURNING *',
+      [status, req.params.id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'Application not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update jobseeker application status error:', err.message);
+    res.status(500).json({ error: 'Could not update status.' });
+  }
+});
+
+router.delete('/admin/jobseeker-applications/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM jobseeker_applications WHERE id = $1 RETURNING id', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Application not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete jobseeker application error:', err.message);
+    res.status(500).json({ error: 'Could not delete application.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Admin (protected): employer inquiries
+// ---------------------------------------------------------------------------
+router.get('/admin/employer-inquiries', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM employer_inquiries ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch employer inquiries error:', err.message);
+    res.status(500).json({ error: 'Could not load employer inquiries.' });
+  }
+});
+
+router.patch('/admin/employer-inquiries/:id/status', requireAdmin, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const result = await pool.query(
+      'UPDATE employer_inquiries SET status = $1 WHERE id = $2 RETURNING *',
+      [status, req.params.id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'Inquiry not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update employer inquiry status error:', err.message);
+    res.status(500).json({ error: 'Could not update status.' });
+  }
+});
+
+router.delete('/admin/employer-inquiries/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM employer_inquiries WHERE id = $1 RETURNING id', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Inquiry not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete employer inquiry error:', err.message);
+    res.status(500).json({ error: 'Could not delete inquiry.' });
+  }
 });
 
 // ---------------------------------------------------------------------------
