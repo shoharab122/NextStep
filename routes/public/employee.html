@@ -1397,6 +1397,253 @@
                 left: 0;
             }
         }
+
+        /* ===== PHONE-SPECIFIC POLISH ===== */
+        @media (max-width: 480px) {
+            .navbar-inner {
+                height: 64px;
+            }
+
+            .logo {
+                font-size: 18px;
+                gap: 8px;
+            }
+
+            .logo .brand-logo-img {
+                height: 30px !important;
+                width: 30px !important;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            .nav-login {
+                font-size: 13px;
+            }
+
+            .nav-divider {
+                display: none;
+            }
+
+            .nav-right .btn-yellow {
+                padding: 9px 14px;
+                font-size: 13px;
+            }
+
+            #navUserGreeting {
+                font-size: 13px;
+                max-width: 90px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .container {
+                padding: 0 16px;
+            }
+
+            .hero {
+                padding: 32px 0 24px;
+            }
+
+            .hero-eyebrow {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .hero-title {
+                font-size: 30px;
+            }
+
+            .hero-text {
+                font-size: 15px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+            }
+
+            .img-card img,
+            .img-1 img,
+            .img-2 img,
+            .img-3 img,
+            .img-4 img {
+                height: 150px;
+            }
+
+            .proud-text {
+                font-size: 16px;
+                margin-top: 36px;
+            }
+
+            .about-section,
+            .apply-section,
+            .talent-section,
+            .staffing-section,
+            .contact-section {
+                padding: 48px 0;
+            }
+
+            .about-grid h2,
+            .apply-right h2,
+            .staffing-right h2,
+            .talent-header h2 {
+                font-size: 26px;
+            }
+
+            .about-figures {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .about-figure-card {
+                padding: 16px;
+            }
+
+            .about-figure-card b {
+                font-size: 24px;
+            }
+
+            .benefits-box,
+            .cta-box {
+                padding: 28px 18px;
+                border-radius: 20px;
+            }
+
+            .benefits-header h2,
+            .cta-box h2 {
+                font-size: 26px;
+            }
+
+            .benefits-header-right p {
+                font-size: 14px;
+            }
+
+            .apply-image-main,
+            .staffing-image-main {
+                height: 340px;
+            }
+
+            .happy-card {
+                width: 170px;
+                padding: 14px;
+                top: 20px;
+            }
+
+            .happy-card h4 {
+                font-size: 13px;
+            }
+
+            .easy-badge {
+                font-size: 12px;
+                padding: 10px 16px;
+                bottom: 30px;
+            }
+
+            .review-card {
+                padding: 10px 12px;
+                gap: 8px;
+            }
+
+            .review-info h5 {
+                font-size: 12px;
+            }
+
+            .review-info span {
+                font-size: 10px;
+            }
+
+            .talent-grid {
+                gap: 12px;
+            }
+
+            .talent-card {
+                padding: 22px 18px;
+            }
+
+            .contact-info,
+            .contact-form-panel {
+                padding: 28px 20px;
+            }
+
+            .contact-info h2 {
+                font-size: 24px;
+            }
+
+            .contact-shell {
+                border-radius: 18px;
+            }
+
+            .footer {
+                padding: 40px 0 20px;
+            }
+
+            .footer-brand .logo {
+                font-size: 17px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+
+            .scroll-top {
+                width: 42px;
+                height: 42px;
+                bottom: 16px;
+                right: 16px;
+            }
+
+            /* Auth modals */
+            .ns-modal {
+                padding: 1.25rem 1rem;
+                border-radius: 12px;
+                max-height: 92vh;
+            }
+
+            .ns-modal h3 {
+                font-size: 1.15rem;
+            }
+
+            .ns-modal-sub {
+                font-size: 0.85rem;
+            }
+
+            .ns-checkbox-row {
+                gap: 0.4rem;
+            }
+
+            .ns-checkbox-pill {
+                font-size: 0.78rem;
+                padding: 0.35rem 0.65rem;
+            }
+
+            .ns-google-btn > div {
+                width: 100% !important;
+            }
+
+            .ns-google-btn iframe {
+                width: 100% !important;
+            }
+        }
+
+        /* Prevent horizontal scroll from any oversized fixed-width elements */
+        @media (max-width: 860px) {
+            .happy-card,
+            .easy-badge,
+            .review-card {
+                max-width: calc(100% - 16px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -2151,11 +2398,13 @@
                 callback: (resp) => handleGoogleCredential({ credential: resp.credential, role }, msgEl),
             });
 
+            const buttonWidth = Math.min(340, container.offsetWidth || 340);
+
             google.accounts.id.renderButton(container, {
                 type: 'standard',
                 theme: 'outline',
                 size: 'large',
-                width: 340,
+                width: buttonWidth,
                 text: role === 'employer' ? 'signup_with' : 'continue_with',
             });
         }
