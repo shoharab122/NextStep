@@ -1666,7 +1666,17 @@
             <div class="nav-right">
                 <a href="#" class="nav-login" id="navLoginLink" data-open-modal="login">Login</a>
                 <span id="navUserMenu">
-                    <span id="navUserGreeting"></span>
+                    <span class="ns-profile-wrap">
+                        <button type="button" id="navUserGreeting"></button>
+                        <div class="ns-profile-panel" id="navProfilePanel">
+                            <div class="ns-profile-row"><span>Name</span><b id="profileName"></b></div>
+                            <div class="ns-profile-row"><span>Email</span><b id="profileEmail"></b></div>
+                            <div class="ns-profile-row"><span>Role</span><b id="profileRole"></b></div>
+                            <div class="ns-profile-row"><span>Phone</span><b id="profilePhone"></b></div>
+                            <div class="ns-profile-row"><span>Account ID</span><b id="profileId"></b></div>
+                            <div class="ns-profile-row"><span>Member since</span><b id="profileSince"></b></div>
+                        </div>
+                    </span>
                     <button type="button" id="navLogoutBtn">Log out</button>
                 </span>
                 <span class="nav-divider">|</span>
@@ -1727,8 +1737,9 @@
                 <p>Whether you're looking for your next job abroad or building out a team, we work as an extension of you — not just a middleman.</p>
             </div>
             <div class="about-figures">
-                <div class="about-figure-card"><b>12+</b><span>Partner employers</span></div>
-                <div class="about-figure-card"><b>2</b><span>Countries covered</span></div>
+                <div class="about-figure-card"><b>500+</b><span>Candidates placed</span></div>
+                <div class="about-figure-card"><b>120+</b><span>Partner employers</span></div>
+                <div class="about-figure-card"><b>6</b><span>Countries covered</span></div>
                 <div class="about-figure-card"><b>92%</b><span>Retention after 6 months</span></div>
             </div>
         </div>
@@ -2243,7 +2254,15 @@
         .ns-form-switch a:hover{ text-decoration:underline; }
         #navUserMenu{ display:none; align-items:center; gap:0.6rem; }
         #navUserMenu.show{ display:inline-flex; }
-        #navUserGreeting{ font-weight:600; font-size:0.9rem; color:var(--text); }
+        .ns-profile-wrap{ position:relative; display:inline-flex; }
+        #navUserGreeting{ font-weight:600; font-size:0.9rem; color:var(--text); background:none; border:none; cursor:pointer; padding:4px 8px; border-radius:8px; font-family:inherit; }
+        #navUserGreeting:hover{ background:var(--bg-light); }
+        .ns-profile-panel{ display:none; position:absolute; top:calc(100% + 8px); right:0; background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 12px 32px rgba(18,33,59,0.16); padding:14px 16px; min-width:240px; z-index:1100; }
+        .ns-profile-panel.open{ display:block; }
+        .ns-profile-row{ display:flex; justify-content:space-between; gap:12px; padding:6px 0; border-bottom:1px solid var(--border); font-size:0.82rem; }
+        .ns-profile-row:last-child{ border-bottom:none; }
+        .ns-profile-row span{ color:var(--text-muted); }
+        .ns-profile-row b{ color:var(--text); font-weight:600; text-align:right; word-break:break-word; max-width:150px; }
         #navLogoutBtn{ background:none; border:none; color:var(--text-muted); font-size:0.85rem; cursor:pointer; text-decoration:underline; padding:0; }
         .ns-google-btn-wrap{ display:flex; justify-content:center; margin-bottom:0.9rem; }
         .ns-google-btn{ width:100%; display:flex; justify-content:center; }
@@ -2331,14 +2350,47 @@
             localStorage.removeItem(TOKEN_KEY);
             navUserMenu.classList.remove('show');
             navLoginLink.style.display = '';
+            document.getElementById('navProfilePanel').classList.remove('open');
         }
+
+        const navProfilePanel = document.getElementById('navProfilePanel');
+        const profileFields = {
+            name: document.getElementById('profileName'),
+            email: document.getElementById('profileEmail'),
+            role: document.getElementById('profileRole'),
+            phone: document.getElementById('profilePhone'),
+            id: document.getElementById('profileId'),
+            since: document.getElementById('profileSince'),
+        };
 
         function applyLoggedInUI(user) {
             const name = user.role === 'employer' ? (user.company_name || user.contact_name) : user.full_name;
             navUserGreeting.textContent = `Hi, ${name}`;
             navUserMenu.classList.add('show');
             navLoginLink.style.display = 'none';
+
+            // Populate this user's own unique profile details — never shared
+            // across accounts, always pulled fresh from their session response.
+            profileFields.name.textContent = name || '—';
+            profileFields.email.textContent = user.email || '—';
+            profileFields.role.textContent = user.role === 'employer' ? 'Employer' : 'Jobseeker';
+            profileFields.phone.textContent = user.phone || '—';
+            profileFields.id.textContent = user.id != null ? `#${user.id}` : '—';
+            profileFields.since.textContent = user.created_at
+                ? new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+                : '—';
         }
+
+        navUserGreeting.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navProfilePanel.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!navProfilePanel.contains(e.target) && e.target !== navUserGreeting) {
+                navProfilePanel.classList.remove('open');
+            }
+        });
 
         async function refreshSession() {
             const token = getToken();
@@ -2648,5 +2700,4 @@
         }
     </script>
 </body>
-
-
+</html>
