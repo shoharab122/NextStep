@@ -1134,6 +1134,7 @@
             <button class="tab-btn" data-tab="higher-ratio"><span class="tab-icon">🎯</span>Higher Ratio</button>
             <button class="tab-btn" data-tab="contacts"><span class="tab-icon">✉️</span>Contact Messages</button>
             <button class="tab-btn" data-tab="customers"><span class="tab-icon">👤</span>Customer Accounts</button>
+            <button class="tab-btn" data-tab="job-applications"><span class="tab-icon">💼</span>Job Applications</button>
             <button class="tab-btn" data-tab="messages"><span class="tab-icon">💬</span>Messages<span id="messagesUnreadDot" style="display:none; width:8px; height:8px; border-radius:50%; background:#B3261E; margin-left:6px;"></span></button>
           </div>
           <div class="tab-divider"></div>
@@ -1321,6 +1322,36 @@
           </div>
           <div class="apps-grid" id="appsTableBody">
             <div class="empty-state">Loading applications…</div>
+          </div>
+        </section>
+
+        <!-- Job Applications panel (jobseeker applications + employer staffing requests) -->
+        <section class="panel" id="panel-job-applications">
+          <div class="panel-header">
+            <h2>Job Applications</h2>
+            <p>Jobseeker applications and employer staffing requests submitted from the Staffing site (with or without an account).</p>
+          </div>
+          <div class="toolbar">
+            <div class="left">
+              <div style="display:flex; gap:0.4rem;">
+                <button class="tab-btn active" id="jobTypeJobseekerBtn" style="padding:0.5rem 1rem;">Jobseekers</button>
+                <button class="tab-btn" id="jobTypeEmployerBtn" style="padding:0.5rem 1rem;">Employers</button>
+              </div>
+              <input type="text" id="jobAppSearch" class="search-input" placeholder="Search by name or email…" />
+              <select id="jobStatusFilter">
+                <option value="">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="contacted">Contacted</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+            <div>
+              <button class="btn-ghost" id="refreshJobAppsBtn">Refresh</button>
+            </div>
+          </div>
+          <div class="apps-grid" id="jobAppsGrid">
+            <div class="empty-state">Loading…</div>
           </div>
         </section>
 
@@ -2117,6 +2148,22 @@
   </div>
 </div>
 
+<!-- ================= JOB APPLICATION / EMPLOYER REQUEST DETAIL MODAL ================= -->
+<div class="modal-overlay" id="jobDetailModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="jobModalName">—</h3>
+        <p class="row-sub" id="jobModalEmail">—</p>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <button class="modal-close" id="jobModalClose">&times;</button>
+      </div>
+    </div>
+    <div class="detail-grid" id="jobModalBody"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2237,6 +2284,7 @@
     // Home should always show fresh data pulled straight from the server,
     // not whatever was last cached in memory from another tab.
     if (tabName === 'home') loadEverything();
+    if (tabName === 'job-applications') { loadJobApplications(); loadEmployerInquiries(); }
   }
 
   $$('.tab-btn').forEach((btn) => {
@@ -4621,7 +4669,216 @@
     loadInvoices();
     loadSettings();
     loadTodos();
+    loadJobApplications();
+    loadEmployerInquiries();
   }
+
+  // ---------------- Job Applications (jobseekers + employers) ----------------
+  let jobseekerApps = [];
+  let employerInquiries = [];
+  let jobAppView = 'jobseeker'; // 'jobseeker' | 'employer'
+
+  async function loadJobApplications() {
+    try {
+      const res = await apiFetch('/admin/jobseeker-applications');
+      if (!res.ok) throw new Error('Failed to load jobseeker applications.');
+      jobseekerApps = await res.json();
+      if (jobAppView === 'jobseeker') renderJobApps();
+    } catch (err) {
+      if (jobAppView === 'jobseeker') $('#jobAppsGrid').innerHTML = `<div class="empty-state">${err.message}</div>`;
+    }
+  }
+
+  async function loadEmployerInquiries() {
+    try {
+      const res = await apiFetch('/admin/employer-inquiries');
+      if (!res.ok) throw new Error('Failed to load employer requests.');
+      employerInquiries = await res.json();
+      if (jobAppView === 'employer') renderJobApps();
+    } catch (err) {
+      if (jobAppView === 'employer') $('#jobAppsGrid').innerHTML = `<div class="empty-state">${err.message}</div>`;
+    }
+  }
+
+  function renderJobApps() {
+    const grid = $('#jobAppsGrid');
+    const search = $('#jobAppSearch').value.trim().toLowerCase();
+    const statusFilter = $('#jobStatusFilter').value;
+    const source = jobAppView === 'jobseeker' ? jobseekerApps : employerInquiries;
+
+    let rows = source.filter((a) => {
+      const name = jobAppView === 'jobseeker' ? a.full_name : a.company_name;
+      const matchesSearch = !search
+        || (name || '').toLowerCase().includes(search)
+        || (a.email || '').toLowerCase().includes(search);
+      const matchesStatus = !statusFilter || a.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+    if (rows.length === 0) {
+      grid.innerHTML = `<div class="empty-state">No ${jobAppView === 'jobseeker' ? 'jobseeker applications' : 'employer requests'} found.</div>`;
+      return;
+    }
+
+    grid.innerHTML = rows.map((a) => {
+      if (jobAppView === 'jobseeker') {
+        return `
+        <div class="app-card">
+          <div class="app-card-head">
+            <div class="app-avatar">${escapeHtml(initials(a.full_name))}</div>
+            <div class="app-card-id">
+              <div class="app-name">${escapeHtml(a.full_name)}</div>
+              <div class="app-email">${escapeHtml(a.email)}</div>
+            </div>
+          </div>
+          <div class="app-facts">
+            <div><div class="fact-label">Phone</div><div class="fact-value">${escapeHtml(a.phone || '—')}</div></div>
+            <div><div class="fact-label">Field</div><div class="fact-value">${escapeHtml(a.field || '—')}</div></div>
+            <div><div class="fact-label">Country</div><div class="fact-value">${escapeHtml(a.country || '—')}</div></div>
+            <div><div class="fact-label">Submitted</div><div class="fact-value">${fmtDate(a.created_at)}</div></div>
+          </div>
+          <div class="app-card-foot">
+            <select class="job-status-select" data-id="${a.id}" data-kind="jobseeker">
+              ${['pending','reviewed','contacted','closed'].map(s =>
+                `<option value="${s}" ${s === a.status ? 'selected' : ''}>${statusLabel(s)}</option>`
+              ).join('')}
+            </select>
+            <div class="app-card-actions">
+              <button class="icon-btn" data-job-view="${a.id}" data-kind="jobseeker">View</button>
+              <button class="icon-btn danger" data-job-delete="${a.id}" data-kind="jobseeker">Delete</button>
+            </div>
+          </div>
+        </div>`;
+      }
+      return `
+        <div class="app-card">
+          <div class="app-card-head">
+            <div class="app-avatar">${escapeHtml(initials(a.company_name))}</div>
+            <div class="app-card-id">
+              <div class="app-name">${escapeHtml(a.company_name)}</div>
+              <div class="app-email">${escapeHtml(a.email)}</div>
+            </div>
+          </div>
+          <div class="app-facts">
+            <div><div class="fact-label">Contact</div><div class="fact-value">${escapeHtml(a.contact_name || '—')}</div></div>
+            <div><div class="fact-label">Industry</div><div class="fact-value">${escapeHtml(a.industry || '—')}</div></div>
+            <div><div class="fact-label">Headcount</div><div class="fact-value">${a.headcount || '—'}</div></div>
+            <div><div class="fact-label">Submitted</div><div class="fact-value">${fmtDate(a.created_at)}</div></div>
+          </div>
+          <div class="app-card-foot">
+            <select class="job-status-select" data-id="${a.id}" data-kind="employer">
+              ${['pending','reviewed','contacted','closed'].map(s =>
+                `<option value="${s}" ${s === a.status ? 'selected' : ''}>${statusLabel(s)}</option>`
+              ).join('')}
+            </select>
+            <div class="app-card-actions">
+              <button class="icon-btn" data-job-view="${a.id}" data-kind="employer">View</button>
+              <button class="icon-btn danger" data-job-delete="${a.id}" data-kind="employer">Delete</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  $('#jobTypeJobseekerBtn').addEventListener('click', () => {
+    jobAppView = 'jobseeker';
+    $('#jobTypeJobseekerBtn').classList.add('active');
+    $('#jobTypeEmployerBtn').classList.remove('active');
+    renderJobApps();
+  });
+  $('#jobTypeEmployerBtn').addEventListener('click', () => {
+    jobAppView = 'employer';
+    $('#jobTypeEmployerBtn').classList.add('active');
+    $('#jobTypeJobseekerBtn').classList.remove('active');
+    renderJobApps();
+  });
+  $('#jobAppSearch').addEventListener('input', renderJobApps);
+  $('#jobStatusFilter').addEventListener('change', renderJobApps);
+  $('#refreshJobAppsBtn').addEventListener('click', () => { loadJobApplications(); loadEmployerInquiries(); });
+
+  $('#jobAppsGrid').addEventListener('change', async (e) => {
+    if (!e.target.classList.contains('job-status-select')) return;
+    const id = e.target.dataset.id;
+    const kind = e.target.dataset.kind;
+    const status = e.target.value;
+    const endpoint = kind === 'jobseeker' ? `/admin/jobseeker-applications/${id}/status` : `/admin/employer-inquiries/${id}/status`;
+    try {
+      const res = await apiFetch(endpoint, { method: 'PATCH', body: JSON.stringify({ status }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not update status.');
+      const list = kind === 'jobseeker' ? jobseekerApps : employerInquiries;
+      const item = list.find((x) => x.id === Number(id));
+      if (item) item.status = status;
+      toast('Status updated.');
+    } catch (err) {
+      toast(err.message, true);
+      loadJobApplications();
+      loadEmployerInquiries();
+    }
+  });
+
+  $('#jobAppsGrid').addEventListener('click', async (e) => {
+    const viewId = e.target.dataset.jobView;
+    const deleteId = e.target.dataset.jobDelete;
+    const kind = e.target.dataset.kind;
+
+    if (viewId) {
+      const list = kind === 'jobseeker' ? jobseekerApps : employerInquiries;
+      const item = list.find((x) => x.id === Number(viewId));
+      if (item) openJobDetailModal(item, kind);
+    }
+
+    if (deleteId) {
+      if (!confirm('Delete this permanently? This cannot be undone.')) return;
+      const endpoint = kind === 'jobseeker' ? `/admin/jobseeker-applications/${deleteId}` : `/admin/employer-inquiries/${deleteId}`;
+      try {
+        const res = await apiFetch(endpoint, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not delete.');
+        if (kind === 'jobseeker') jobseekerApps = jobseekerApps.filter((x) => x.id !== Number(deleteId));
+        else employerInquiries = employerInquiries.filter((x) => x.id !== Number(deleteId));
+        renderJobApps();
+        toast('Deleted.');
+      } catch (err) {
+        toast(err.message, true);
+      }
+    }
+  });
+
+  function openJobDetailModal(a, kind) {
+    if (kind === 'jobseeker') {
+      $('#jobModalName').textContent = a.full_name;
+      $('#jobModalEmail').textContent = a.email;
+      $('#jobModalBody').innerHTML = `
+        ${detailItem('Phone', escapeHtml(a.phone || '—'))}
+        ${detailItem('Field', escapeHtml(a.field || '—'))}
+        ${detailItem('Country', escapeHtml(a.country || '—'))}
+        ${detailItem('Experience (years)', a.experience_years ?? '—')}
+        ${detailItem('Status', `<span class="status-pill status-${a.status}">${statusLabel(a.status)}</span>`)}
+        ${detailItem('Submitted', fmtDate(a.created_at))}
+        ${detailItem('Resume', certLink(a.resume_url, 'View file'))}
+        ${detailItem('Message', escapeHtml(a.message || '—'))}
+      `;
+    } else {
+      $('#jobModalName').textContent = a.company_name;
+      $('#jobModalEmail').textContent = a.email;
+      $('#jobModalBody').innerHTML = `
+        ${detailItem('Contact name', escapeHtml(a.contact_name || '—'))}
+        ${detailItem('Phone', escapeHtml(a.phone || '—'))}
+        ${detailItem('Industry', escapeHtml(a.industry || '—'))}
+        ${detailItem('Headcount', a.headcount ?? '—')}
+        ${detailItem('Status', `<span class="status-pill status-${a.status}">${statusLabel(a.status)}</span>`)}
+        ${detailItem('Submitted', fmtDate(a.created_at))}
+        ${detailItem('Message', escapeHtml(a.message || '—'))}
+      `;
+    }
+    $('#jobDetailModal').classList.add('open');
+  }
+
+  $('#jobModalClose').addEventListener('click', () => $('#jobDetailModal').classList.remove('open'));
+  $('#jobDetailModal').addEventListener('click', (e) => {
+    if (e.target === $('#jobDetailModal')) $('#jobDetailModal').classList.remove('open');
+  });
 
   verifySession();
 </script>
