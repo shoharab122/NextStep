@@ -1121,6 +1121,7 @@
             <button class="tab-btn" data-tab="higher-ratio"><span class="tab-icon">🎯</span>Higher Ratio</button>
             <button class="tab-btn" data-tab="contacts"><span class="tab-icon">✉️</span>Contact Messages</button>
             <button class="tab-btn" data-tab="customers"><span class="tab-icon">👤</span>Customer Accounts</button>
+            <button class="tab-btn" data-tab="messages"><span class="tab-icon">💬</span>Messages<span id="messagesUnreadDot" style="display:none; width:8px; height:8px; border-radius:50%; background:#B3261E; margin-left:6px;"></span></button>
           </div>
           <div class="tab-divider"></div>
           <div class="tab-group" aria-label="Billing">
@@ -1605,6 +1606,30 @@
         <div class="detail-grid" id="customerModalBody"></div>
       </div>
     </div>
+
+    <!-- Messages panel -->
+    <section class="panel" id="panel-messages">
+      <div class="panel-header">
+        <h2>Messages</h2>
+        <p>Conversations with jobseekers and employers. Replies go straight to their profile inbox.</p>
+      </div>
+      <div class="toolbar">
+        <div class="left">
+          <input type="text" id="messageInboxSearch" class="search-input" placeholder="Search by name or email…" />
+        </div>
+        <div>
+          <button class="btn-ghost" id="refreshMessagesBtn">Refresh</button>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:280px 1fr; gap:1rem; align-items:start;">
+        <div class="contacts-grid" id="messageInboxList" style="grid-template-columns:1fr; max-height:560px; overflow-y:auto;">
+          <div class="empty-state">Loading conversations…</div>
+        </div>
+        <div id="messageThreadPanel" style="border:1px solid var(--border); border-radius:12px; padding:1rem; min-height:400px; display:flex; flex-direction:column;">
+          <p style="color:var(--text-muted); font-size:0.9rem;">Select a conversation to view messages.</p>
+        </div>
+      </div>
+    </section>
 
     <!-- Destinations panel -->
     <section class="panel" id="panel-destinations">
@@ -3392,12 +3417,33 @@
 
       $('#customerModalBody').innerHTML = `
         <div class="detail-row"><b>Role</b><span style="text-transform:capitalize;">${escapeHtml(u.role)}</span></div>
-        <div class="detail-row"><b>Phone</b><span>${escapeHtml(u.phone || '—')}</span></div>
-        ${u.role === 'employer' ? `<div class="detail-row"><b>Contact person</b><span>${escapeHtml(u.contact_name || '—')}</span></div>
-        <div class="detail-row"><b>Headcount need</b><span>${escapeHtml(u.headcount || '—')}</span></div>` : `<div class="detail-row"><b>Job title</b><span>${escapeHtml(u.job_title || '—')}</span></div>`}
         <div class="detail-row"><b>Joined</b><span>${fmtDate(u.created_at)}</span></div>
+        <div class="detail-row" style="grid-column:1 / -1;">
+          <b>Full profile (editable)</b>
+          <div class="ns-form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.4rem;">
+            ${u.role === 'employer' ? `
+              <label style="font-size:0.8rem;">Company Name<input type="text" id="cust_company_name" value="${escapeHtml(u.company_name)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
+              <label style="font-size:0.8rem;">Contact Name<input type="text" id="cust_contact_name" value="${escapeHtml(u.contact_name)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
+              <label style="font-size:0.8rem;">Headcount need<input type="number" id="cust_headcount" value="${escapeHtml(u.headcount)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
+            ` : `
+              <label style="font-size:0.8rem;">Full Name<input type="text" id="cust_full_name" value="${escapeHtml(u.full_name)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
+              <label style="font-size:0.8rem;">Job Title<input type="text" id="cust_job_title" value="${escapeHtml(u.job_title)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
+            `}
+            <label style="font-size:0.8rem;">Phone<input type="text" id="cust_phone" value="${escapeHtml(u.phone)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
+            <label style="font-size:0.8rem;">Headline<input type="text" id="cust_headline" value="${escapeHtml(u.headline)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
+            <label style="font-size:0.8rem;">Location<input type="text" id="cust_location" value="${escapeHtml(u.location)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
+            <label style="font-size:0.8rem; grid-column:1 / -1;">About<textarea id="cust_bio" rows="2" style="width:100%; padding:0.4rem; margin-top:2px;">${escapeHtml(u.bio)}</textarea></label>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.6rem; margin-top:0.6rem;">
+            <button class="btn-brass" id="customerSaveBtn" type="button">Save profile</button>
+            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem;">
+              <input type="checkbox" id="cust_suspended" ${u.is_suspended ? 'checked' : ''} /> Suspend account (blocks login)
+            </label>
+          </div>
+        </div>
         ${itemsHtml}
       `;
+      $('#customerSaveBtn').addEventListener('click', () => saveCustomerProfile(id, u.role));
     } catch (err) {
       $('#customerModalName').textContent = 'Error';
       $('#customerModalBody').innerHTML = `<div class="detail-row" style="grid-column:1 / -1;">${err.message}</div>`;
@@ -3408,6 +3454,130 @@
   $('#customerModalOverlay').addEventListener('click', (e) => {
     if (e.target === $('#customerModalOverlay')) $('#customerModalOverlay').classList.remove('open');
   });
+
+  async function saveCustomerProfile(id, role) {
+    const btn = $('#customerSaveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    const payload = {
+      phone: $('#cust_phone').value,
+      headline: $('#cust_headline').value,
+      location: $('#cust_location').value,
+      bio: $('#cust_bio').value,
+      is_suspended: $('#cust_suspended').checked,
+    };
+    if (role === 'employer') {
+      payload.company_name = $('#cust_company_name').value;
+      payload.contact_name = $('#cust_contact_name').value;
+      payload.headcount = $('#cust_headcount').value || null;
+    } else {
+      payload.full_name = $('#cust_full_name').value;
+      payload.job_title = $('#cust_job_title').value;
+    }
+
+    try {
+      const res = await apiFetch(`/admin/users/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not save changes.');
+      toast('Customer profile updated.');
+      loadCustomers();
+    } catch (err) {
+      toast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save profile';
+    }
+  }
+
+  // ---------------- Messages ----------------
+  let activeThreadUserId = null;
+
+  async function loadMessageInbox() {
+    const list = $('#messageInboxList');
+    list.innerHTML = `<div class="empty-state">Loading conversations…</div>`;
+    try {
+      const res = await apiFetch('/admin/messages');
+      if (!res.ok) throw new Error('Failed to load messages.');
+      const threads = await res.json();
+      const search = $('#messageInboxSearch').value.trim().toLowerCase();
+      const rows = threads.filter((t) => !search || (t.name || '').toLowerCase().includes(search) || t.email.toLowerCase().includes(search));
+
+      const hasUnread = threads.some((t) => t.unread_count > 0);
+      $('#messagesUnreadDot').style.display = hasUnread ? 'inline-block' : 'none';
+
+      if (!rows.length) {
+        list.innerHTML = `<div class="empty-state">No conversations yet.</div>`;
+        return;
+      }
+      list.innerHTML = rows.map((t) => `
+        <div class="contact-card" data-thread-user="${t.user_id}" style="cursor:pointer; ${activeThreadUserId == t.user_id ? 'border-color:var(--blue);' : ''}">
+          <div class="contact-card-head">
+            <div class="contact-name">${escapeHtml(t.name || t.email)} ${t.unread_count > 0 ? `<span style="background:#B3261E; color:#fff; border-radius:10px; font-size:0.68rem; padding:1px 6px; margin-left:4px;">${t.unread_count}</span>` : ''}</div>
+          </div>
+          <div class="contact-message" style="-webkit-line-clamp:2;">${t.last_sender === 'admin' ? 'You: ' : ''}${escapeHtml((t.last_message || '').slice(0, 80))}</div>
+        </div>
+      `).join('');
+    } catch (err) {
+      list.innerHTML = `<div class="empty-state">${err.message}</div>`;
+    }
+  }
+
+  $('#messageInboxSearch').addEventListener('input', loadMessageInbox);
+  $('#refreshMessagesBtn').addEventListener('click', loadMessageInbox);
+
+  $('#messageInboxList').addEventListener('click', (e) => {
+    const card = e.target.closest('[data-thread-user]');
+    if (!card) return;
+    openThread(card.dataset.threadUser);
+  });
+
+  async function openThread(userId) {
+    activeThreadUserId = Number(userId);
+    const panel = $('#messageThreadPanel');
+    panel.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Loading…</p>`;
+    try {
+      const res = await apiFetch(`/admin/messages/${userId}`);
+      if (!res.ok) throw new Error('Could not load this conversation.');
+      const messages = await res.json();
+      panel.innerHTML = `
+        <div id="threadMessages" style="flex:1; display:flex; flex-direction:column; gap:0.5rem; overflow-y:auto; max-height:420px; margin-bottom:0.75rem;">
+          ${messages.map((m) => `
+            <div style="max-width:75%; align-self:${m.sender === 'admin' ? 'flex-end' : 'flex-start'}; background:${m.sender === 'admin' ? 'var(--blue)' : 'var(--bg-light)'}; color:${m.sender === 'admin' ? '#fff' : 'var(--text)'}; padding:0.5rem 0.75rem; border-radius:10px; font-size:0.85rem;">
+              ${escapeHtml(m.message)}
+              <div style="font-size:0.68rem; opacity:0.7; margin-top:0.2rem;">${new Date(m.created_at).toLocaleString()}</div>
+            </div>
+          `).join('') || '<p style="color:var(--text-muted); font-size:0.85rem;">No messages yet.</p>'}
+        </div>
+        <form id="threadReplyForm" style="display:flex; gap:0.5rem;">
+          <input type="text" id="threadReplyInput" placeholder="Type a reply…" style="flex:1; padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px;" required />
+          <button class="btn-brass" type="submit">Send</button>
+        </form>
+      `;
+      const threadMessages = $('#threadMessages');
+      threadMessages.scrollTop = threadMessages.scrollHeight;
+      $('#threadReplyForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = $('#threadReplyInput');
+        const text = input.value.trim();
+        if (!text) return;
+        try {
+          const r = await apiFetch(`/admin/messages/${userId}`, { method: 'POST', body: JSON.stringify({ message: text }) });
+          if (!r.ok) throw new Error('Could not send reply.');
+          input.value = '';
+          openThread(userId);
+          loadMessageInbox();
+        } catch (err) {
+          toast(err.message, true);
+        }
+      });
+      loadMessageInbox();
+    } catch (err) {
+      panel.innerHTML = `<p style="color:#B3261E; font-size:0.9rem;">${err.message}</p>`;
+    }
+  }
 
   // ---------------- Export ----------------
   $('#exportBtn').addEventListener('click', async () => {
@@ -4432,6 +4602,7 @@
     loadApplications();
     loadContacts();
     loadCustomers();
+    loadMessageInbox();
     loadDestinations();
     loadEvents();
     loadInvoices();
