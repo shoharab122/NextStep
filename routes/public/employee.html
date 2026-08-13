@@ -108,6 +108,13 @@
             transition: color 0.2s;
         }
 
+        /* Login/Join us duplicates only ever appear inside the mobile
+           dropdown (see the max-width:1024px block below) — hidden here
+           so they never show in the desktop nav row. */
+        .nav-mobile-extra {
+            display: none;
+        }
+
         .nav-links a:hover {
             color: var(--blue);
         }
@@ -122,11 +129,19 @@
             font-size: 15px;
             font-weight: 500;
             color: var(--text);
-            transition: color 0.2s;
+            transition: color 0.2s, background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .nav-login:hover {
             color: var(--blue);
+        }
+
+        .nav-login-icon-svg {
+            display: none;
+            flex-shrink: 0;
         }
 
         .nav-divider {
@@ -1267,6 +1282,52 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
+            .navbar-inner {
+                height: auto;
+                min-height: 64px;
+                padding: 10px 0;
+            }
+
+            .logo span {
+                white-space: nowrap;
+            }
+
+            /* Collapse the divider / Join us button out of the cramped top
+               bar on mobile — Join us is still reachable from the hamburger
+               menu below. Login stays visible but shrinks to an icon-only
+               button so it can never collide with the logo text. */
+            .nav-divider,
+            .nav-joinus-btn {
+                display: none;
+            }
+
+            .nav-login {
+                width: 34px;
+                height: 34px;
+                justify-content: center;
+                border-radius: 50%;
+                background: var(--bg-light);
+                border: 1px solid var(--border);
+                flex-shrink: 0;
+                padding: 0;
+            }
+
+            .nav-login-icon-svg {
+                display: inline-flex;
+            }
+
+            .nav-login-text {
+                display: none;
+            }
+
+            .nav-mobile-extra {
+                display: none;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
             .nav-links {
                 display: none;
             }
@@ -1274,7 +1335,7 @@
             .nav-links.show {
                 display: flex;
                 position: absolute;
-                top: 72px;
+                top: 100%;
                 left: 0;
                 right: 0;
                 background: #fff;
@@ -1284,10 +1345,16 @@
                 padding: 8px 24px 16px;
                 border-bottom: 1px solid var(--border);
                 box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+                max-height: calc(100vh - 64px);
+                overflow-y: auto;
             }
 
             .nav-links.show li {
                 width: 100%;
+            }
+
+            .nav-links.show li.nav-mobile-extra {
+                display: block;
             }
 
             .nav-links.show a {
@@ -1297,8 +1364,15 @@
                 border-bottom: 1px solid var(--border);
             }
 
+            .nav-links.show li.nav-mobile-extra a.btn {
+                width: auto;
+                border-bottom: none;
+                padding: 12px 28px;
+            }
+
             .mobile-menu-btn {
                 display: flex;
+                flex-shrink: 0;
             }
 
             .mobile-menu-btn.open span:nth-child(1) {
@@ -1397,6 +1471,140 @@
                 left: 0;
             }
         }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .logo {
+                font-size: 17px;
+                gap: 8px;
+            }
+
+            .navbar .brand-logo-img {
+                width: 30px !important;
+                height: 30px !important;
+            }
+
+            .nav-right {
+                gap: 6px;
+            }
+
+            .mobile-menu-btn {
+                padding: 6px;
+            }
+
+            .hero {
+                padding: 32px 0 24px;
+            }
+
+            .hero-title {
+                font-size: 30px;
+            }
+
+            .hero-text {
+                font-size: 15.5px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+            }
+
+            .img-card img {
+                height: 150px;
+            }
+
+            .img-1 img {
+                height: 165px;
+            }
+
+            .img-2 img, .img-3 img, .img-4 img {
+                height: 165px;
+            }
+
+            .about-grid h2,
+            .benefits-header h2,
+            .apply-right h2,
+            .talent-header h2,
+            .staffing-right h2,
+            .cta-box h2 {
+                font-size: 26px;
+            }
+
+            .about-figures {
+                gap: 12px;
+            }
+
+            .about-figure-card {
+                padding: 16px;
+            }
+
+            .about-figure-card b {
+                font-size: 24px;
+            }
+
+            .happy-card {
+                width: 170px;
+                padding: 14px;
+                top: 20px;
+            }
+
+            .easy-badge {
+                padding: 10px 16px;
+                font-size: 12.5px;
+                bottom: 30px;
+            }
+
+            .review-card {
+                padding: 10px 14px;
+                max-width: 200px;
+            }
+
+            .review-info h5 {
+                font-size: 12.5px;
+            }
+
+            .talent-card,
+            .benefit-card {
+                padding: 24px 18px;
+            }
+
+            .contact-info,
+            .contact-form-panel {
+                padding: 28px 18px;
+            }
+
+            .footer {
+                padding: 48px 0 20px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo {
+                font-size: 15px;
+            }
+
+            .navbar .brand-logo-img {
+                width: 26px !important;
+                height: 26px !important;
+            }
+
+            .hero-title {
+                font-size: 26px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1415,16 +1623,23 @@
                 <li><a href="#" data-open-modal="employer">Employer</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li><a href="#">English</a></li>
+                <li class="nav-mobile-extra"><a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" class="btn btn-yellow" style="display:inline-flex;margin-top:8px;">Join us</a></li>
             </ul>
             <div class="nav-right">
-                <a href="#" class="nav-login" id="navLoginLink" data-open-modal="login">Login</a>
+                <a href="#" class="nav-login" id="navLoginLink" data-open-modal="login">
+                    <svg class="nav-login-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+                        <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span class="nav-login-text">Login</span>
+                </a>
                 <span id="navUserMenu">
                     <span id="navUserGreeting"></span>
                     <button type="button" id="navProfileBtn">My Profile</button>
                     <button type="button" id="navLogoutBtn">Log out</button>
                 </span>
                 <span class="nav-divider">|</span>
-                <a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" class="btn btn-yellow">Join us</a>
+                <a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" class="btn btn-yellow nav-joinus-btn">Join us</a>
                 <button class="mobile-menu-btn" aria-label="Menu">
                     <span></span>
                     <span></span>
