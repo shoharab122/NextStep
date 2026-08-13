@@ -1397,253 +1397,6 @@
                 left: 0;
             }
         }
-
-        /* ===== PHONE-SPECIFIC POLISH ===== */
-        @media (max-width: 480px) {
-            .navbar-inner {
-                height: 64px;
-            }
-
-            .logo {
-                font-size: 18px;
-                gap: 8px;
-            }
-
-            .logo .brand-logo-img {
-                height: 30px !important;
-                width: 30px !important;
-            }
-
-            .nav-right {
-                gap: 10px;
-            }
-
-            .nav-login {
-                font-size: 13px;
-            }
-
-            .nav-divider {
-                display: none;
-            }
-
-            .nav-right .btn-yellow {
-                padding: 9px 14px;
-                font-size: 13px;
-            }
-
-            #navUserGreeting {
-                font-size: 13px;
-                max-width: 90px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                display: inline-block;
-                vertical-align: middle;
-            }
-
-            .container {
-                padding: 0 16px;
-            }
-
-            .hero {
-                padding: 32px 0 24px;
-            }
-
-            .hero-eyebrow {
-                font-size: 14px;
-                margin-bottom: 10px;
-            }
-
-            .hero-title {
-                font-size: 30px;
-            }
-
-            .hero-text {
-                font-size: 15px;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .hero-buttons .btn {
-                width: 100%;
-            }
-
-            .img-card img,
-            .img-1 img,
-            .img-2 img,
-            .img-3 img,
-            .img-4 img {
-                height: 150px;
-            }
-
-            .proud-text {
-                font-size: 16px;
-                margin-top: 36px;
-            }
-
-            .about-section,
-            .apply-section,
-            .talent-section,
-            .staffing-section,
-            .contact-section {
-                padding: 48px 0;
-            }
-
-            .about-grid h2,
-            .apply-right h2,
-            .staffing-right h2,
-            .talent-header h2 {
-                font-size: 26px;
-            }
-
-            .about-figures {
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-
-            .about-figure-card {
-                padding: 16px;
-            }
-
-            .about-figure-card b {
-                font-size: 24px;
-            }
-
-            .benefits-box,
-            .cta-box {
-                padding: 28px 18px;
-                border-radius: 20px;
-            }
-
-            .benefits-header h2,
-            .cta-box h2 {
-                font-size: 26px;
-            }
-
-            .benefits-header-right p {
-                font-size: 14px;
-            }
-
-            .apply-image-main,
-            .staffing-image-main {
-                height: 340px;
-            }
-
-            .happy-card {
-                width: 170px;
-                padding: 14px;
-                top: 20px;
-            }
-
-            .happy-card h4 {
-                font-size: 13px;
-            }
-
-            .easy-badge {
-                font-size: 12px;
-                padding: 10px 16px;
-                bottom: 30px;
-            }
-
-            .review-card {
-                padding: 10px 12px;
-                gap: 8px;
-            }
-
-            .review-info h5 {
-                font-size: 12px;
-            }
-
-            .review-info span {
-                font-size: 10px;
-            }
-
-            .talent-grid {
-                gap: 12px;
-            }
-
-            .talent-card {
-                padding: 22px 18px;
-            }
-
-            .contact-info,
-            .contact-form-panel {
-                padding: 28px 20px;
-            }
-
-            .contact-info h2 {
-                font-size: 24px;
-            }
-
-            .contact-shell {
-                border-radius: 18px;
-            }
-
-            .footer {
-                padding: 40px 0 20px;
-            }
-
-            .footer-brand .logo {
-                font-size: 17px;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                gap: 8px;
-                text-align: center;
-            }
-
-            .scroll-top {
-                width: 42px;
-                height: 42px;
-                bottom: 16px;
-                right: 16px;
-            }
-
-            /* Auth modals */
-            .ns-modal {
-                padding: 1.25rem 1rem;
-                border-radius: 12px;
-                max-height: 92vh;
-            }
-
-            .ns-modal h3 {
-                font-size: 1.15rem;
-            }
-
-            .ns-modal-sub {
-                font-size: 0.85rem;
-            }
-
-            .ns-checkbox-row {
-                gap: 0.4rem;
-            }
-
-            .ns-checkbox-pill {
-                font-size: 0.78rem;
-                padding: 0.35rem 0.65rem;
-            }
-
-            .ns-google-btn > div {
-                width: 100% !important;
-            }
-
-            .ns-google-btn iframe {
-                width: 100% !important;
-            }
-        }
-
-        /* Prevent horizontal scroll from any oversized fixed-width elements */
-        @media (max-width: 860px) {
-            .happy-card,
-            .easy-badge,
-            .review-card {
-                max-width: calc(100% - 16px);
-            }
-        }
     </style>
 </head>
 <body>
@@ -1666,17 +1419,7 @@
             <div class="nav-right">
                 <a href="#" class="nav-login" id="navLoginLink" data-open-modal="login">Login</a>
                 <span id="navUserMenu">
-                    <span class="ns-profile-wrap">
-                        <button type="button" id="navUserGreeting"></button>
-                        <div class="ns-profile-panel" id="navProfilePanel">
-                            <div class="ns-profile-row"><span>Name</span><b id="profileName"></b></div>
-                            <div class="ns-profile-row"><span>Email</span><b id="profileEmail"></b></div>
-                            <div class="ns-profile-row"><span>Role</span><b id="profileRole"></b></div>
-                            <div class="ns-profile-row"><span>Phone</span><b id="profilePhone"></b></div>
-                            <div class="ns-profile-row"><span>Account ID</span><b id="profileId"></b></div>
-                            <div class="ns-profile-row"><span>Member since</span><b id="profileSince"></b></div>
-                        </div>
-                    </span>
+                    <span id="navUserGreeting" style="cursor:pointer; text-decoration:underline;" title="View my profile"></span>
                     <button type="button" id="navLogoutBtn">Log out</button>
                 </span>
                 <span class="nav-divider">|</span>
@@ -2128,6 +1871,7 @@
                 </div>
                 <button type="submit" class="btn btn-blue" id="jobseekerSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Create account</button>
                 <p class="ns-form-switch">Already have an account? <a href="#" data-switch-to="login">Log in</a></p>
+                <p class="ns-form-switch">Just want to apply? <a href="#" data-switch-to="guestJobseeker">Apply without an account</a></p>
             </form>
         </div>
     </div>
@@ -2195,6 +1939,7 @@
                 </div>
                 <button type="submit" class="btn btn-blue" id="employerSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Create account</button>
                 <p class="ns-form-switch">Already have an account? <a href="#" data-switch-to="login">Log in</a></p>
+                <p class="ns-form-switch">Just want to send a request? <a href="#" data-switch-to="guestEmployer">Request staffing without an account</a></p>
             </form>
         </div>
     </div>
@@ -2227,6 +1972,138 @@
         </div>
     </div>
 
+    <!-- Guest jobseeker application (no account required) -->
+    <div class="ns-modal-overlay" id="guestJobseekerModal" aria-hidden="true">
+        <div class="ns-modal">
+            <button class="ns-modal-close" data-close-modal aria-label="Close">&times;</button>
+            <h3>Apply as a jobseeker</h3>
+            <p style="color:var(--text-muted); font-size:0.88rem; margin:-0.4rem 0 1rem;">No account needed — we'll reach out by email or phone.</p>
+            <div class="ns-form-msg" id="guestJobseekerFormMsg"></div>
+            <form id="guestJobseekerForm">
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="gjs_full_name" name="full_name" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label>Email</label>
+                        <input type="email" id="gjs_email" name="email" required />
+                    </div>
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="gjs_phone" name="phone" />
+                    </div>
+                    <div class="ns-form-group">
+                        <label>Preferred Country</label>
+                        <input type="text" id="gjs_country" name="country" placeholder="e.g. Poland" />
+                    </div>
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label>Field / Sector</label>
+                        <input type="text" id="gjs_field" name="field" placeholder="e.g. Construction" />
+                    </div>
+                    <div class="ns-form-group">
+                        <label>Years of Experience</label>
+                        <input type="number" id="gjs_experience" name="experience_years" min="0" />
+                    </div>
+                </div>
+                <div class="ns-form-group">
+                    <label>Message</label>
+                    <textarea id="gjs_message" name="message" rows="3" placeholder="Anything else we should know?"></textarea>
+                </div>
+                <div class="ns-form-group">
+                    <label>Resume (PDF or Word, optional)</label>
+                    <input type="file" id="gjs_resume" name="resume" accept=".pdf,.doc,.docx" />
+                </div>
+                <button type="submit" class="btn btn-blue" id="guestJobseekerSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Submit application</button>
+                <p class="ns-form-switch">Want to track your application? <a href="#" data-switch-to="jobseeker">Create a free account instead</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Guest employer inquiry (no account required) -->
+    <div class="ns-modal-overlay" id="guestEmployerModal" aria-hidden="true">
+        <div class="ns-modal">
+            <button class="ns-modal-close" data-close-modal aria-label="Close">&times;</button>
+            <h3>Request staffing</h3>
+            <p style="color:var(--text-muted); font-size:0.88rem; margin:-0.4rem 0 1rem;">No account needed — tell us what you're hiring for and we'll follow up.</p>
+            <div class="ns-form-msg" id="guestEmployerFormMsg"></div>
+            <form id="guestEmployerForm">
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label>Company Name</label>
+                        <input type="text" id="gem_company" name="company_name" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label>Contact Name</label>
+                        <input type="text" id="gem_contact_name" name="contact_name" required />
+                    </div>
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label>Email</label>
+                        <input type="email" id="gem_email" name="email" required />
+                    </div>
+                    <div class="ns-form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="gem_phone" name="phone" />
+                    </div>
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label>Industry</label>
+                        <input type="text" id="gem_industry" name="industry" />
+                    </div>
+                    <div class="ns-form-group">
+                        <label>Headcount Needed</label>
+                        <input type="number" id="gem_headcount" name="headcount" min="1" />
+                    </div>
+                </div>
+                <div class="ns-form-group">
+                    <label>Message</label>
+                    <textarea id="gem_message" name="message" rows="3" required placeholder="Tell us about the roles you need filled..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-blue" id="guestEmployerSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Submit request</button>
+                <p class="ns-form-switch">Want to manage requests in one place? <a href="#" data-switch-to="employer">Create a free account instead</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Logged-in customer profile -->
+    <div class="ns-modal-overlay" id="profileModal" aria-hidden="true">
+        <div class="ns-modal">
+            <button class="ns-modal-close" data-close-modal aria-label="Close">&times;</button>
+            <h3>My Profile</h3>
+            <div class="ns-form-msg" id="profileFormMsg"></div>
+
+            <div id="profileDetails" style="margin-bottom:1.25rem;">
+                <div class="ns-form-row" id="profileNameRow"></div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label>Email</label>
+                        <input type="email" id="profileEmail" disabled />
+                    </div>
+                    <div class="ns-form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="profilePhone" />
+                    </div>
+                </div>
+                <div id="profileExtraRow"></div>
+                <button type="button" class="btn btn-blue" id="profileSaveBtn" style="margin-top:0.4rem;">Save changes</button>
+            </div>
+
+            <h4 class="ns-form-subhead" id="profileHistoryTitle">My applications</h4>
+            <div id="profileHistoryList" style="display:flex; flex-direction:column; gap:0.6rem; max-height:260px; overflow-y:auto;">
+                <p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+
     <style>
         .ns-modal-overlay{ display:none; position:fixed; inset:0; background:rgba(18,33,59,0.55); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
         .ns-modal-overlay.open{ display:flex; }
@@ -2254,15 +2131,7 @@
         .ns-form-switch a:hover{ text-decoration:underline; }
         #navUserMenu{ display:none; align-items:center; gap:0.6rem; }
         #navUserMenu.show{ display:inline-flex; }
-        .ns-profile-wrap{ position:relative; display:inline-flex; }
-        #navUserGreeting{ font-weight:600; font-size:0.9rem; color:var(--text); background:none; border:none; cursor:pointer; padding:4px 8px; border-radius:8px; font-family:inherit; }
-        #navUserGreeting:hover{ background:var(--bg-light); }
-        .ns-profile-panel{ display:none; position:absolute; top:calc(100% + 8px); right:0; background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 12px 32px rgba(18,33,59,0.16); padding:14px 16px; min-width:240px; z-index:1100; }
-        .ns-profile-panel.open{ display:block; }
-        .ns-profile-row{ display:flex; justify-content:space-between; gap:12px; padding:6px 0; border-bottom:1px solid var(--border); font-size:0.82rem; }
-        .ns-profile-row:last-child{ border-bottom:none; }
-        .ns-profile-row span{ color:var(--text-muted); }
-        .ns-profile-row b{ color:var(--text); font-weight:600; text-align:right; word-break:break-word; max-width:150px; }
+        #navUserGreeting{ font-weight:600; font-size:0.9rem; color:var(--text); }
         #navLogoutBtn{ background:none; border:none; color:var(--text-muted); font-size:0.85rem; cursor:pointer; text-decoration:underline; padding:0; }
         .ns-google-btn-wrap{ display:flex; justify-content:center; margin-bottom:0.9rem; }
         .ns-google-btn{ width:100%; display:flex; justify-content:center; }
@@ -2278,6 +2147,9 @@
             jobseeker: document.getElementById('jobseekerModal'),
             employer: document.getElementById('employerModal'),
             login: document.getElementById('loginModal'),
+            guestJobseeker: document.getElementById('guestJobseekerModal'),
+            guestEmployer: document.getElementById('guestEmployerModal'),
+            profile: document.getElementById('profileModal'),
         };
 
         function openModal(name) {
@@ -2350,47 +2222,14 @@
             localStorage.removeItem(TOKEN_KEY);
             navUserMenu.classList.remove('show');
             navLoginLink.style.display = '';
-            document.getElementById('navProfilePanel').classList.remove('open');
         }
-
-        const navProfilePanel = document.getElementById('navProfilePanel');
-        const profileFields = {
-            name: document.getElementById('profileName'),
-            email: document.getElementById('profileEmail'),
-            role: document.getElementById('profileRole'),
-            phone: document.getElementById('profilePhone'),
-            id: document.getElementById('profileId'),
-            since: document.getElementById('profileSince'),
-        };
 
         function applyLoggedInUI(user) {
             const name = user.role === 'employer' ? (user.company_name || user.contact_name) : user.full_name;
             navUserGreeting.textContent = `Hi, ${name}`;
             navUserMenu.classList.add('show');
             navLoginLink.style.display = 'none';
-
-            // Populate this user's own unique profile details — never shared
-            // across accounts, always pulled fresh from their session response.
-            profileFields.name.textContent = name || '—';
-            profileFields.email.textContent = user.email || '—';
-            profileFields.role.textContent = user.role === 'employer' ? 'Employer' : 'Jobseeker';
-            profileFields.phone.textContent = user.phone || '—';
-            profileFields.id.textContent = user.id != null ? `#${user.id}` : '—';
-            profileFields.since.textContent = user.created_at
-                ? new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-                : '—';
         }
-
-        navUserGreeting.addEventListener('click', (e) => {
-            e.stopPropagation();
-            navProfilePanel.classList.toggle('open');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!navProfilePanel.contains(e.target) && e.target !== navUserGreeting) {
-                navProfilePanel.classList.remove('open');
-            }
-        });
 
         async function refreshSession() {
             const token = getToken();
@@ -2449,13 +2288,11 @@
                 callback: (resp) => handleGoogleCredential({ credential: resp.credential, role }, msgEl),
             });
 
-            const buttonWidth = Math.min(340, container.offsetWidth || 340);
-
             google.accounts.id.renderButton(container, {
                 type: 'standard',
                 theme: 'outline',
                 size: 'large',
-                width: buttonWidth,
+                width: 340,
                 text: role === 'employer' ? 'signup_with' : 'continue_with',
             });
         }
@@ -2653,6 +2490,220 @@
                 loginBtn.textContent = 'Log in';
             }
         });
+
+        // ---------------- Guest jobseeker application (no account) ----------------
+        const guestJobseekerForm = document.getElementById('guestJobseekerForm');
+        const guestJobseekerMsg = document.getElementById('guestJobseekerFormMsg');
+        const guestJobseekerBtn = document.getElementById('guestJobseekerSubmitBtn');
+
+        guestJobseekerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            guestJobseekerMsg.className = 'ns-form-msg';
+            guestJobseekerBtn.disabled = true;
+            guestJobseekerBtn.textContent = 'Submitting...';
+
+            try {
+                const formData = new FormData(guestJobseekerForm);
+                const headers = {};
+                const token = getToken();
+                if (token) headers.Authorization = `Bearer ${token}`; // links it to the account if logged in
+
+                const res = await fetch('/api/jobseeker-application', {
+                    method: 'POST',
+                    headers,
+                    body: formData,
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showFormMsg(guestJobseekerMsg, 'Application submitted! We\'ll be in touch soon.', 'success');
+                    guestJobseekerForm.reset();
+                    window.setTimeout(() => closeAllModals(), 1200);
+                } else {
+                    showFormMsg(guestJobseekerMsg, data.error || 'Something went wrong. Please try again.', 'error');
+                }
+            } catch (err) {
+                showFormMsg(guestJobseekerMsg, 'Network error. Please check your connection and try again.', 'error');
+            } finally {
+                guestJobseekerBtn.disabled = false;
+                guestJobseekerBtn.textContent = 'Submit application';
+            }
+        });
+
+        // ---------------- Guest employer inquiry (no account) ----------------
+        const guestEmployerForm = document.getElementById('guestEmployerForm');
+        const guestEmployerMsg = document.getElementById('guestEmployerFormMsg');
+        const guestEmployerBtn = document.getElementById('guestEmployerSubmitBtn');
+
+        guestEmployerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            guestEmployerMsg.className = 'ns-form-msg';
+            guestEmployerBtn.disabled = true;
+            guestEmployerBtn.textContent = 'Submitting...';
+
+            try {
+                const payload = {
+                    company_name: guestEmployerForm.company_name.value,
+                    contact_name: guestEmployerForm.contact_name.value,
+                    email: guestEmployerForm.email.value,
+                    phone: guestEmployerForm.phone.value,
+                    industry: guestEmployerForm.industry.value,
+                    headcount: guestEmployerForm.headcount.value,
+                    message: guestEmployerForm.message.value,
+                };
+                const headers = { 'Content-Type': 'application/json' };
+                const token = getToken();
+                if (token) headers.Authorization = `Bearer ${token}`;
+
+                const res = await fetch('/api/employer-inquiry', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showFormMsg(guestEmployerMsg, 'Request submitted! We\'ll be in touch soon.', 'success');
+                    guestEmployerForm.reset();
+                    window.setTimeout(() => closeAllModals(), 1200);
+                } else {
+                    showFormMsg(guestEmployerMsg, data.error || 'Something went wrong. Please try again.', 'error');
+                }
+            } catch (err) {
+                showFormMsg(guestEmployerMsg, 'Network error. Please check your connection and try again.', 'error');
+            } finally {
+                guestEmployerBtn.disabled = false;
+                guestEmployerBtn.textContent = 'Submit request';
+            }
+        });
+
+        // ---------------- Profile ----------------
+        let currentProfileUser = null;
+        const profileMsg = document.getElementById('profileFormMsg');
+        const profileNameRow = document.getElementById('profileNameRow');
+        const profileEmail = document.getElementById('profileEmail');
+        const profilePhone = document.getElementById('profilePhone');
+        const profileExtraRow = document.getElementById('profileExtraRow');
+        const profileSaveBtn = document.getElementById('profileSaveBtn');
+        const profileHistoryTitle = document.getElementById('profileHistoryTitle');
+        const profileHistoryList = document.getElementById('profileHistoryList');
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str == null ? '' : String(str);
+            return div.innerHTML;
+        }
+
+        async function openProfile() {
+            openModal('profile');
+            profileMsg.className = 'ns-form-msg';
+            profileHistoryList.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>';
+
+            const token = getToken();
+            if (!token) { closeAllModals(); openModal('login'); return; }
+
+            try {
+                const res = await fetch('/api/auth/profile', { headers: { Authorization: `Bearer ${token}` } });
+                if (!res.ok) { showFormMsg(profileMsg, 'Could not load your profile. Please log in again.', 'error'); return; }
+                const data = await res.json();
+                currentProfileUser = data.user;
+                renderProfileForm(data.user);
+                renderProfileHistory(data.user, data.applications || [], data.inquiries || []);
+            } catch (err) {
+                showFormMsg(profileMsg, 'Network error loading your profile.', 'error');
+            }
+        }
+
+        function renderProfileForm(user) {
+            profileEmail.value = user.email || '';
+            profilePhone.value = user.phone || '';
+
+            if (user.role === 'employer') {
+                profileNameRow.innerHTML = `
+                    <div class="ns-form-group"><label>Company Name</label><input type="text" id="profileCompanyName" value="${escapeHtml(user.company_name)}" /></div>
+                    <div class="ns-form-group"><label>Contact Name</label><input type="text" id="profileContactName" value="${escapeHtml(user.contact_name)}" /></div>
+                `;
+                profileExtraRow.innerHTML = '';
+            } else {
+                profileNameRow.innerHTML = `
+                    <div class="ns-form-group" style="grid-column:1 / -1;"><label>Full Name</label><input type="text" id="profileFullName" value="${escapeHtml(user.full_name)}" /></div>
+                `;
+                profileExtraRow.innerHTML = `
+                    <div class="ns-form-group"><label>Job Title</label><input type="text" id="profileJobTitle" value="${escapeHtml(user.job_title)}" /></div>
+                `;
+            }
+        }
+
+        function renderProfileHistory(user, applications, inquiries) {
+            if (user.role === 'employer') {
+                profileHistoryTitle.textContent = 'My staffing requests';
+                if (!inquiries.length) {
+                    profileHistoryList.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No requests submitted yet.</p>';
+                    return;
+                }
+                profileHistoryList.innerHTML = inquiries.map((i) => `
+                    <div style="border:1px solid var(--border); border-radius:8px; padding:0.6rem 0.75rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600;">
+                            <span>${escapeHtml(i.industry || 'General inquiry')}</span>
+                            <span style="text-transform:capitalize; color:var(--blue);">${escapeHtml(i.status)}</span>
+                        </div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">${escapeHtml((i.message || '').slice(0, 120))}</div>
+                    </div>
+                `).join('');
+            } else {
+                profileHistoryTitle.textContent = 'My applications';
+                if (!applications.length) {
+                    profileHistoryList.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No applications submitted yet. <a href="#" data-switch-to="guestJobseeker">Apply now</a>.</p>';
+                    return;
+                }
+                profileHistoryList.innerHTML = applications.map((a) => `
+                    <div style="border:1px solid var(--border); border-radius:8px; padding:0.6rem 0.75rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600;">
+                            <span>${escapeHtml(a.field || 'General application')} — ${escapeHtml(a.country || 'Any country')}</span>
+                            <span style="text-transform:capitalize; color:var(--blue);">${escapeHtml(a.status)}</span>
+                        </div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">${a.resume_url ? `<a href="${escapeHtml(a.resume_url)}" target="_blank" rel="noopener">View resume</a>` : 'No resume attached'}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        profileSaveBtn.addEventListener('click', async () => {
+            if (!currentProfileUser) return;
+            profileMsg.className = 'ns-form-msg';
+            profileSaveBtn.disabled = true;
+            profileSaveBtn.textContent = 'Saving...';
+
+            const payload = { phone: profilePhone.value };
+            if (currentProfileUser.role === 'employer') {
+                payload.company_name = document.getElementById('profileCompanyName').value;
+                payload.contact_name = document.getElementById('profileContactName').value;
+            } else {
+                payload.full_name = document.getElementById('profileFullName').value;
+                payload.job_title = document.getElementById('profileJobTitle').value;
+            }
+
+            try {
+                const res = await fetch('/api/auth/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    currentProfileUser = data.user;
+                    applyLoggedInUI(data.user);
+                    showFormMsg(profileMsg, 'Profile updated.', 'success');
+                } else {
+                    showFormMsg(profileMsg, data.error || 'Could not save your changes.', 'error');
+                }
+            } catch (err) {
+                showFormMsg(profileMsg, 'Network error. Please try again.', 'error');
+            } finally {
+                profileSaveBtn.disabled = false;
+                profileSaveBtn.textContent = 'Save changes';
+            }
+        });
+
+        navUserGreeting.addEventListener('click', openProfile);
     </script>
 
     <script>
