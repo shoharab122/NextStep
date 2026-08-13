@@ -284,7 +284,41 @@ const resumeUpload = multer({
       );
     `);
 
-    console.log('Connected to PostgreSQL — contacts, student_applications, jobseeker_applications, employer_inquiries, events, destinations, site_settings, invoices & todos tables ready.');
+    // -------------------------------------------------------------------
+    // Customer accounts (jobseekers + employers who create a profile on
+    // employee.html). Shared table, distinguished by `role`.
+    // -------------------------------------------------------------------
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        role TEXT NOT NULL CHECK (role IN ('jobseeker','employer')),
+        email TEXT NOT NULL UNIQUE,
+        password_hash TEXT,
+        google_id TEXT,
+        full_name TEXT,
+        phone TEXT,
+        job_title TEXT,
+        industries JSONB DEFAULT '[]',
+        company_name TEXT,
+        contact_name TEXT,
+        headcount INTEGER,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    // Applications/inquiries submitted while logged in get linked back to
+    // the account so a customer can see their own history on their profile.
+    // Both stay nullable — applying WITHOUT an account still works fine.
+    await pool.query(`
+      ALTER TABLE jobseeker_applications
+        ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
+    `);
+    await pool.query(`
+      ALTER TABLE employer_inquiries
+        ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
+    `);
+
+    console.log('Connected to PostgreSQL — contacts, student_applications, jobseeker_applications, employer_inquiries, users, events, destinations, site_settings, invoices & todos tables ready.');
   } catch (err) {
     console.error('Database connection/setup error:', err.message);
   }
@@ -448,6 +482,226 @@ router.post('/auth/google', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Jobseeker / Employer: email+password accounts, profile & applications
+// ---------------------------------------------------------------------------
+
+// Strips password_hash before a user row goes out over the wire.
+function publicUser(user) {
+  if (!user) return null;
+  const { password_hash, ...safe } = user;
+  return safe;
+}
+
+// Requires a valid customer (jobseeker/employer) token.
+function requireUser(req, res, next) {
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token) return res.status(401).json({ error: 'Please log in to continue.' });
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid or expired session. Please log in again.' });
+  }
+}
+
+// Attaches req.user if a valid token is present, but never blocks the
+// request — this is what lets someone apply/inquire WITHOUT an account,
+// while still linking the record to their profile if they happen to be
+// logged in.
+function optionalUser(req, res, next) {
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (token) {
+    try { req.user = jwt.verify(token, process.env.JWT_SECRET); } catch (err) { /* ignore, stay anonymous */ }
+  }
+  next();
+}
+
+router.post('/auth/jobseeker/signup', async (req, res) => {
+  const { first_name, last_name, email, phone, job_title, password, industries } = req.body;
+
+  if (!first_name || !last_name || !email || !password) {
+    return res.status(400).json({ error: 'First name, last name, email, and password are required.' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+  }
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ error: 'Account system is not configured on the server.' });
+  }
+
+  try {
+    const { rows: existing } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (existing.length) {
+      return res.status(409).json({ error: 'An account with this email already exists. Please log in instead.' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const fullName = `${first_name} ${last_name}`.trim();
+
+    const { rows } = await pool.query(
+      `INSERT INTO users (role, email, password_hash, full_name, phone, job_title, industries, created_at)
+       VALUES ('jobseeker', $1, $2, $3, $4, $5, $6, NOW())
+       RETURNING *`,
+      [email, passwordHash, fullName, phone || null, job_title || null, JSON.stringify(industries || [])]
+    );
+    const user = rows[0];
+    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(201).json({ success: true, token, user: publicUser(user) });
+  } catch (err) {
+    console.error('Jobseeker signup error:', err.message);
+    res.status(500).json({ error: 'Could not create your account. Please try again.' });
+  }
+});
+
+router.post('/auth/employer/signup', async (req, res) => {
+  const { company_name, contact_name, email, phone, headcount, password, industries } = req.body;
+
+  if (!company_name || !contact_name || !email || !password) {
+    return res.status(400).json({ error: 'Company name, contact name, email, and password are required.' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+  }
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ error: 'Account system is not configured on the server.' });
+  }
+
+  const toIntOrNull = (v) => (v === undefined || v === null || v === '' ? null : parseInt(v, 10));
+
+  try {
+    const { rows: existing } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (existing.length) {
+      return res.status(409).json({ error: 'An account with this email already exists. Please log in instead.' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const { rows } = await pool.query(
+      `INSERT INTO users (role, email, password_hash, company_name, contact_name, phone, headcount, industries, created_at)
+       VALUES ('employer', $1, $2, $3, $4, $5, $6, $7, NOW())
+       RETURNING *`,
+      [email, passwordHash, company_name, contact_name, phone || null, toIntOrNull(headcount), JSON.stringify(industries || [])]
+    );
+    const user = rows[0];
+    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(201).json({ success: true, token, user: publicUser(user) });
+  } catch (err) {
+    console.error('Employer signup error:', err.message);
+    res.status(500).json({ error: 'Could not create your account. Please try again.' });
+  }
+});
+
+router.post('/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ error: 'Account system is not configured on the server.' });
+  }
+
+  try {
+    const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = rows[0];
+
+    if (!user || !user.password_hash) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.json({ success: true, token, user: publicUser(user) });
+  } catch (err) {
+    console.error('Login error:', err.message);
+    res.status(500).json({ error: 'Login failed. Please try again.' });
+  }
+});
+
+// Lets employee.html verify a stored token & re-hydrate the logged-in UI.
+router.get('/auth/me', requireUser, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+    if (!rows[0]) return res.status(401).json({ error: 'Account no longer exists.' });
+    res.json({ user: publicUser(rows[0]) });
+  } catch (err) {
+    console.error('Auth /me error:', err.message);
+    res.status(500).json({ error: 'Could not load your session.' });
+  }
+});
+
+// A customer's own profile page: account details + everything they've submitted.
+router.get('/auth/profile', requireUser, async (req, res) => {
+  try {
+    const { rows: userRows } = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+    const user = userRows[0];
+    if (!user) return res.status(404).json({ error: 'Account not found.' });
+
+    let applications = [];
+    let inquiries = [];
+    if (user.role === 'jobseeker') {
+      const { rows } = await pool.query(
+        'SELECT * FROM jobseeker_applications WHERE user_id = $1 ORDER BY created_at DESC',
+        [user.id]
+      );
+      applications = rows;
+    } else {
+      const { rows } = await pool.query(
+        'SELECT * FROM employer_inquiries WHERE user_id = $1 ORDER BY created_at DESC',
+        [user.id]
+      );
+      inquiries = rows;
+    }
+
+    res.json({ user: publicUser(user), applications, inquiries });
+  } catch (err) {
+    console.error('Profile load error:', err.message);
+    res.status(500).json({ error: 'Could not load your profile.' });
+  }
+});
+
+router.put('/auth/profile', requireUser, async (req, res) => {
+  try {
+    const { rows: userRows } = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+    const user = userRows[0];
+    if (!user) return res.status(404).json({ error: 'Account not found.' });
+
+    const b = req.body;
+    let result;
+    if (user.role === 'jobseeker') {
+      result = await pool.query(
+        `UPDATE users SET
+           full_name = COALESCE($1, full_name),
+           phone = COALESCE($2, phone),
+           job_title = COALESCE($3, job_title)
+         WHERE id = $4 RETURNING *`,
+        [b.full_name ?? null, b.phone ?? null, b.job_title ?? null, user.id]
+      );
+    } else {
+      result = await pool.query(
+        `UPDATE users SET
+           company_name = COALESCE($1, company_name),
+           contact_name = COALESCE($2, contact_name),
+           phone = COALESCE($3, phone)
+         WHERE id = $4 RETURNING *`,
+        [b.company_name ?? null, b.contact_name ?? null, b.phone ?? null, user.id]
+      );
+    }
+
+    res.json({ success: true, user: publicUser(result.rows[0]) });
+  } catch (err) {
+    console.error('Profile update error:', err.message);
+    res.status(500).json({ error: 'Could not update your profile.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Public: contact form
 // ---------------------------------------------------------------------------
 router.post('/contact', async (req, res) => {
@@ -595,7 +849,7 @@ router.post('/student-application', (req, res) => {
 // ---------------------------------------------------------------------------
 // Public: jobseeker application (with resume upload to Cloudinary)
 // ---------------------------------------------------------------------------
-router.post('/jobseeker-application', (req, res) => {
+router.post('/jobseeker-application', optionalUser, (req, res) => {
   resumeUpload(req, res, async (uploadErr) => {
     if (uploadErr) {
       console.error('Resume upload error:', uploadErr.message);
@@ -616,12 +870,13 @@ router.post('/jobseeker-application', (req, res) => {
     try {
       const result = await pool.query(
         `INSERT INTO jobseeker_applications
-          (full_name, email, phone, country, field, experience_years, message, resume_url)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+          (full_name, email, phone, country, field, experience_years, message, resume_url, user_id)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
          RETURNING id`,
         [
           b.full_name, b.email, b.phone || null, b.country || null,
           b.field || null, toIntOrNull(b.experience_years), b.message || null, resumeUrl,
+          (req.user && req.user.role === 'jobseeker') ? req.user.id : null,
         ]
       );
 
@@ -643,7 +898,7 @@ router.post('/jobseeker-application', (req, res) => {
 // ---------------------------------------------------------------------------
 // Public: employer inquiry (staffing request, no file upload)
 // ---------------------------------------------------------------------------
-router.post('/employer-inquiry', async (req, res) => {
+router.post('/employer-inquiry', optionalUser, async (req, res) => {
   const { company_name, contact_name, email, phone, industry, headcount, message } = req.body;
 
   if (!company_name || !contact_name || !email || !message) {
@@ -655,10 +910,11 @@ router.post('/employer-inquiry', async (req, res) => {
   try {
     const result = await pool.query(
       `INSERT INTO employer_inquiries
-        (company_name, contact_name, email, phone, industry, headcount, message)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)
+        (company_name, contact_name, email, phone, industry, headcount, message, user_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
        RETURNING id`,
-      [company_name, contact_name, email, phone || null, industry || null, toIntOrNull(headcount), message]
+      [company_name, contact_name, email, phone || null, industry || null, toIntOrNull(headcount), message,
+       (req.user && req.user.role === 'employer') ? req.user.id : null]
     );
 
     transporter.sendMail({
@@ -844,16 +1100,82 @@ router.delete('/admin/applications/:id', requireAdmin, async (req, res) => {
 // ---------------------------------------------------------------------------
 // Admin (protected): dashboard summary stats
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Admin (protected): customer accounts (jobseeker + employer profiles)
+// ---------------------------------------------------------------------------
+router.get('/admin/users', requireAdmin, async (req, res) => {
+  try {
+    const { role } = req.query;
+    const params = [];
+    let where = '';
+    if (role === 'jobseeker' || role === 'employer') {
+      params.push(role);
+      where = 'WHERE role = $1';
+    }
+    const { rows } = await pool.query(
+      `SELECT id, role, email, full_name, phone, job_title, industries,
+              company_name, contact_name, headcount, google_id IS NOT NULL AS has_google, created_at
+       FROM users ${where} ORDER BY created_at DESC`,
+      params
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('Admin users list error:', err.message);
+    res.status(500).json({ error: 'Could not load customer accounts.' });
+  }
+});
+
+router.get('/admin/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const { rows: userRows } = await pool.query(
+      'SELECT id, role, email, full_name, phone, job_title, industries, company_name, contact_name, headcount, created_at FROM users WHERE id = $1',
+      [req.params.id]
+    );
+    const user = userRows[0];
+    if (!user) return res.status(404).json({ error: 'Account not found.' });
+
+    let applications = [];
+    let inquiries = [];
+    if (user.role === 'jobseeker') {
+      const { rows } = await pool.query('SELECT * FROM jobseeker_applications WHERE user_id = $1 ORDER BY created_at DESC', [user.id]);
+      applications = rows;
+    } else {
+      const { rows } = await pool.query('SELECT * FROM employer_inquiries WHERE user_id = $1 ORDER BY created_at DESC', [user.id]);
+      inquiries = rows;
+    }
+    res.json({ user, applications, inquiries });
+  } catch (err) {
+    console.error('Admin user detail error:', err.message);
+    res.status(500).json({ error: 'Could not load this account.' });
+  }
+});
+
+router.delete('/admin/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Account not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Admin user delete error:', err.message);
+    res.status(500).json({ error: 'Could not delete this account.' });
+  }
+});
+
 router.get('/admin/stats', requireAdmin, async (req, res) => {
   try {
-    const [apps, byStatus, contacts] = await Promise.all([
+    const [apps, byStatus, contacts, users] = await Promise.all([
       pool.query('SELECT COUNT(*)::int AS total FROM student_applications'),
       pool.query('SELECT status, COUNT(*)::int AS count FROM student_applications GROUP BY status'),
       pool.query('SELECT COUNT(*)::int AS total FROM contacts'),
+      pool.query("SELECT role, COUNT(*)::int AS count FROM users GROUP BY role"),
     ]);
+    const usersByRole = users.rows.reduce((acc, r) => ({ ...acc, [r.role]: r.count }), {});
     res.json({
       totalApplications: apps.rows[0].total,
       totalContacts: contacts.rows[0].total,
+      totalUsers: (usersByRole.jobseeker || 0) + (usersByRole.employer || 0),
+      totalJobseekers: usersByRole.jobseeker || 0,
+      totalEmployers: usersByRole.employer || 0,
       byStatus: byStatus.rows.reduce((acc, r) => ({ ...acc, [r.status]: r.count }), {}),
     });
   } catch (err) {
