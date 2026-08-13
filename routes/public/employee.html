@@ -2074,12 +2074,30 @@
 
     <!-- Logged-in customer profile -->
     <div class="ns-modal-overlay" id="profileModal" aria-hidden="true">
-        <div class="ns-modal">
+        <div class="ns-modal" style="max-width:560px;">
             <button class="ns-modal-close" data-close-modal aria-label="Close">&times;</button>
-            <h3>My Profile</h3>
+
+            <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
+                <div style="position:relative; flex-shrink:0;">
+                    <img id="profileAvatarImg" src="" alt="" style="width:64px; height:64px; border-radius:50%; object-fit:cover; background:var(--bg-light); border:1px solid var(--border);" />
+                    <label for="profileAvatarInput" style="position:absolute; bottom:-2px; right:-2px; background:var(--blue); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; cursor:pointer;">✎</label>
+                    <input type="file" id="profileAvatarInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
+                </div>
+                <div>
+                    <h3 style="margin-bottom:2px;">My Profile</h3>
+                    <p id="profileHeadlineDisplay" style="color:var(--text-muted); font-size:0.85rem;"></p>
+                </div>
+            </div>
+
+            <div class="ns-tabs" style="display:flex; gap:0.5rem; margin-bottom:1rem; border-bottom:1px solid var(--border);">
+                <button type="button" class="ns-tab-btn active" data-profile-tab="details" style="padding:0.5rem 0.2rem; background:none; border:none; border-bottom:2px solid var(--blue); font-weight:600; color:var(--blue);">Details</button>
+                <button type="button" class="ns-tab-btn" data-profile-tab="history" style="padding:0.5rem 0.2rem; background:none; border:none; border-bottom:2px solid transparent; font-weight:600; color:var(--text-muted);">My Activity</button>
+                <button type="button" class="ns-tab-btn" data-profile-tab="messages" style="padding:0.5rem 0.2rem; background:none; border:none; border-bottom:2px solid transparent; font-weight:600; color:var(--text-muted);">Messages <span id="profileUnreadBadge" style="display:none; background:#B3261E; color:#fff; border-radius:10px; font-size:0.7rem; padding:1px 6px; margin-left:2px;"></span></button>
+            </div>
+
             <div class="ns-form-msg" id="profileFormMsg"></div>
 
-            <div id="profileDetails" style="margin-bottom:1.25rem;">
+            <div id="profilePane-details">
                 <div class="ns-form-row" id="profileNameRow"></div>
                 <div class="ns-form-row">
                     <div class="ns-form-group">
@@ -2091,13 +2109,39 @@
                         <input type="tel" id="profilePhone" />
                     </div>
                 </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label>Headline</label>
+                        <input type="text" id="profileHeadline" placeholder="e.g. Aspiring nurse | Seeking Germany opportunities" />
+                    </div>
+                    <div class="ns-form-group">
+                        <label>Location</label>
+                        <input type="text" id="profileLocation" placeholder="e.g. Chattogram, Bangladesh" />
+                    </div>
+                </div>
                 <div id="profileExtraRow"></div>
+                <div class="ns-form-group">
+                    <label>About</label>
+                    <textarea id="profileBio" rows="3" placeholder="Tell us a bit about yourself or your company..."></textarea>
+                </div>
                 <button type="button" class="btn btn-blue" id="profileSaveBtn" style="margin-top:0.4rem;">Save changes</button>
             </div>
 
-            <h4 class="ns-form-subhead" id="profileHistoryTitle">My applications</h4>
-            <div id="profileHistoryList" style="display:flex; flex-direction:column; gap:0.6rem; max-height:260px; overflow-y:auto;">
-                <p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>
+            <div id="profilePane-history" style="display:none;">
+                <h4 class="ns-form-subhead" id="profileHistoryTitle">My applications</h4>
+                <div id="profileHistoryList" style="display:flex; flex-direction:column; gap:0.6rem; max-height:320px; overflow-y:auto;">
+                    <p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>
+                </div>
+            </div>
+
+            <div id="profilePane-messages" style="display:none;">
+                <div id="profileMessagesList" style="display:flex; flex-direction:column; gap:0.5rem; max-height:280px; overflow-y:auto; margin-bottom:0.75rem; padding-right:4px;">
+                    <p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>
+                </div>
+                <form id="profileMessageForm" style="display:flex; gap:0.5rem;">
+                    <input type="text" id="profileMessageInput" placeholder="Type a message to NextStep Immigration..." style="flex:1; font-family:inherit; font-size:0.9rem; padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px; background:var(--bg);" required />
+                    <button type="submit" class="btn btn-blue" id="profileMessageSendBtn">Send</button>
+                </form>
             </div>
         </div>
     </div>
@@ -2224,9 +2268,9 @@
             navLoginLink.style.display = '';
         }
 
-        function applyLoggedInUI(user) {
+        function applyLoggedInUI(user, unreadCount) {
             const name = user.role === 'employer' ? (user.company_name || user.contact_name) : user.full_name;
-            navUserGreeting.textContent = `Hi, ${name}`;
+            navUserGreeting.innerHTML = `Hi, ${name}` + (unreadCount ? ` <span style="background:#B3261E; color:#fff; border-radius:10px; font-size:0.7rem; padding:1px 6px;">${unreadCount}</span>` : '');
             navUserMenu.classList.add('show');
             navLoginLink.style.display = 'none';
         }
@@ -2240,7 +2284,7 @@
                 });
                 if (!res.ok) { clearSession(); return; }
                 const data = await res.json();
-                applyLoggedInUI(data.user);
+                applyLoggedInUI(data.user, data.unreadMessages || 0);
             } catch (err) {
                 console.error('Session check failed:', err.message);
             }
@@ -2581,16 +2625,41 @@
         const profileNameRow = document.getElementById('profileNameRow');
         const profileEmail = document.getElementById('profileEmail');
         const profilePhone = document.getElementById('profilePhone');
+        const profileHeadline = document.getElementById('profileHeadline');
+        const profileLocation = document.getElementById('profileLocation');
+        const profileBio = document.getElementById('profileBio');
         const profileExtraRow = document.getElementById('profileExtraRow');
         const profileSaveBtn = document.getElementById('profileSaveBtn');
         const profileHistoryTitle = document.getElementById('profileHistoryTitle');
         const profileHistoryList = document.getElementById('profileHistoryList');
+        const profileAvatarImg = document.getElementById('profileAvatarImg');
+        const profileAvatarInput = document.getElementById('profileAvatarInput');
+        const profileHeadlineDisplay = document.getElementById('profileHeadlineDisplay');
+        const DEFAULT_AVATAR = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%231B4E9B"/><circle cx="32" cy="24" r="12" fill="%23fff"/><path d="M8 58c0-13 11-22 24-22s24 9 24 22" fill="%23fff"/></svg>');
 
         function escapeHtml(str) {
             const div = document.createElement('div');
             div.textContent = str == null ? '' : String(str);
             return div.innerHTML;
         }
+
+        // ---- Profile sub-tabs ----
+        document.querySelectorAll('[data-profile-tab]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-profile-tab]').forEach((b) => {
+                    b.classList.remove('active');
+                    b.style.borderBottomColor = 'transparent';
+                    b.style.color = 'var(--text-muted)';
+                });
+                btn.classList.add('active');
+                btn.style.borderBottomColor = 'var(--blue)';
+                btn.style.color = 'var(--blue)';
+                ['details', 'history', 'messages'].forEach((name) => {
+                    document.getElementById('profilePane-' + name).style.display = (name === btn.dataset.profileTab) ? 'block' : 'none';
+                });
+                if (btn.dataset.profileTab === 'messages') loadProfileMessages();
+            });
+        });
 
         async function openProfile() {
             openModal('profile');
@@ -2615,6 +2684,11 @@
         function renderProfileForm(user) {
             profileEmail.value = user.email || '';
             profilePhone.value = user.phone || '';
+            profileHeadline.value = user.headline || '';
+            profileLocation.value = user.location || '';
+            profileBio.value = user.bio || '';
+            profileAvatarImg.src = user.avatar_url || DEFAULT_AVATAR;
+            profileHeadlineDisplay.textContent = user.headline || (user.role === 'employer' ? 'Employer account' : 'Jobseeker account');
 
             if (user.role === 'employer') {
                 profileNameRow.innerHTML = `
@@ -2666,13 +2740,52 @@
             }
         }
 
+        // Switching to the modal from a link re-uses openModal(), so make sure
+        // data-switch-to="guestJobseeker"/"guestEmployer" inside the history list works too.
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('[data-switch-to]');
+            if (link && link.closest('#profileHistoryList')) {
+                e.preventDefault();
+                openModal(link.getAttribute('data-switch-to'));
+            }
+        });
+
+        profileAvatarInput.addEventListener('change', async () => {
+            const file = profileAvatarInput.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('avatar', file);
+            try {
+                const res = await fetch('/api/auth/profile/avatar', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${getToken()}` },
+                    body: formData,
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    currentProfileUser = data.user;
+                    profileAvatarImg.src = data.user.avatar_url;
+                    showFormMsg(profileMsg, 'Profile photo updated.', 'success');
+                } else {
+                    showFormMsg(profileMsg, data.error || 'Could not upload your photo.', 'error');
+                }
+            } catch (err) {
+                showFormMsg(profileMsg, 'Network error uploading your photo.', 'error');
+            }
+        });
+
         profileSaveBtn.addEventListener('click', async () => {
             if (!currentProfileUser) return;
             profileMsg.className = 'ns-form-msg';
             profileSaveBtn.disabled = true;
             profileSaveBtn.textContent = 'Saving...';
 
-            const payload = { phone: profilePhone.value };
+            const payload = {
+                phone: profilePhone.value,
+                headline: profileHeadline.value,
+                location: profileLocation.value,
+                bio: profileBio.value,
+            };
             if (currentProfileUser.role === 'employer') {
                 payload.company_name = document.getElementById('profileCompanyName').value;
                 payload.contact_name = document.getElementById('profileContactName').value;
@@ -2691,6 +2804,7 @@
                 if (res.ok && data.success) {
                     currentProfileUser = data.user;
                     applyLoggedInUI(data.user);
+                    profileHeadlineDisplay.textContent = data.user.headline || (data.user.role === 'employer' ? 'Employer account' : 'Jobseeker account');
                     showFormMsg(profileMsg, 'Profile updated.', 'success');
                 } else {
                     showFormMsg(profileMsg, data.error || 'Could not save your changes.', 'error');
@@ -2700,6 +2814,67 @@
             } finally {
                 profileSaveBtn.disabled = false;
                 profileSaveBtn.textContent = 'Save changes';
+            }
+        });
+
+        // ---------------- Messages ----------------
+        const profileMessagesList = document.getElementById('profileMessagesList');
+        const profileMessageForm = document.getElementById('profileMessageForm');
+        const profileMessageInput = document.getElementById('profileMessageInput');
+        const profileMessageSendBtn = document.getElementById('profileMessageSendBtn');
+        const profileUnreadBadge = document.getElementById('profileUnreadBadge');
+
+        function renderMessages(messages) {
+            if (!messages.length) {
+                profileMessagesList.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">No messages yet — say hello!</p>';
+                return;
+            }
+            profileMessagesList.innerHTML = messages.map((m) => `
+                <div style="max-width:80%; align-self:${m.sender === 'customer' ? 'flex-end' : 'flex-start'}; background:${m.sender === 'customer' ? 'var(--blue)' : 'var(--bg-light)'}; color:${m.sender === 'customer' ? '#fff' : 'var(--text)'}; padding:0.5rem 0.75rem; border-radius:10px; font-size:0.85rem;">
+                    ${escapeHtml(m.message)}
+                    <div style="font-size:0.68rem; opacity:0.7; margin-top:0.2rem;">${new Date(m.created_at).toLocaleString()}</div>
+                </div>
+            `).join('');
+            profileMessagesList.style.display = 'flex';
+            profileMessagesList.style.flexDirection = 'column';
+            profileMessagesList.scrollTop = profileMessagesList.scrollHeight;
+        }
+
+        async function loadProfileMessages() {
+            profileMessagesList.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>';
+            try {
+                const res = await fetch('/api/messages', { headers: { Authorization: `Bearer ${getToken()}` } });
+                if (!res.ok) { profileMessagesList.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Could not load messages.</p>'; return; }
+                const messages = await res.json();
+                renderMessages(messages);
+                profileUnreadBadge.style.display = 'none';
+            } catch (err) {
+                profileMessagesList.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Network error loading messages.</p>';
+            }
+        }
+
+        profileMessageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = profileMessageInput.value.trim();
+            if (!text) return;
+            profileMessageSendBtn.disabled = true;
+            try {
+                const res = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+                    body: JSON.stringify({ message: text }),
+                });
+                if (res.ok) {
+                    profileMessageInput.value = '';
+                    loadProfileMessages();
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert(data.error || 'Could not send your message.');
+                }
+            } catch (err) {
+                alert('Network error. Please try again.');
+            } finally {
+                profileMessageSendBtn.disabled = false;
             }
         });
 
