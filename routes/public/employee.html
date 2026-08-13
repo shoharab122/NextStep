@@ -1294,30 +1294,21 @@
 
             /* Collapse the divider / Join us button out of the cramped top
                bar on mobile — Join us is still reachable from the hamburger
-               menu below. Login stays visible but shrinks to an icon-only
-               button so it can never collide with the logo text. */
+               menu below. Login stays visible as a compact text pill so it
+               reads clearly and can never collide with the logo text. */
             .nav-divider,
             .nav-joinus-btn {
                 display: none;
             }
 
             .nav-login {
-                width: 34px;
-                height: 34px;
-                justify-content: center;
-                border-radius: 50%;
+                font-size: 12.5px;
+                padding: 7px 12px;
+                border-radius: 20px;
                 background: var(--bg-light);
                 border: 1px solid var(--border);
                 flex-shrink: 0;
-                padding: 0;
-            }
-
-            .nav-login-icon-svg {
-                display: inline-flex;
-            }
-
-            .nav-login-text {
-                display: none;
+                white-space: nowrap;
             }
 
             .nav-mobile-extra {
@@ -1627,15 +1618,17 @@
             </ul>
             <div class="nav-right">
                 <a href="#" class="nav-login" id="navLoginLink" data-open-modal="login">
-                    <svg class="nav-login-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
-                        <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
                     <span class="nav-login-text">Login</span>
                 </a>
                 <span id="navUserMenu">
                     <span id="navUserGreeting"></span>
-                    <button type="button" id="navProfileBtn">My Profile</button>
+                    <button type="button" id="navProfileBtn">
+                        <svg class="nav-profile-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span class="nav-profile-text">My Profile</span>
+                    </button>
                     <button type="button" id="navLogoutBtn">Log out</button>
                 </span>
                 <span class="nav-divider">|</span>
@@ -2393,10 +2386,22 @@
             #profileMessageForm input{ width:100%; }
             #profileMessageSendBtn{ width:100%; justify-content:center; }
             .ns-modal .btn{ width:100%; justify-content:center; }
-            #navUserMenu{ gap:0.4rem; }
-            #navUserGreeting{ display:none; } /* name shown inside the profile modal instead — saves nav space on phones */
-            #navProfileBtn{ padding:0.35rem 0.7rem; font-size:0.75rem; }
-            #navLogoutBtn{ font-size:0.75rem; }
+            #navUserMenu{ gap:6px !important; }
+            #navUserGreeting{ display:none !important; } /* name shown inside the profile modal instead — saves nav space on phones */
+            #navProfileBtn{
+                padding:0 !important;
+                width:34px !important;
+                height:34px !important;
+                border-radius:50% !important;
+                background:var(--bg-light) !important;
+                color:var(--text) !important;
+                border:1px solid var(--border) !important;
+                justify-content:center !important;
+                flex-shrink:0;
+            }
+            .nav-profile-icon-svg{ display:inline-flex !important; }
+            .nav-profile-text{ display:none !important; }
+            #navLogoutBtn{ font-size:0.72rem !important; white-space:nowrap; flex-shrink:0; }
         }
         .ns-form-group{ margin-bottom:0.85rem; display:flex; flex-direction:column; gap:0.3rem; }
         .ns-form-group label{ font-size:0.82rem; font-weight:600; color:var(--text); }
@@ -2417,7 +2422,8 @@
         #navUserMenu{ display:none; align-items:center; gap:0.6rem; flex-wrap:wrap; }
         #navUserMenu.show{ display:inline-flex; }
         #navUserGreeting{ font-weight:600; font-size:0.9rem; color:var(--text); }
-        #navProfileBtn{ background:var(--blue); color:#fff; border:none; font-size:0.8rem; font-weight:600; cursor:pointer; padding:0.4rem 0.85rem; border-radius:20px; white-space:nowrap; }
+        #navProfileBtn{ background:var(--blue); color:#fff; border:none; font-size:0.8rem; font-weight:600; cursor:pointer; padding:0.4rem 0.85rem; border-radius:20px; white-space:nowrap; display:inline-flex; align-items:center; gap:5px; }
+        .nav-profile-icon-svg{ display:none; flex-shrink:0; }
         #navProfileBtn:hover{ background:var(--blue-dark); }
         #navLogoutBtn{ background:none; border:none; color:var(--text-muted); font-size:0.85rem; cursor:pointer; text-decoration:underline; padding:0; }
         .ns-google-btn-wrap{ display:flex; justify-content:center; margin-bottom:0.9rem; }
