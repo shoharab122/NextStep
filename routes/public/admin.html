@@ -1046,6 +1046,19 @@
 
     /* Icon buttons — bigger tap targets */
     .icon-btn{ padding:0.5rem 0.65rem; font-size:0.85rem; }
+
+    /* Messages panel — stack the inbox above the thread instead of side-by-side */
+    #panel-messages > div[style*="grid-template-columns:280px"]{
+      display:flex !important; flex-direction:column;
+    }
+    #messageInboxList{ max-height:220px !important; }
+    #messageThreadPanel{ min-height:320px !important; }
+    #threadMessages{ max-height:280px !important; }
+
+    /* Customer profile edit grid inside the detail modal */
+    #customerModalBody div[style*="grid-template-columns:1fr 1fr"]{
+      grid-template-columns:1fr !important;
+    }
   }
 
   /* ============================================================
