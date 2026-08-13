@@ -1419,7 +1419,8 @@
             <div class="nav-right">
                 <a href="#" class="nav-login" id="navLoginLink" data-open-modal="login">Login</a>
                 <span id="navUserMenu">
-                    <span id="navUserGreeting" style="cursor:pointer; text-decoration:underline;" title="View my profile"></span>
+                    <span id="navUserGreeting"></span>
+                    <button type="button" id="navProfileBtn">My Profile</button>
                     <button type="button" id="navLogoutBtn">Log out</button>
                 </span>
                 <span class="nav-divider">|</span>
@@ -2157,6 +2158,31 @@
         .ns-modal-close{ position:absolute; top:0.85rem; right:0.9rem; background:none; border:none; font-size:1.5rem; line-height:1; cursor:pointer; color:var(--text-muted); }
         .ns-form-row{ display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; }
         @media (max-width:520px){ .ns-form-row{ grid-template-columns:1fr; } }
+
+        /* ===== Mobile optimization: modals, profile, messages ===== */
+        @media (max-width: 640px) {
+            .ns-modal-overlay{ padding:0; align-items:flex-end; }
+            .ns-modal{
+                max-width:100%;
+                width:100%;
+                border-radius:16px 16px 0 0;
+                max-height:92vh;
+                padding:1.25rem 1rem 1.5rem;
+            }
+            .ns-modal h3{ font-size:1.15rem; }
+            .ns-tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; flex-wrap:nowrap !important; }
+            .ns-tab-btn{ flex-shrink:0; font-size:0.85rem !important; }
+            #profileAvatarImg{ width:52px !important; height:52px !important; }
+            #profileHistoryList, #profileMessagesList{ max-height:220px !important; }
+            #profileMessageForm{ flex-direction:column; }
+            #profileMessageForm input{ width:100%; }
+            #profileMessageSendBtn{ width:100%; justify-content:center; }
+            .ns-modal .btn{ width:100%; justify-content:center; }
+            #navUserMenu{ gap:0.4rem; }
+            #navUserGreeting{ display:none; } /* name shown inside the profile modal instead — saves nav space on phones */
+            #navProfileBtn{ padding:0.35rem 0.7rem; font-size:0.75rem; }
+            #navLogoutBtn{ font-size:0.75rem; }
+        }
         .ns-form-group{ margin-bottom:0.85rem; display:flex; flex-direction:column; gap:0.3rem; }
         .ns-form-group label{ font-size:0.82rem; font-weight:600; color:var(--text); }
         .ns-form-group input, .ns-form-group textarea{ font-family:inherit; font-size:0.92rem; padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); }
@@ -2173,9 +2199,11 @@
         .ns-form-switch{ text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:1rem; }
         .ns-form-switch a{ color:var(--blue); font-weight:600; text-decoration:none; }
         .ns-form-switch a:hover{ text-decoration:underline; }
-        #navUserMenu{ display:none; align-items:center; gap:0.6rem; }
+        #navUserMenu{ display:none; align-items:center; gap:0.6rem; flex-wrap:wrap; }
         #navUserMenu.show{ display:inline-flex; }
         #navUserGreeting{ font-weight:600; font-size:0.9rem; color:var(--text); }
+        #navProfileBtn{ background:var(--blue); color:#fff; border:none; font-size:0.8rem; font-weight:600; cursor:pointer; padding:0.4rem 0.85rem; border-radius:20px; white-space:nowrap; }
+        #navProfileBtn:hover{ background:var(--blue-dark); }
         #navLogoutBtn{ background:none; border:none; color:var(--text-muted); font-size:0.85rem; cursor:pointer; text-decoration:underline; padding:0; }
         .ns-google-btn-wrap{ display:flex; justify-content:center; margin-bottom:0.9rem; }
         .ns-google-btn{ width:100%; display:flex; justify-content:center; }
@@ -2252,6 +2280,7 @@
         const navLoginLink = document.getElementById('navLoginLink');
         const navUserMenu = document.getElementById('navUserMenu');
         const navUserGreeting = document.getElementById('navUserGreeting');
+        const navProfileBtn = document.getElementById('navProfileBtn');
         const navLogoutBtn = document.getElementById('navLogoutBtn');
 
         function getToken() {
@@ -2393,7 +2422,7 @@
                     applyLoggedInUI(data.user);
                     showFormMsg(jobseekerMsg, 'Account created! Welcome to NextStep.', 'success');
                     jobseekerForm.reset();
-                    window.setTimeout(() => closeAllModals(), 1200);
+                    window.setTimeout(() => { closeAllModals(); openProfile(); }, 1200);
                 } else {
                     showFormMsg(jobseekerMsg, data.error || 'Something went wrong. Please try again.', 'error');
                 }
@@ -2446,7 +2475,7 @@
                     applyLoggedInUI(data.user);
                     showFormMsg(employerMsg, 'Account created! Welcome to NextStep.', 'success');
                     employerForm.reset();
-                    window.setTimeout(() => closeAllModals(), 1200);
+                    window.setTimeout(() => { closeAllModals(); openProfile(); }, 1200);
                 } else {
                     showFormMsg(employerMsg, data.error || 'Something went wrong. Please try again.', 'error');
                 }
@@ -2879,6 +2908,7 @@
         });
 
         navUserGreeting.addEventListener('click', openProfile);
+        navProfileBtn.addEventListener('click', openProfile);
     </script>
 
     <script>
