@@ -118,9 +118,26 @@ const resumeUpload = multer({
   },
 }).single('resume');
 
-// ---------------------------------------------------------------------------
-// Table setup
-// ---------------------------------------------------------------------------
+// Separate storage/upload config for customer profile photos (own Cloudinary folder).
+const avatarStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'nextstep-avatars',
+    resource_type: 'image',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+  },
+});
+
+const avatarUpload = multer({
+  storage: avatarStorage,
+  limits: { fileSize: 3 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype);
+    cb(ok ? null : new Error('Only JPG, PNG, or WEBP images are allowed.'), ok);
+  },
+}).single('avatar');
+
+
 (async () => {
   try {
     await pool.query(`
@@ -318,7 +335,31 @@ const resumeUpload = multer({
         ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
     `);
 
-    console.log('Connected to PostgreSQL — contacts, student_applications, jobseeker_applications, employer_inquiries, users, events, destinations, site_settings, invoices & todos tables ready.');
+    // -------------------------------------------------------------------
+    // LinkedIn-style extras on the customer profile.
+    // -------------------------------------------------------------------
+    await pool.query(`
+      ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS avatar_url TEXT,
+        ADD COLUMN IF NOT EXISTS headline TEXT,
+        ADD COLUMN IF NOT EXISTS bio TEXT,
+        ADD COLUMN IF NOT EXISTS location TEXT,
+        ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN NOT NULL DEFAULT false;
+    `);
+
+    // Direct messaging between a customer account and NSI staff/admin.
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS customer_messages (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        sender TEXT NOT NULL CHECK (sender IN ('customer','admin')),
+        message TEXT NOT NULL,
+        is_read BOOLEAN NOT NULL DEFAULT false,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    console.log('Connected to PostgreSQL — contacts, student_applications, jobseeker_applications, employer_inquiries, users, customer_messages, events, destinations, site_settings, invoices & todos tables ready.');
   } catch (err) {
     console.error('Database connection/setup error:', err.message);
   }
@@ -611,6 +652,9 @@ router.post('/auth/login', async (req, res) => {
     if (!user || !user.password_hash) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
+    if (user.is_suspended) {
+      return res.status(403).json({ error: 'This account has been suspended. Please contact NextStep Immigration for help.' });
+    }
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       return res.status(401).json({ error: 'Invalid email or password.' });
@@ -629,7 +673,11 @@ router.get('/auth/me', requireUser, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
     if (!rows[0]) return res.status(401).json({ error: 'Account no longer exists.' });
-    res.json({ user: publicUser(rows[0]) });
+    const { rows: unreadRows } = await pool.query(
+      "SELECT COUNT(*)::int AS count FROM customer_messages WHERE user_id = $1 AND sender = 'admin' AND is_read = false",
+      [req.user.id]
+    );
+    res.json({ user: publicUser(rows[0]), unreadMessages: unreadRows[0].count });
   } catch (err) {
     console.error('Auth /me error:', err.message);
     res.status(500).json({ error: 'Could not load your session.' });
@@ -679,18 +727,24 @@ router.put('/auth/profile', requireUser, async (req, res) => {
         `UPDATE users SET
            full_name = COALESCE($1, full_name),
            phone = COALESCE($2, phone),
-           job_title = COALESCE($3, job_title)
-         WHERE id = $4 RETURNING *`,
-        [b.full_name ?? null, b.phone ?? null, b.job_title ?? null, user.id]
+           job_title = COALESCE($3, job_title),
+           headline = COALESCE($4, headline),
+           bio = COALESCE($5, bio),
+           location = COALESCE($6, location)
+         WHERE id = $7 RETURNING *`,
+        [b.full_name ?? null, b.phone ?? null, b.job_title ?? null, b.headline ?? null, b.bio ?? null, b.location ?? null, user.id]
       );
     } else {
       result = await pool.query(
         `UPDATE users SET
            company_name = COALESCE($1, company_name),
            contact_name = COALESCE($2, contact_name),
-           phone = COALESCE($3, phone)
-         WHERE id = $4 RETURNING *`,
-        [b.company_name ?? null, b.contact_name ?? null, b.phone ?? null, user.id]
+           phone = COALESCE($3, phone),
+           headline = COALESCE($4, headline),
+           bio = COALESCE($5, bio),
+           location = COALESCE($6, location)
+         WHERE id = $7 RETURNING *`,
+        [b.company_name ?? null, b.contact_name ?? null, b.phone ?? null, b.headline ?? null, b.bio ?? null, b.location ?? null, user.id]
       );
     }
 
@@ -698,6 +752,71 @@ router.put('/auth/profile', requireUser, async (req, res) => {
   } catch (err) {
     console.error('Profile update error:', err.message);
     res.status(500).json({ error: 'Could not update your profile.' });
+  }
+});
+
+// Profile photo upload — separate endpoint so the rest of the profile form
+// can stay a plain JSON PUT.
+router.post('/auth/profile/avatar', requireUser, (req, res) => {
+  avatarUpload(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      const message = uploadErr.code === 'LIMIT_FILE_SIZE'
+        ? 'Your photo is larger than 3MB.'
+        : uploadErr.message || 'Photo upload failed.';
+      return res.status(400).json({ error: message });
+    }
+    if (!req.file) return res.status(400).json({ error: 'No photo was uploaded.' });
+
+    try {
+      const { rows } = await pool.query(
+        'UPDATE users SET avatar_url = $1 WHERE id = $2 RETURNING *',
+        [req.file.path, req.user.id]
+      );
+      res.json({ success: true, user: publicUser(rows[0]) });
+    } catch (err) {
+      console.error('Avatar update error:', err.message);
+      res.status(500).json({ error: 'Could not save your photo.' });
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Customer <-> NSI messaging
+// ---------------------------------------------------------------------------
+
+// The logged-in customer's own conversation thread.
+router.get('/messages', requireUser, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM customer_messages WHERE user_id = $1 ORDER BY created_at ASC',
+      [req.user.id]
+    );
+    // Opening the thread marks staff replies as read.
+    await pool.query(
+      "UPDATE customer_messages SET is_read = true WHERE user_id = $1 AND sender = 'admin' AND is_read = false",
+      [req.user.id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('Load messages error:', err.message);
+    res.status(500).json({ error: 'Could not load your messages.' });
+  }
+});
+
+router.post('/messages', requireUser, async (req, res) => {
+  const { message } = req.body;
+  if (!message || !message.trim()) {
+    return res.status(400).json({ error: 'Message cannot be empty.' });
+  }
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO customer_messages (user_id, sender, message) VALUES ($1, 'customer', $2) RETURNING *`,
+      [req.user.id, message.trim()]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error('Send message error:', err.message);
+    res.status(500).json({ error: 'Could not send your message.' });
   }
 });
 
@@ -1158,6 +1277,98 @@ router.delete('/admin/users/:id', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('Admin user delete error:', err.message);
     res.status(500).json({ error: 'Could not delete this account.' });
+  }
+});
+
+// Full admin control over a customer's profile — any field, including
+// suspending the account (blocks login without deleting their history).
+router.put('/admin/users/:id', requireAdmin, async (req, res) => {
+  const b = req.body;
+  try {
+    const { rows } = await pool.query(
+      `UPDATE users SET
+         full_name = COALESCE($1, full_name),
+         phone = COALESCE($2, phone),
+         job_title = COALESCE($3, job_title),
+         headline = COALESCE($4, headline),
+         bio = COALESCE($5, bio),
+         location = COALESCE($6, location),
+         company_name = COALESCE($7, company_name),
+         contact_name = COALESCE($8, contact_name),
+         headcount = COALESCE($9, headcount),
+         is_suspended = COALESCE($10, is_suspended)
+       WHERE id = $11 RETURNING *`,
+      [
+        b.full_name ?? null, b.phone ?? null, b.job_title ?? null, b.headline ?? null,
+        b.bio ?? null, b.location ?? null, b.company_name ?? null, b.contact_name ?? null,
+        b.headcount ?? null, typeof b.is_suspended === 'boolean' ? b.is_suspended : null,
+        req.params.id,
+      ]
+    );
+    if (!rows[0]) return res.status(404).json({ error: 'Account not found.' });
+    res.json({ success: true, user: rows[0] });
+  } catch (err) {
+    console.error('Admin user update error:', err.message);
+    res.status(500).json({ error: 'Could not update this account.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Admin (protected): customer messaging
+// ---------------------------------------------------------------------------
+
+// One row per customer who has an active conversation, with their latest
+// message and an unread count — the admin "inbox" list.
+router.get('/admin/messages', requireAdmin, async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT u.id AS user_id, u.role, u.email,
+             COALESCE(u.company_name, u.full_name) AS name,
+             m.message AS last_message, m.sender AS last_sender, m.created_at AS last_at,
+             (SELECT COUNT(*)::int FROM customer_messages WHERE user_id = u.id AND sender = 'customer' AND is_read = false) AS unread_count
+      FROM customer_messages m
+      JOIN users u ON u.id = m.user_id
+      WHERE m.id IN (SELECT MAX(id) FROM customer_messages GROUP BY user_id)
+      ORDER BY m.created_at DESC
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error('Admin messages inbox error:', err.message);
+    res.status(500).json({ error: 'Could not load messages.' });
+  }
+});
+
+router.get('/admin/messages/:userId', requireAdmin, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM customer_messages WHERE user_id = $1 ORDER BY created_at ASC',
+      [req.params.userId]
+    );
+    await pool.query(
+      "UPDATE customer_messages SET is_read = true WHERE user_id = $1 AND sender = 'customer' AND is_read = false",
+      [req.params.userId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('Admin messages thread error:', err.message);
+    res.status(500).json({ error: 'Could not load this conversation.' });
+  }
+});
+
+router.post('/admin/messages/:userId', requireAdmin, async (req, res) => {
+  const { message } = req.body;
+  if (!message || !message.trim()) {
+    return res.status(400).json({ error: 'Message cannot be empty.' });
+  }
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO customer_messages (user_id, sender, message, is_read) VALUES ($1, 'admin', $2, true) RETURNING *`,
+      [req.params.userId, message.trim()]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error('Admin send message error:', err.message);
+    res.status(500).json({ error: 'Could not send your reply.' });
   }
 });
 
