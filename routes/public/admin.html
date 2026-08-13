@@ -1046,19 +1046,6 @@
 
     /* Icon buttons — bigger tap targets */
     .icon-btn{ padding:0.5rem 0.65rem; font-size:0.85rem; }
-
-    /* Messages panel — stack the inbox above the thread instead of side-by-side */
-    #panel-messages > div[style*="grid-template-columns:280px"]{
-      display:flex !important; flex-direction:column;
-    }
-    #messageInboxList{ max-height:220px !important; }
-    #messageThreadPanel{ min-height:320px !important; }
-    #threadMessages{ max-height:280px !important; }
-
-    /* Customer profile edit grid inside the detail modal */
-    #customerModalBody div[style*="grid-template-columns:1fr 1fr"]{
-      grid-template-columns:1fr !important;
-    }
   }
 
   /* ============================================================
@@ -1130,11 +1117,12 @@
           <div class="tab-group" aria-label="Inbox">
             <span class="tab-group-label">Inbox</span>
             <button class="tab-btn" data-tab="applications"><span class="tab-icon">📋</span>Student Applications</button>
+            <button class="tab-btn" data-tab="jobseeker-apps"><span class="tab-icon">🧑‍💼</span>Jobseeker Applications</button>
+            <button class="tab-btn" data-tab="employer-inquiries"><span class="tab-icon">🏢</span>Employer Inquiries</button>
             <button class="tab-btn" data-tab="student-form"><span class="tab-icon">🖨️</span>Student Form</button>
             <button class="tab-btn" data-tab="higher-ratio"><span class="tab-icon">🎯</span>Higher Ratio</button>
             <button class="tab-btn" data-tab="contacts"><span class="tab-icon">✉️</span>Contact Messages</button>
             <button class="tab-btn" data-tab="customers"><span class="tab-icon">👤</span>Customer Accounts</button>
-            <button class="tab-btn" data-tab="messages"><span class="tab-icon">💬</span>Messages<span id="messagesUnreadDot" style="display:none; width:8px; height:8px; border-radius:50%; background:#B3261E; margin-left:6px;"></span></button>
           </div>
           <div class="tab-divider"></div>
           <div class="tab-group" aria-label="Billing">
@@ -1321,6 +1309,58 @@
           </div>
           <div class="apps-grid" id="appsTableBody">
             <div class="empty-state">Loading applications…</div>
+          </div>
+        </section>
+
+        <!-- Jobseeker Applications panel (NextStep staffing gateway) -->
+        <section class="panel" id="panel-jobseeker-apps">
+          <div class="panel-header">
+            <h2>Jobseeker Applications</h2>
+            <p>Applications submitted on the staffing gateway — with or without an account.</p>
+          </div>
+          <div class="toolbar">
+            <div class="left">
+              <input type="text" id="jsAppSearch" class="search-input" placeholder="Search by name or email…" />
+              <select id="jsAppStatusFilter">
+                <option value="">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="contacted">Contacted</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div>
+              <button class="btn-ghost" id="refreshJsAppsBtn">Refresh</button>
+            </div>
+          </div>
+          <div class="apps-grid" id="jsAppsTableBody">
+            <div class="empty-state">Loading jobseeker applications…</div>
+          </div>
+        </section>
+
+        <!-- Employer Inquiries panel (NextStep staffing gateway) -->
+        <section class="panel" id="panel-employer-inquiries">
+          <div class="panel-header">
+            <h2>Employer Inquiries</h2>
+            <p>Staffing requests submitted by employers — with or without an account.</p>
+          </div>
+          <div class="toolbar">
+            <div class="left">
+              <input type="text" id="empInqSearch" class="search-input" placeholder="Search by company or email…" />
+              <select id="empInqStatusFilter">
+                <option value="">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="contacted">Contacted</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div>
+              <button class="btn-ghost" id="refreshEmpInqBtn">Refresh</button>
+            </div>
+          </div>
+          <div class="apps-grid" id="empInqTableBody">
+            <div class="empty-state">Loading employer inquiries…</div>
           </div>
         </section>
 
@@ -1619,30 +1659,6 @@
         <div class="detail-grid" id="customerModalBody"></div>
       </div>
     </div>
-
-    <!-- Messages panel -->
-    <section class="panel" id="panel-messages">
-      <div class="panel-header">
-        <h2>Messages</h2>
-        <p>Conversations with jobseekers and employers. Replies go straight to their profile inbox.</p>
-      </div>
-      <div class="toolbar">
-        <div class="left">
-          <input type="text" id="messageInboxSearch" class="search-input" placeholder="Search by name or email…" />
-        </div>
-        <div>
-          <button class="btn-ghost" id="refreshMessagesBtn">Refresh</button>
-        </div>
-      </div>
-      <div style="display:grid; grid-template-columns:280px 1fr; gap:1rem; align-items:start;">
-        <div class="contacts-grid" id="messageInboxList" style="grid-template-columns:1fr; max-height:560px; overflow-y:auto;">
-          <div class="empty-state">Loading conversations…</div>
-        </div>
-        <div id="messageThreadPanel" style="border:1px solid var(--border); border-radius:12px; padding:1rem; min-height:400px; display:flex; flex-direction:column;">
-          <p style="color:var(--text-muted); font-size:0.9rem;">Select a conversation to view messages.</p>
-        </div>
-      </div>
-    </section>
 
     <!-- Destinations panel -->
     <section class="panel" id="panel-destinations">
@@ -2676,6 +2692,229 @@
   $('#statusFilter').addEventListener('change', renderApplications);
   $('#refreshAppsBtn').addEventListener('click', loadApplications);
 
+  // ---------------- Jobseeker Applications (staffing gateway) ----------------
+  let jobseekerApplications = [];
+
+  async function loadJobseekerApplications() {
+    const grid = $('#jsAppsTableBody');
+    if (!grid) return;
+    grid.innerHTML = `<div class="empty-state">Loading jobseeker applications…</div>`;
+    try {
+      const res = await apiFetch('/admin/jobseeker-applications');
+      if (!res.ok) throw new Error('Failed to load jobseeker applications.');
+      jobseekerApplications = await res.json();
+      renderJobseekerApplications();
+    } catch (err) {
+      grid.innerHTML = `<div class="empty-state">${err.message}</div>`;
+    }
+  }
+
+  function renderJobseekerApplications() {
+    const grid = $('#jsAppsTableBody');
+    if (!grid) return;
+    const search = ($('#jsAppSearch').value || '').trim().toLowerCase();
+    const statusFilter = $('#jsAppStatusFilter').value;
+
+    let rows = jobseekerApplications.filter((a) => {
+      const matchesSearch = !search
+        || (a.full_name || '').toLowerCase().includes(search)
+        || (a.email || '').toLowerCase().includes(search);
+      const matchesStatus = !statusFilter || (a.status || 'pending') === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+    if (rows.length === 0) {
+      grid.innerHTML = `<div class="empty-state">No jobseeker applications found.</div>`;
+      return;
+    }
+
+    grid.innerHTML = rows.map((a) => `
+      <div class="app-card">
+        <div class="app-card-head">
+          <div class="app-avatar">${escapeHtml(initials(a.full_name))}</div>
+          <div class="app-card-id">
+            <div class="app-name">${escapeHtml(a.full_name)}${a.user_id ? ' <span style="font-weight:500; color:var(--text-muted); font-size:0.78rem;">(has account)</span>' : ''}</div>
+            <div class="app-email">${escapeHtml(a.email)}</div>
+          </div>
+        </div>
+        <div class="app-facts">
+          <div><div class="fact-label">Phone</div><div class="fact-value">${escapeHtml(a.phone || '—')}</div></div>
+          <div><div class="fact-label">Country</div><div class="fact-value">${escapeHtml(a.country || '—')}</div></div>
+          <div><div class="fact-label">Field</div><div class="fact-value">${escapeHtml(a.field || '—')}</div></div>
+          <div><div class="fact-label">Experience</div><div class="fact-value">${a.experience_years != null ? escapeHtml(String(a.experience_years)) + ' yrs' : '—'}</div></div>
+          <div><div class="fact-label">Submitted</div><div class="fact-value">${fmtDate(a.created_at)}</div></div>
+          <div><div class="fact-label">App ID</div><div class="fact-value">#${a.id}</div></div>
+        </div>
+        ${a.message ? `<div style="font-size:0.85rem; color:var(--text-muted); margin:0.4rem 0;">${escapeHtml(a.message)}</div>` : ''}
+        <div class="app-card-foot">
+          <select class="js-status-select" data-id="${a.id}">
+            ${['pending','reviewed','contacted','rejected'].map(s =>
+              `<option value="${s}" ${s === (a.status || 'pending') ? 'selected' : ''}>${statusLabel(s)}</option>`
+            ).join('')}
+          </select>
+          <div class="app-card-actions">
+            ${a.resume_url ? `<a class="icon-btn" href="${escapeHtml(a.resume_url)}" target="_blank" rel="noopener">View resume</a>` : ''}
+            <button class="icon-btn danger" data-delete-js-app="${a.id}">Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  if ($('#jsAppSearch')) $('#jsAppSearch').addEventListener('input', renderJobseekerApplications);
+  if ($('#jsAppStatusFilter')) $('#jsAppStatusFilter').addEventListener('change', renderJobseekerApplications);
+  if ($('#refreshJsAppsBtn')) $('#refreshJsAppsBtn').addEventListener('click', loadJobseekerApplications);
+
+  const jsAppsGrid = $('#jsAppsTableBody');
+  if (jsAppsGrid) {
+    jsAppsGrid.addEventListener('change', async (e) => {
+      if (!e.target.classList.contains('js-status-select')) return;
+      const id = e.target.dataset.id;
+      const status = e.target.value;
+      try {
+        const res = await apiFetch(`/admin/jobseeker-applications/${id}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not update status.');
+        const app = jobseekerApplications.find((a) => a.id === Number(id));
+        if (app) app.status = status;
+        toast('Status updated.');
+      } catch (err) {
+        toast(err.message, true);
+        loadJobseekerApplications();
+      }
+    });
+
+    jsAppsGrid.addEventListener('click', async (e) => {
+      const delBtn = e.target.closest('[data-delete-js-app]');
+      if (!delBtn) return;
+      const id = delBtn.dataset.deleteJsApp;
+      if (!confirm('Delete this jobseeker application permanently?')) return;
+      try {
+        const res = await apiFetch(`/admin/jobseeker-applications/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Could not delete application.');
+        jobseekerApplications = jobseekerApplications.filter((a) => a.id !== Number(id));
+        renderJobseekerApplications();
+        toast('Application deleted.');
+      } catch (err) {
+        toast(err.message, true);
+      }
+    });
+  }
+
+  // ---------------- Employer Inquiries (staffing gateway) ----------------
+  let employerInquiries = [];
+
+  async function loadEmployerInquiries() {
+    const grid = $('#empInqTableBody');
+    if (!grid) return;
+    grid.innerHTML = `<div class="empty-state">Loading employer inquiries…</div>`;
+    try {
+      const res = await apiFetch('/admin/employer-inquiries');
+      if (!res.ok) throw new Error('Failed to load employer inquiries.');
+      employerInquiries = await res.json();
+      renderEmployerInquiries();
+    } catch (err) {
+      grid.innerHTML = `<div class="empty-state">${err.message}</div>`;
+    }
+  }
+
+  function renderEmployerInquiries() {
+    const grid = $('#empInqTableBody');
+    if (!grid) return;
+    const search = ($('#empInqSearch').value || '').trim().toLowerCase();
+    const statusFilter = $('#empInqStatusFilter').value;
+
+    let rows = employerInquiries.filter((i) => {
+      const matchesSearch = !search
+        || (i.company_name || '').toLowerCase().includes(search)
+        || (i.email || '').toLowerCase().includes(search);
+      const matchesStatus = !statusFilter || (i.status || 'pending') === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+    if (rows.length === 0) {
+      grid.innerHTML = `<div class="empty-state">No employer inquiries found.</div>`;
+      return;
+    }
+
+    grid.innerHTML = rows.map((i) => `
+      <div class="app-card">
+        <div class="app-card-head">
+          <div class="app-avatar">${escapeHtml(initials(i.company_name))}</div>
+          <div class="app-card-id">
+            <div class="app-name">${escapeHtml(i.company_name)}${i.user_id ? ' <span style="font-weight:500; color:var(--text-muted); font-size:0.78rem;">(has account)</span>' : ''}</div>
+            <div class="app-email">${escapeHtml(i.email)}</div>
+          </div>
+        </div>
+        <div class="app-facts">
+          <div><div class="fact-label">Contact</div><div class="fact-value">${escapeHtml(i.contact_name || '—')}</div></div>
+          <div><div class="fact-label">Phone</div><div class="fact-value">${escapeHtml(i.phone || '—')}</div></div>
+          <div><div class="fact-label">Industry</div><div class="fact-value">${escapeHtml(i.industry || '—')}</div></div>
+          <div><div class="fact-label">Headcount</div><div class="fact-value">${i.headcount != null ? escapeHtml(String(i.headcount)) : '—'}</div></div>
+          <div><div class="fact-label">Submitted</div><div class="fact-value">${fmtDate(i.created_at)}</div></div>
+          <div><div class="fact-label">ID</div><div class="fact-value">#${i.id}</div></div>
+        </div>
+        ${i.message ? `<div style="font-size:0.85rem; color:var(--text-muted); margin:0.4rem 0;">${escapeHtml(i.message)}</div>` : ''}
+        <div class="app-card-foot">
+          <select class="emp-status-select" data-id="${i.id}">
+            ${['pending','reviewed','contacted','rejected'].map(s =>
+              `<option value="${s}" ${s === (i.status || 'pending') ? 'selected' : ''}>${statusLabel(s)}</option>`
+            ).join('')}
+          </select>
+          <div class="app-card-actions">
+            <button class="icon-btn danger" data-delete-emp-inq="${i.id}">Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  if ($('#empInqSearch')) $('#empInqSearch').addEventListener('input', renderEmployerInquiries);
+  if ($('#empInqStatusFilter')) $('#empInqStatusFilter').addEventListener('change', renderEmployerInquiries);
+  if ($('#refreshEmpInqBtn')) $('#refreshEmpInqBtn').addEventListener('click', loadEmployerInquiries);
+
+  const empInqGrid = $('#empInqTableBody');
+  if (empInqGrid) {
+    empInqGrid.addEventListener('change', async (e) => {
+      if (!e.target.classList.contains('emp-status-select')) return;
+      const id = e.target.dataset.id;
+      const status = e.target.value;
+      try {
+        const res = await apiFetch(`/admin/employer-inquiries/${id}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not update status.');
+        const inq = employerInquiries.find((i) => i.id === Number(id));
+        if (inq) inq.status = status;
+        toast('Status updated.');
+      } catch (err) {
+        toast(err.message, true);
+        loadEmployerInquiries();
+      }
+    });
+
+    empInqGrid.addEventListener('click', async (e) => {
+      const delBtn = e.target.closest('[data-delete-emp-inq]');
+      if (!delBtn) return;
+      const id = delBtn.dataset.deleteEmpInq;
+      if (!confirm('Delete this employer inquiry permanently?')) return;
+      try {
+        const res = await apiFetch(`/admin/employer-inquiries/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Could not delete inquiry.');
+        employerInquiries = employerInquiries.filter((i) => i.id !== Number(id));
+        renderEmployerInquiries();
+        toast('Inquiry deleted.');
+      } catch (err) {
+        toast(err.message, true);
+      }
+    });
+  }
+
   $('#appsTableBody').addEventListener('change', async (e) => {
     if (!e.target.classList.contains('status-select')) return;
     const id = e.target.dataset.id;
@@ -3430,33 +3669,12 @@
 
       $('#customerModalBody').innerHTML = `
         <div class="detail-row"><b>Role</b><span style="text-transform:capitalize;">${escapeHtml(u.role)}</span></div>
+        <div class="detail-row"><b>Phone</b><span>${escapeHtml(u.phone || '—')}</span></div>
+        ${u.role === 'employer' ? `<div class="detail-row"><b>Contact person</b><span>${escapeHtml(u.contact_name || '—')}</span></div>
+        <div class="detail-row"><b>Headcount need</b><span>${escapeHtml(u.headcount || '—')}</span></div>` : `<div class="detail-row"><b>Job title</b><span>${escapeHtml(u.job_title || '—')}</span></div>`}
         <div class="detail-row"><b>Joined</b><span>${fmtDate(u.created_at)}</span></div>
-        <div class="detail-row" style="grid-column:1 / -1;">
-          <b>Full profile (editable)</b>
-          <div class="ns-form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.4rem;">
-            ${u.role === 'employer' ? `
-              <label style="font-size:0.8rem;">Company Name<input type="text" id="cust_company_name" value="${escapeHtml(u.company_name)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
-              <label style="font-size:0.8rem;">Contact Name<input type="text" id="cust_contact_name" value="${escapeHtml(u.contact_name)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
-              <label style="font-size:0.8rem;">Headcount need<input type="number" id="cust_headcount" value="${escapeHtml(u.headcount)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
-            ` : `
-              <label style="font-size:0.8rem;">Full Name<input type="text" id="cust_full_name" value="${escapeHtml(u.full_name)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
-              <label style="font-size:0.8rem;">Job Title<input type="text" id="cust_job_title" value="${escapeHtml(u.job_title)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
-            `}
-            <label style="font-size:0.8rem;">Phone<input type="text" id="cust_phone" value="${escapeHtml(u.phone)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
-            <label style="font-size:0.8rem;">Headline<input type="text" id="cust_headline" value="${escapeHtml(u.headline)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
-            <label style="font-size:0.8rem;">Location<input type="text" id="cust_location" value="${escapeHtml(u.location)}" style="width:100%; padding:0.4rem; margin-top:2px;" /></label>
-            <label style="font-size:0.8rem; grid-column:1 / -1;">About<textarea id="cust_bio" rows="2" style="width:100%; padding:0.4rem; margin-top:2px;">${escapeHtml(u.bio)}</textarea></label>
-          </div>
-          <div style="display:flex; align-items:center; gap:0.6rem; margin-top:0.6rem;">
-            <button class="btn-brass" id="customerSaveBtn" type="button">Save profile</button>
-            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.85rem;">
-              <input type="checkbox" id="cust_suspended" ${u.is_suspended ? 'checked' : ''} /> Suspend account (blocks login)
-            </label>
-          </div>
-        </div>
         ${itemsHtml}
       `;
-      $('#customerSaveBtn').addEventListener('click', () => saveCustomerProfile(id, u.role));
     } catch (err) {
       $('#customerModalName').textContent = 'Error';
       $('#customerModalBody').innerHTML = `<div class="detail-row" style="grid-column:1 / -1;">${err.message}</div>`;
@@ -3467,130 +3685,6 @@
   $('#customerModalOverlay').addEventListener('click', (e) => {
     if (e.target === $('#customerModalOverlay')) $('#customerModalOverlay').classList.remove('open');
   });
-
-  async function saveCustomerProfile(id, role) {
-    const btn = $('#customerSaveBtn');
-    btn.disabled = true;
-    btn.textContent = 'Saving…';
-    const payload = {
-      phone: $('#cust_phone').value,
-      headline: $('#cust_headline').value,
-      location: $('#cust_location').value,
-      bio: $('#cust_bio').value,
-      is_suspended: $('#cust_suspended').checked,
-    };
-    if (role === 'employer') {
-      payload.company_name = $('#cust_company_name').value;
-      payload.contact_name = $('#cust_contact_name').value;
-      payload.headcount = $('#cust_headcount').value || null;
-    } else {
-      payload.full_name = $('#cust_full_name').value;
-      payload.job_title = $('#cust_job_title').value;
-    }
-
-    try {
-      const res = await apiFetch(`/admin/users/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Could not save changes.');
-      toast('Customer profile updated.');
-      loadCustomers();
-    } catch (err) {
-      toast(err.message, true);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Save profile';
-    }
-  }
-
-  // ---------------- Messages ----------------
-  let activeThreadUserId = null;
-
-  async function loadMessageInbox() {
-    const list = $('#messageInboxList');
-    list.innerHTML = `<div class="empty-state">Loading conversations…</div>`;
-    try {
-      const res = await apiFetch('/admin/messages');
-      if (!res.ok) throw new Error('Failed to load messages.');
-      const threads = await res.json();
-      const search = $('#messageInboxSearch').value.trim().toLowerCase();
-      const rows = threads.filter((t) => !search || (t.name || '').toLowerCase().includes(search) || t.email.toLowerCase().includes(search));
-
-      const hasUnread = threads.some((t) => t.unread_count > 0);
-      $('#messagesUnreadDot').style.display = hasUnread ? 'inline-block' : 'none';
-
-      if (!rows.length) {
-        list.innerHTML = `<div class="empty-state">No conversations yet.</div>`;
-        return;
-      }
-      list.innerHTML = rows.map((t) => `
-        <div class="contact-card" data-thread-user="${t.user_id}" style="cursor:pointer; ${activeThreadUserId == t.user_id ? 'border-color:var(--blue);' : ''}">
-          <div class="contact-card-head">
-            <div class="contact-name">${escapeHtml(t.name || t.email)} ${t.unread_count > 0 ? `<span style="background:#B3261E; color:#fff; border-radius:10px; font-size:0.68rem; padding:1px 6px; margin-left:4px;">${t.unread_count}</span>` : ''}</div>
-          </div>
-          <div class="contact-message" style="-webkit-line-clamp:2;">${t.last_sender === 'admin' ? 'You: ' : ''}${escapeHtml((t.last_message || '').slice(0, 80))}</div>
-        </div>
-      `).join('');
-    } catch (err) {
-      list.innerHTML = `<div class="empty-state">${err.message}</div>`;
-    }
-  }
-
-  $('#messageInboxSearch').addEventListener('input', loadMessageInbox);
-  $('#refreshMessagesBtn').addEventListener('click', loadMessageInbox);
-
-  $('#messageInboxList').addEventListener('click', (e) => {
-    const card = e.target.closest('[data-thread-user]');
-    if (!card) return;
-    openThread(card.dataset.threadUser);
-  });
-
-  async function openThread(userId) {
-    activeThreadUserId = Number(userId);
-    const panel = $('#messageThreadPanel');
-    panel.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Loading…</p>`;
-    try {
-      const res = await apiFetch(`/admin/messages/${userId}`);
-      if (!res.ok) throw new Error('Could not load this conversation.');
-      const messages = await res.json();
-      panel.innerHTML = `
-        <div id="threadMessages" style="flex:1; display:flex; flex-direction:column; gap:0.5rem; overflow-y:auto; max-height:420px; margin-bottom:0.75rem;">
-          ${messages.map((m) => `
-            <div style="max-width:75%; align-self:${m.sender === 'admin' ? 'flex-end' : 'flex-start'}; background:${m.sender === 'admin' ? 'var(--blue)' : 'var(--bg-light)'}; color:${m.sender === 'admin' ? '#fff' : 'var(--text)'}; padding:0.5rem 0.75rem; border-radius:10px; font-size:0.85rem;">
-              ${escapeHtml(m.message)}
-              <div style="font-size:0.68rem; opacity:0.7; margin-top:0.2rem;">${new Date(m.created_at).toLocaleString()}</div>
-            </div>
-          `).join('') || '<p style="color:var(--text-muted); font-size:0.85rem;">No messages yet.</p>'}
-        </div>
-        <form id="threadReplyForm" style="display:flex; gap:0.5rem;">
-          <input type="text" id="threadReplyInput" placeholder="Type a reply…" style="flex:1; padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px;" required />
-          <button class="btn-brass" type="submit">Send</button>
-        </form>
-      `;
-      const threadMessages = $('#threadMessages');
-      threadMessages.scrollTop = threadMessages.scrollHeight;
-      $('#threadReplyForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const input = $('#threadReplyInput');
-        const text = input.value.trim();
-        if (!text) return;
-        try {
-          const r = await apiFetch(`/admin/messages/${userId}`, { method: 'POST', body: JSON.stringify({ message: text }) });
-          if (!r.ok) throw new Error('Could not send reply.');
-          input.value = '';
-          openThread(userId);
-          loadMessageInbox();
-        } catch (err) {
-          toast(err.message, true);
-        }
-      });
-      loadMessageInbox();
-    } catch (err) {
-      panel.innerHTML = `<p style="color:#B3261E; font-size:0.9rem;">${err.message}</p>`;
-    }
-  }
 
   // ---------------- Export ----------------
   $('#exportBtn').addEventListener('click', async () => {
@@ -4613,9 +4707,10 @@
     renderHomeOverview();
     loadStats();
     loadApplications();
+    loadJobseekerApplications();
+    loadEmployerInquiries();
     loadContacts();
     loadCustomers();
-    loadMessageInbox();
     loadDestinations();
     loadEvents();
     loadInvoices();
