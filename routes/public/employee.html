@@ -2209,23 +2209,24 @@
                         <input type="text" id="gjs_country" name="country" placeholder="e.g. Poland" />
                     </div>
                 </div>
-                <div class="ns-form-row">
-                    <div class="ns-form-group">
-                        <label>Field / Sector</label>
-                        <input type="text" id="gjs_field" name="field" placeholder="e.g. Construction" />
-                    </div>
-                    <div class="ns-form-group">
-                        <label>Years of Experience</label>
-                        <input type="number" id="gjs_experience" name="experience_years" min="0" />
-                    </div>
+                <h4 class="ns-form-subhead">Which sector do you have experience in?</h4>
+                <div class="ns-checkbox-row">
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Construction" /><span>🏗️ Construction</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Elderly care" /><span>👵 Elderly care</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Agriculture" /><span>🌾 Agriculture</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Warehousing & logistics" /><span>📦 Warehousing & logistics</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Cleaning" /><span>🧹 Cleaning</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Transport" /><span>🚛 Transport</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Skilled trades" /><span>🛠️ Skilled trades</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Recycling/waste" /><span>♻️ Recycling/waste</span></label>
+                </div>
+                <div class="ns-form-group">
+                    <label>Years of Experience</label>
+                    <input type="number" id="gjs_experience" name="experience_years" min="0" />
                 </div>
                 <div class="ns-form-group">
                     <label>Message</label>
                     <textarea id="gjs_message" name="message" rows="3" placeholder="Anything else we should know?"></textarea>
-                </div>
-                <div class="ns-form-group">
-                    <label>Resume (PDF or Word, optional)</label>
-                    <input type="file" id="gjs_resume" name="resume" accept=".pdf,.doc,.docx" />
                 </div>
                 <button type="submit" class="btn btn-blue" id="guestJobseekerSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Submit application</button>
                 <p class="ns-form-switch">Want to track your application? <a href="#" data-switch-to="jobseeker">Create a free account instead</a></p>
@@ -2261,15 +2262,20 @@
                         <input type="tel" id="gem_phone" name="phone" />
                     </div>
                 </div>
-                <div class="ns-form-row">
-                    <div class="ns-form-group">
-                        <label>Industry</label>
-                        <input type="text" id="gem_industry" name="industry" />
-                    </div>
-                    <div class="ns-form-group">
-                        <label>Headcount Needed</label>
-                        <input type="number" id="gem_headcount" name="headcount" min="1" />
-                    </div>
+                <h4 class="ns-form-subhead">Which sector are you hiring for?</h4>
+                <div class="ns-checkbox-row">
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Construction" /><span>🏗️ Construction</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Elderly care" /><span>👵 Elderly care</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Agriculture" /><span>🌾 Agriculture</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Warehousing & logistics" /><span>📦 Warehousing & logistics</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Cleaning" /><span>🧹 Cleaning</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Transport" /><span>🚛 Transport</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Skilled trades" /><span>🛠️ Skilled trades</span></label>
+                    <label class="ns-checkbox-pill"><input type="checkbox" name="industries" value="Recycling/waste" /><span>♻️ Recycling/waste</span></label>
+                </div>
+                <div class="ns-form-group">
+                    <label>Headcount Needed</label>
+                    <input type="number" id="gem_headcount" name="headcount" min="1" />
                 </div>
                 <div class="ns-form-group">
                     <label>Message</label>
