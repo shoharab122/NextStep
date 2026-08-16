@@ -981,16 +981,22 @@
     .about-figures{ gap:0.85rem; }
     #testimonials .section-head{ text-align:center; }
     .footer-grid{
-      grid-template-columns:1fr 0.7fr 0.9fr; gap:0.75rem; text-align:left;
+      grid-template-columns:1fr 1fr; gap:1.5rem 0.75rem; text-align:left;
       font-size:0.8em;
     }
-    .footer-grid > div:first-child{ order:0; }
+    .footer-grid > div:first-child{
+      order:0; grid-column:1 / -1; display:flex; flex-direction:column; align-items:center; text-align:center;
+      padding-bottom:1.25rem; margin-bottom:0.25rem; border-bottom:1px solid var(--line-light);
+    }
+    .footer-grid > div:first-child p{ text-align:center; }
     .footer-links{ align-items:flex-start; gap:0.5rem; }
     .footer-grid h4{ font-size:0.95rem; margin-bottom:0.6rem; }
     .footer-grid > div:first-child h4{ font-size:1rem; }
     .footer-grid h4::after{ left:0; transform:none; width:22px; }
-    .footer-grid > div:nth-child(3) p{ justify-content:flex-start; flex-wrap:wrap; word-break:break-word; }
-    .footer-address{ padding:0.6rem 0.65rem !important; gap:0.5rem !important; }
+    .footer-grid > div:nth-child(3) p{ justify-content:flex-start; flex-wrap:wrap; word-break:break-word; text-align:left; }
+    .footer-office-eu{ grid-column:1; }
+    .footer-office-bd{ grid-column:2; }
+    .footer-address{ padding:0.55rem 0.6rem !important; gap:0.5rem !important; max-width:none; margin:0 0 0.6rem; }
     .footer-address .ico{ width:22px; height:22px; font-size:0.75rem; }
     .footer-address b{ font-size:0.82rem; }
     .footer-links a:hover{ transform:none; }
@@ -1009,20 +1015,6 @@
     .card, .problem-card, .figure-card{ padding:1.5rem 1.25rem; }
     .btn-primary, .btn-ghost{ min-height:48px; }
     nav.main-nav a{ font-size:1.02rem; }
-    .footer-grid{
-      grid-template-columns:1fr 1fr; gap:1.5rem 0.75rem; font-size:0.8em; text-align:left;
-    }
-    .footer-grid > div:first-child{
-      grid-column:1 / -1; display:flex; flex-direction:column; align-items:center; text-align:center;
-      padding-bottom:1.25rem; margin-bottom:0.25rem; border-bottom:1px solid var(--line-light);
-    }
-    .footer-grid > div:first-child p{ text-align:center; }
-    .footer-links{ align-items:flex-start; }
-    .footer-office-eu{ grid-column:1; }
-    .footer-office-bd{ grid-column:2; }
-    .footer-grid > div:nth-child(3) p{ justify-content:flex-start; text-align:left; }
-    .footer-address{ text-align:left; max-width:none; margin:0 0 0.6rem; padding:0.55rem 0.6rem !important; }
-    .footer-social-row{ justify-content:flex-start !important; }
   }
 
   /* ============================================================
