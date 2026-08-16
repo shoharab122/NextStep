@@ -2626,15 +2626,16 @@
                 display:flex; flex-direction:column; overflow:hidden;
             }
             .ns-profile-modal .ns-modal-close{
-                position:static; top:auto; right:auto;
-                width:36px; height:36px; border-radius:50%;
+                position:absolute;
+                top:calc(0.7rem + env(safe-area-inset-top)); right:0.7rem;
+                width:38px; height:38px; border-radius:50%;
                 display:flex; align-items:center; justify-content:center;
-                background:rgba(255,255,255,0.18); color:#fff;
-                font-size:1.35rem; order:-1; margin-right:0.6rem; flex-shrink:0;
+                background:rgba(0,0,0,0.22); color:#fff;
+                font-size:1.4rem; line-height:1; z-index:5;
             }
             .ns-profile-header{
-                flex-shrink:0; margin:0; border-radius:0;
-                padding:calc(0.9rem + env(safe-area-inset-top)) 1rem 1rem;
+                flex-shrink:0; margin:0; border-radius:0; position:relative;
+                padding:calc(0.9rem + env(safe-area-inset-top)) 3rem 1rem 1rem;
             }
             #profileAvatarImg, .ns-profile-avatar{ width:58px !important; height:58px !important; }
             .ns-profile-header-text h3{ font-size:1.1rem; }
