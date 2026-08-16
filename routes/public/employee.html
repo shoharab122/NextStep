@@ -2289,30 +2289,30 @@
 
     <!-- Logged-in customer profile -->
     <div class="ns-modal-overlay" id="profileModal" aria-hidden="true">
-        <div class="ns-modal" style="max-width:560px;">
+        <div class="ns-modal ns-profile-modal" style="max-width:560px;">
             <button class="ns-modal-close" data-close-modal aria-label="Close">&times;</button>
 
-            <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
-                <div style="position:relative; flex-shrink:0;">
-                    <img id="profileAvatarImg" src="" alt="" style="width:64px; height:64px; border-radius:50%; object-fit:cover; background:var(--bg-light); border:1px solid var(--border);" />
-                    <label for="profileAvatarInput" style="position:absolute; bottom:-2px; right:-2px; background:var(--blue); color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; cursor:pointer;">✎</label>
+            <div class="ns-profile-header">
+                <div class="ns-profile-avatar-wrap">
+                    <img id="profileAvatarImg" src="" alt="" class="ns-profile-avatar" />
+                    <label for="profileAvatarInput" class="ns-profile-avatar-edit">✎</label>
                     <input type="file" id="profileAvatarInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
                 </div>
-                <div>
-                    <h3 style="margin-bottom:2px;">My Profile</h3>
-                    <p id="profileHeadlineDisplay" style="color:var(--text-muted); font-size:0.85rem;"></p>
+                <div class="ns-profile-header-text">
+                    <h3>My Profile</h3>
+                    <p id="profileHeadlineDisplay" class="ns-profile-headline"></p>
                 </div>
             </div>
 
-            <div class="ns-tabs" style="display:flex; gap:0.5rem; margin-bottom:1rem; border-bottom:1px solid var(--border);">
-                <button type="button" class="ns-tab-btn active" data-profile-tab="details" style="padding:0.5rem 0.2rem; background:none; border:none; border-bottom:2px solid var(--blue); font-weight:600; color:var(--blue);">Details</button>
-                <button type="button" class="ns-tab-btn" data-profile-tab="history" style="padding:0.5rem 0.2rem; background:none; border:none; border-bottom:2px solid transparent; font-weight:600; color:var(--text-muted);">My Activity</button>
-                <button type="button" class="ns-tab-btn" data-profile-tab="messages" style="padding:0.5rem 0.2rem; background:none; border:none; border-bottom:2px solid transparent; font-weight:600; color:var(--text-muted);">Messages <span id="profileUnreadBadge" style="display:none; background:#B3261E; color:#fff; border-radius:10px; font-size:0.7rem; padding:1px 6px; margin-left:2px;"></span></button>
+            <div class="ns-tabs ns-profile-tabs">
+                <button type="button" class="ns-tab-btn active" data-profile-tab="details">Details</button>
+                <button type="button" class="ns-tab-btn" data-profile-tab="history">My Activity</button>
+                <button type="button" class="ns-tab-btn" data-profile-tab="messages">Messages <span id="profileUnreadBadge" class="ns-profile-badge"></span></button>
             </div>
 
             <div class="ns-form-msg" id="profileFormMsg"></div>
 
-            <div id="profilePane-details">
+            <div id="profilePane-details" class="ns-profile-pane">
                 <div class="ns-form-row" id="profileNameRow"></div>
                 <div class="ns-form-row">
                     <div class="ns-form-group">
@@ -2339,22 +2339,22 @@
                     <label>About</label>
                     <textarea id="profileBio" rows="3" placeholder="Tell us a bit about yourself or your company..."></textarea>
                 </div>
-                <button type="button" class="btn btn-blue" id="profileSaveBtn" style="margin-top:0.4rem;">Save changes</button>
+                <button type="button" class="btn btn-blue" id="profileSaveBtn" style="margin-top:0.6rem;">Save changes</button>
             </div>
 
-            <div id="profilePane-history" style="display:none;">
+            <div id="profilePane-history" class="ns-profile-pane" style="display:none;">
                 <h4 class="ns-form-subhead" id="profileHistoryTitle">My applications</h4>
-                <div id="profileHistoryList" style="display:flex; flex-direction:column; gap:0.6rem; max-height:320px; overflow-y:auto;">
+                <div id="profileHistoryList" class="ns-profile-scroll">
                     <p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>
                 </div>
             </div>
 
-            <div id="profilePane-messages" style="display:none;">
-                <div id="profileMessagesList" style="display:flex; flex-direction:column; gap:0.5rem; max-height:280px; overflow-y:auto; margin-bottom:0.75rem; padding-right:4px;">
+            <div id="profilePane-messages" class="ns-profile-pane" style="display:none;">
+                <div id="profileMessagesList" class="ns-profile-scroll ns-profile-messages">
                     <p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>
                 </div>
-                <form id="profileMessageForm" style="display:flex; gap:0.5rem;">
-                    <input type="text" id="profileMessageInput" placeholder="Type a message to NextStep Immigration..." style="flex:1; font-family:inherit; font-size:0.9rem; padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px; background:var(--bg);" required />
+                <form id="profileMessageForm" class="ns-profile-message-form">
+                    <input type="text" id="profileMessageInput" placeholder="Type a message to NextStep Immigration..." required />
                     <button type="submit" class="btn btn-blue" id="profileMessageSendBtn">Send</button>
                 </form>
             </div>
@@ -2372,6 +2372,58 @@
         .ns-modal-close{ position:absolute; top:0.85rem; right:0.9rem; background:none; border:none; font-size:1.5rem; line-height:1; cursor:pointer; color:var(--text-muted); }
         .ns-form-row{ display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; }
         @media (max-width:520px){ .ns-form-row{ grid-template-columns:1fr; } }
+
+        /* ===== Profile modal ===== */
+        .ns-profile-modal{ padding-top:0; overflow:hidden; }
+        .ns-profile-header{
+            display:flex; align-items:center; gap:1rem;
+            margin:0 -1.75rem 1.25rem; padding:1.6rem 1.75rem 1.3rem;
+            background:linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color:#fff;
+        }
+        .ns-profile-avatar-wrap{ position:relative; flex-shrink:0; }
+        .ns-profile-avatar{
+            width:68px; height:68px; border-radius:50%; object-fit:cover;
+            background:var(--bg-light); border:3px solid rgba(255,255,255,0.85);
+            box-shadow:0 4px 14px rgba(0,0,0,0.25);
+        }
+        .ns-profile-avatar-edit{
+            position:absolute; bottom:-2px; right:-2px; background:var(--yellow); color:var(--text);
+            width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+            font-size:12px; cursor:pointer; border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.25);
+            transition:transform 0.15s ease;
+        }
+        .ns-profile-avatar-edit:hover{ transform:scale(1.08); }
+        .ns-profile-header-text h3{ color:#fff; font-size:1.3rem; margin-bottom:2px; }
+        .ns-profile-headline{ color:rgba(255,255,255,0.85) !important; font-size:0.85rem; }
+        .ns-profile-tabs{
+            display:flex; gap:0.4rem; margin-bottom:1.1rem; border-bottom:none;
+            background:var(--bg-light); padding:0.3rem; border-radius:10px;
+        }
+        .ns-profile-tabs .ns-tab-btn{
+            flex:1; padding:0.5rem 0.6rem !important; background:none; border:none !important;
+            border-radius:8px; font-weight:600; font-size:0.85rem; color:var(--text-muted);
+            transition:background 0.15s ease, color 0.15s ease;
+        }
+        .ns-profile-tabs .ns-tab-btn.active{ background:#fff; color:var(--blue); box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+        .ns-profile-badge{ background:#B3261E; color:#fff; border-radius:10px; font-size:0.7rem; padding:1px 6px; margin-left:2px; }
+        .ns-profile-pane{ animation:ns-fade-in 0.18s ease; }
+        @keyframes ns-fade-in{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:translateY(0);} }
+        .ns-profile-scroll{
+            display:flex; flex-direction:column; gap:0.6rem; max-height:320px; overflow-y:auto; padding-right:2px;
+            scroll-behavior:smooth;
+        }
+        .ns-profile-messages{ max-height:280px; margin-bottom:0.75rem; }
+        .ns-profile-message-form{ display:flex; gap:0.5rem; }
+        .ns-profile-message-form input{
+            flex:1; font-family:inherit; font-size:0.9rem; padding:0.6rem 0.8rem;
+            border:1px solid var(--border); border-radius:20px; background:var(--bg);
+        }
+        .ns-profile-message-form input:focus{ outline:none; border-color:var(--blue); }
+        .ns-profile-message-form button{ border-radius:20px; padding:0.6rem 1.3rem; }
+        @media (max-width:640px){
+            .ns-profile-header{ margin:0 -1rem 1rem; padding:1.4rem 1rem 1.1rem; }
+        }
 
         /* ===== Mobile optimization: modals, profile, messages ===== */
         @media (max-width: 640px) {
@@ -3165,6 +3217,33 @@
                 }
             });
         });
+
+        // Faster wheel/trackpad scrolling on the main page. Scrolling inside
+        // modals and their inner lists (history/messages) is left untouched
+        // so those panels still scroll normally.
+        (function fastScroll() {
+            const MULTIPLIER = 1.6;
+            let target = window.scrollY;
+            let ticking = false;
+
+            window.addEventListener('wheel', (e) => {
+                if (e.target.closest('.ns-modal-overlay, #profileHistoryList, #profileMessagesList')) return;
+                e.preventDefault();
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                target = Math.min(Math.max(target + e.deltaY * MULTIPLIER, 0), maxScroll);
+                if (!ticking) {
+                    ticking = true;
+                    requestAnimationFrame(() => {
+                        window.scrollTo(0, target);
+                        ticking = false;
+                    });
+                }
+            }, { passive: false });
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) target = window.scrollY;
+            }, { passive: true });
+        })();
 
         // Mobile menu toggle
         const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
