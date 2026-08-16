@@ -511,7 +511,7 @@ router.post('/auth/google', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
+      expiresIn: '365d',
     });
 
     delete user.password_hash;
@@ -588,7 +588,7 @@ router.post('/auth/jobseeker/signup', async (req, res) => {
       [email, passwordHash, fullName, phone || null, job_title || null, JSON.stringify(industries || [])]
     );
     const user = rows[0];
-    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '365d' });
 
     res.status(201).json({ success: true, token, user: publicUser(user) });
   } catch (err) {
@@ -627,7 +627,7 @@ router.post('/auth/employer/signup', async (req, res) => {
       [email, passwordHash, company_name, contact_name, phone || null, toIntOrNull(headcount), JSON.stringify(industries || [])]
     );
     const user = rows[0];
-    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '365d' });
 
     res.status(201).json({ success: true, token, user: publicUser(user) });
   } catch (err) {
@@ -660,7 +660,7 @@ router.post('/auth/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '365d' });
     res.json({ success: true, token, user: publicUser(user) });
   } catch (err) {
     console.error('Login error:', err.message);
