@@ -659,6 +659,7 @@
     display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:3rem;
     padding-bottom:2.75rem; border-bottom:1px solid var(--line-light);
   }
+  .footer-grid > div{ min-width:0; }
   .footer-grid h4{
     color:var(--paper); font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem;
     margin-bottom:1.1rem; position:relative; padding-bottom:0.6rem;
@@ -678,6 +679,22 @@
   .footer-links a:hover{ color:var(--brass-light); transform:translateX(3px); }
   .footer-links a:hover::after{ width:100%; }
   .footer-grid > div:nth-child(3) p{ display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem; }
+  .footer-address{
+    align-items:flex-start !important; gap:0.65rem !important;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+    border-radius:10px; padding:0.7rem 0.8rem !important; margin-bottom:0.7rem !important;
+    word-break:break-word; overflow-wrap:break-word;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .footer-address:hover{ background:rgba(255,255,255,0.07); border-color:rgba(184,134,46,0.35); }
+  .footer-address .ico{
+    flex-shrink:0; width:26px; height:26px; border-radius:50%;
+    background:rgba(184,134,46,0.18); display:flex; align-items:center; justify-content:center;
+    font-size:0.85rem; margin-top:0.05rem;
+  }
+  .footer-address span{ line-height:1.55; }
+  .footer-address b{ color:var(--brass-light); display:block; margin-bottom:0.15rem; font-size:0.88rem; letter-spacing:0.01em; }
+  .footer-address a{ display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.15rem; }
   .footer-bottom{
     text-align:center; padding:1.75rem 0; font-size:0.82rem; color:#7E8CA8;
     letter-spacing:0.01em;
@@ -972,6 +989,9 @@
     .footer-grid > div:first-child h4{ font-size:1rem; }
     .footer-grid h4::after{ left:0; transform:none; width:22px; }
     .footer-grid > div:nth-child(3) p{ justify-content:flex-start; flex-wrap:wrap; word-break:break-word; }
+    .footer-address{ padding:0.6rem 0.65rem !important; gap:0.5rem !important; }
+    .footer-address .ico{ width:22px; height:22px; font-size:0.75rem; }
+    .footer-address b{ font-size:0.82rem; }
     .footer-links a:hover{ transform:none; }
     .footer-brand-row{ flex-wrap:wrap; }
     .footer-brand-row .brand-logo-img{ height:24px; width:24px; }
@@ -988,6 +1008,18 @@
     .card, .problem-card, .figure-card{ padding:1.5rem 1.25rem; }
     .btn-primary, .btn-ghost{ min-height:48px; }
     nav.main-nav a{ font-size:1.02rem; }
+    .footer-grid{
+      grid-template-columns:1fr; gap:2rem; font-size:0.85em; text-align:center;
+    }
+    .footer-grid > div:first-child{ display:flex; flex-direction:column; align-items:center; }
+    .footer-grid p{ text-align:center; }
+    .footer-links{ align-items:center; }
+    .footer-grid h4{ text-align:center; }
+    .footer-grid h4::after{ left:50%; transform:translateX(-50%); }
+    .footer-grid > div:nth-child(3) p{ justify-content:center; text-align:left; }
+    .footer-address{ text-align:left; max-width:340px; margin-left:auto; margin-right:auto; }
+    .footer-grid > div:nth-child(3) p:not(.footer-address){ justify-content:center; }
+    .footer-social-row{ justify-content:center !important; }
   }
 
   /* ============================================================
@@ -1836,6 +1868,14 @@
           <div class="ico">🕓</div>
           <div><b>Hours</b><span>Sat–Thu, 10am–6pm</span></div>
         </div>
+        <div class="info-row">
+          <div class="ico">📍</div>
+          <div><b>European office</b><span>Antwerpse straat 1, 4611 AA Bergen op Zoom, The Netherlands<br><a href="tel:+31164855118" style="color:inherit;">0031 164 855118</a></span></div>
+        </div>
+        <div class="info-row">
+          <div class="ico">📍</div>
+          <div><b>Bangladesh office</b><span>System Imperial Complex, 3rd Floor, Chawkbazar, Chittagong</span></div>
+        </div>
       </div>
 
       <form id="contactForm">
@@ -1889,6 +1929,8 @@
       <h4>Contact</h4>
       <p>📧 support.nextstep1@gmail.com</p>
       <p>📞 <a href="tel:+8801805723581" style="color:#B7C1D6;">+880 1805-723581</a></p>
+      <p class="footer-address"><span class="ico">📍</span><span><b>European office</b>Antwerpse straat 1, 4611 AA Bergen op Zoom, The Netherlands<br><a href="tel:+31164855118" style="color:#B7C1D6;">📞 0031 164 855118</a></span></p>
+      <p class="footer-address"><span class="ico">📍</span><span><b>Bangladesh office</b>System Imperial Complex, 3rd Floor, Chawkbazar, Chittagong</span></p>
       <p><a href="#" class="footer-ielts-link">IELTS<span class="ielts-login-tag"></span></a></p>
       <div class="footer-social-row">
         <a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" aria-label="Facebook" class="footer-social-icon">
