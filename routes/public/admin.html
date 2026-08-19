@@ -892,6 +892,7 @@
     transition: box-shadow .2s var(--ease);
   }
   .settings-card:hover{ box-shadow:var(--shadow-md); }
+  .settings-card + .settings-card{ margin-top:1.5rem; }
   .settings-card h3{ font-size:1.15rem; margin-bottom:0.35rem; }
   .settings-card .row-sub{ margin-bottom:1.5rem; }
   .settings-form{ display:flex; flex-direction:column; gap:1.1rem; }
@@ -1779,6 +1780,24 @@
             <input type="text" id="waMessage" placeholder="Hi! I would like to know more about your services." />
           </div>
           <button type="submit" class="btn-brass" id="saveSettingsBtn">Save settings</button>
+        </form>
+      </div>
+
+      <div class="settings-card">
+        <h3>Study in Italy popup</h3>
+        <p class="row-sub">Shows a flyer image as a popup right after a visitor selects "I'm a Student" and enters the site. Upload any flyer image and turn the popup on or off at any time.</p>
+        <form id="studyPromoForm" class="settings-form">
+          <label class="settings-toggle">
+            <input type="checkbox" id="studyPromoEnabled" />
+            Show popup to students
+          </label>
+          <div class="field">
+            <label for="studyPromoImageInput">Popup image</label>
+            <img id="studyPromoPreview" src="" alt="Popup preview" style="display:none; max-width:220px; width:100%; border-radius:8px; border:1px solid #ddd; margin-bottom:0.6rem;" />
+            <input type="file" id="studyPromoImageInput" accept="image/png, image/jpeg, image/webp" />
+            <p class="row-sub" style="margin-top:0.35rem;">JPG, PNG or WEBP, up to 5MB. Uploading a new image replaces the current one immediately.</p>
+          </div>
+          <button type="submit" class="btn-brass" id="saveStudyPromoBtn">Save settings</button>
         </form>
       </div>
     </section>
@@ -4622,6 +4641,16 @@
       $('#waEnabled').checked = !!s.whatsapp_enabled;
       $('#waNumber').value = s.whatsapp_number || '';
       $('#waMessage').value = s.whatsapp_message || '';
+      $('#studyPromoEnabled').checked = !!s.study_promo_popup_enabled;
+      const preview = $('#studyPromoPreview');
+      if (s.study_promo_popup_image) {
+        preview.src = s.study_promo_popup_image;
+        preview.style.display = 'block';
+        preview.onerror = () => { preview.style.display = 'none'; };
+      } else {
+        preview.removeAttribute('src');
+        preview.style.display = 'none';
+      }
     } catch { /* handled by apiFetch */ }
   }
 
@@ -4637,11 +4666,70 @@
           whatsapp_enabled: $('#waEnabled').checked,
           whatsapp_number: $('#waNumber').value.trim(),
           whatsapp_message: $('#waMessage').value.trim(),
+          study_promo_popup_enabled: $('#studyPromoEnabled').checked,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Could not save settings.');
       toast('Settings saved.');
+    } catch (err) {
+      toast(err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save settings';
+    }
+  });
+
+  $('#studyPromoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('#saveStudyPromoBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      const fileInput = $('#studyPromoImageInput');
+      const file = fileInput.files && fileInput.files[0];
+
+      // If a new flyer image was picked, upload it to Cloudinary first.
+      if (file) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const uploadRes = await apiFetch('/admin/settings/study-promo-image', {
+          method: 'POST',
+          body: formData,
+        });
+        let uploadData;
+        try {
+          uploadData = await uploadRes.json();
+        } catch {
+          throw new Error(
+            `Server did not return a valid response (HTTP ${uploadRes.status}). ` +
+            `Make sure the server has been redeployed/restarted with the latest api.js.`
+          );
+        }
+        if (!uploadRes.ok) throw new Error(uploadData.error || 'Could not upload the popup image.');
+        const preview = $('#studyPromoPreview');
+        preview.src = uploadData.image_url;
+        preview.style.display = 'block';
+        fileInput.value = '';
+      }
+
+      const res = await apiFetch('/admin/settings', {
+        method: 'PUT',
+        body: JSON.stringify({
+          whatsapp_enabled: $('#waEnabled').checked,
+          whatsapp_number: $('#waNumber').value.trim(),
+          whatsapp_message: $('#waMessage').value.trim(),
+          study_promo_popup_enabled: $('#studyPromoEnabled').checked,
+        }),
+      });
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(`Server did not return a valid response (HTTP ${res.status}).`);
+      }
+      if (!res.ok) throw new Error(data.error || 'Could not save settings.');
+      toast('Study in Italy popup settings saved.');
     } catch (err) {
       toast(err.message, true);
     } finally {
