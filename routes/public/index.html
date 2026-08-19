@@ -1131,28 +1131,52 @@
   /* Study-abroad promo popup (student flow) */
   #studyPromoPopup{
     position:fixed; inset:0; z-index:1000;
-    background:rgba(10,14,26,0.72);
+    background:radial-gradient(circle at 50% 40%, rgba(20,26,46,0.78), rgba(6,9,18,0.88));
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
     display:flex; align-items:center; justify-content:center;
     padding:1.2rem;
     opacity:0; visibility:hidden; pointer-events:none;
-    transition:opacity 0.25s ease;
+    transition:opacity 0.35s cubic-bezier(.22,1,.36,1);
   }
   #studyPromoPopup.is-open{ opacity:1; visibility:visible; pointer-events:auto; }
   .study-promo-dialog{
     position:relative; max-width:420px; width:100%; max-height:90vh;
-    background:var(--paper, #fff); border-radius:14px; overflow:hidden;
-    box-shadow:0 30px 70px -20px rgba(0,0,0,0.55);
-    transform:translateY(14px) scale(0.97); transition:transform 0.25s ease;
+    background:linear-gradient(180deg, var(--brass, #b8862e), rgba(184,134,46,0)) padding-box,
+               var(--paper, #fff);
+    border-radius:20px; overflow:hidden;
+    padding:3px;
+    box-shadow:0 40px 90px -24px rgba(0,0,0,0.65), 0 0 0 1px rgba(184,134,46,0.35);
+    transform:translateY(28px) scale(0.94); transition:transform 0.4s cubic-bezier(.22,1,.36,1);
   }
-  #studyPromoPopup.is-open .study-promo-dialog{ transform:translateY(0) scale(1); }
-  .study-promo-dialog img{ display:block; width:100%; height:auto; max-height:85vh; object-fit:contain; background:#fff; }
+  #studyPromoPopup.is-open .study-promo-dialog{
+    transform:translateY(0) scale(1);
+    animation:studyPromoPop 0.5s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes studyPromoPop{
+    0%{ transform:translateY(28px) scale(0.94); }
+    60%{ transform:translateY(-4px) scale(1.015); }
+    100%{ transform:translateY(0) scale(1); }
+  }
+  .study-promo-dialog img{
+    display:block; width:100%; height:auto; max-height:85vh; object-fit:contain;
+    background:#fff; border-radius:17px;
+  }
   .study-promo-close{
-    position:absolute; top:0.6rem; right:0.6rem; z-index:2;
-    width:34px; height:34px; border-radius:50%; border:none;
-    background:rgba(10,14,26,0.75); color:#fff; font-size:1.15rem; line-height:1;
+    position:absolute; top:0.7rem; right:0.7rem; z-index:2;
+    width:32px; height:32px; border-radius:50%; border:none;
+    background:rgba(10,14,26,0.55); color:#fff; font-size:1.05rem; line-height:1;
     cursor:pointer; display:flex; align-items:center; justify-content:center;
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    box-shadow:0 4px 14px -4px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.18);
+    transition:background 0.2s ease, transform 0.2s ease;
   }
-  .study-promo-close:hover{ background:rgba(10,14,26,0.92); }
+  .study-promo-close:hover{ background:rgba(184,134,46,0.9); transform:scale(1.08) rotate(90deg); }
+  .study-promo-close:active{ transform:scale(0.94) rotate(90deg); }
+  @media (prefers-reduced-motion: reduce){
+    #studyPromoPopup, .study-promo-dialog, .study-promo-close, #studyPromoPopup.is-open .study-promo-dialog{
+      transition:none; animation:none;
+    }
+  }
 </style>
 </head>
 <body>
