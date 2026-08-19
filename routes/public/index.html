@@ -659,7 +659,6 @@
     display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:3rem;
     padding-bottom:2.75rem; border-bottom:1px solid var(--line-light);
   }
-  .footer-grid > div{ min-width:0; }
   .footer-grid h4{
     color:var(--paper); font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem;
     margin-bottom:1.1rem; position:relative; padding-bottom:0.6rem;
@@ -679,23 +678,6 @@
   .footer-links a:hover{ color:var(--brass-light); transform:translateX(3px); }
   .footer-links a:hover::after{ width:100%; }
   .footer-grid > div:nth-child(3) p{ display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem; }
-  .footer-office-eu, .footer-office-bd{ grid-column:3; }
-  .footer-address{
-    align-items:flex-start !important; gap:0.65rem !important;
-    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
-    border-radius:10px; padding:0.7rem 0.8rem !important; margin-bottom:0.7rem !important;
-    word-break:break-word; overflow-wrap:break-word;
-    transition:background .15s ease, border-color .15s ease;
-  }
-  .footer-address:hover{ background:rgba(255,255,255,0.07); border-color:rgba(184,134,46,0.35); }
-  .footer-address .ico{
-    flex-shrink:0; width:26px; height:26px; border-radius:50%;
-    background:rgba(184,134,46,0.18); display:flex; align-items:center; justify-content:center;
-    font-size:0.85rem; margin-top:0.05rem;
-  }
-  .footer-address span{ line-height:1.55; }
-  .footer-address b{ color:var(--brass-light); display:block; margin-bottom:0.15rem; font-size:0.88rem; letter-spacing:0.01em; }
-  .footer-address a{ display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.15rem; }
   .footer-bottom{
     text-align:center; padding:1.75rem 0; font-size:0.82rem; color:#7E8CA8;
     letter-spacing:0.01em;
@@ -981,24 +963,15 @@
     .about-figures{ gap:0.85rem; }
     #testimonials .section-head{ text-align:center; }
     .footer-grid{
-      grid-template-columns:1fr 1fr; gap:1.5rem 0.75rem; text-align:left;
+      grid-template-columns:1fr 0.7fr 0.9fr; gap:0.75rem; text-align:left;
       font-size:0.8em;
     }
-    .footer-grid > div:first-child{
-      order:0; grid-column:1 / -1; display:flex; flex-direction:column; align-items:center; text-align:center;
-      padding-bottom:1.25rem; margin-bottom:0.25rem; border-bottom:1px solid var(--line-light);
-    }
-    .footer-grid > div:first-child p{ text-align:center; }
+    .footer-grid > div:first-child{ order:0; }
     .footer-links{ align-items:flex-start; gap:0.5rem; }
     .footer-grid h4{ font-size:0.95rem; margin-bottom:0.6rem; }
     .footer-grid > div:first-child h4{ font-size:1rem; }
     .footer-grid h4::after{ left:0; transform:none; width:22px; }
-    .footer-grid > div:nth-child(3) p{ justify-content:flex-start; flex-wrap:wrap; word-break:break-word; text-align:left; }
-    .footer-office-eu{ grid-column:1; }
-    .footer-office-bd{ grid-column:2; }
-    .footer-address{ padding:0.55rem 0.6rem !important; gap:0.5rem !important; max-width:none; margin:0 0 0.6rem; }
-    .footer-address .ico{ width:22px; height:22px; font-size:0.75rem; }
-    .footer-address b{ font-size:0.82rem; }
+    .footer-grid > div:nth-child(3) p{ justify-content:flex-start; flex-wrap:wrap; word-break:break-word; }
     .footer-links a:hover{ transform:none; }
     .footer-brand-row{ flex-wrap:wrap; }
     .footer-brand-row .brand-logo-img{ height:24px; width:24px; }
@@ -1125,6 +1098,32 @@
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
   }
+
+  /* Study-abroad promo popup (student flow) */
+  #studyPromoPopup{
+    position:fixed; inset:0; z-index:1000;
+    background:rgba(10,14,26,0.72);
+    display:flex; align-items:center; justify-content:center;
+    padding:1.2rem;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity 0.25s ease;
+  }
+  #studyPromoPopup.is-open{ opacity:1; visibility:visible; pointer-events:auto; }
+  .study-promo-dialog{
+    position:relative; max-width:420px; width:100%; max-height:90vh;
+    background:var(--paper, #fff); border-radius:14px; overflow:hidden;
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.55);
+    transform:translateY(14px) scale(0.97); transition:transform 0.25s ease;
+  }
+  #studyPromoPopup.is-open .study-promo-dialog{ transform:translateY(0) scale(1); }
+  .study-promo-dialog img{ display:block; width:100%; height:auto; max-height:85vh; object-fit:contain; background:#fff; }
+  .study-promo-close{
+    position:absolute; top:0.6rem; right:0.6rem; z-index:2;
+    width:34px; height:34px; border-radius:50%; border:none;
+    background:rgba(10,14,26,0.75); color:#fff; font-size:1.15rem; line-height:1;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .study-promo-close:hover{ background:rgba(10,14,26,0.92); }
 </style>
 </head>
 <body>
@@ -1156,6 +1155,13 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
       </a>
     </div>
+  </div>
+</div>
+
+<div id="studyPromoPopup" aria-hidden="true">
+  <div class="study-promo-dialog" role="dialog" aria-modal="true" aria-label="Study in Italy scholarship offer">
+    <button type="button" class="study-promo-close" id="studyPromoCloseBtn" aria-label="Close">&times;</button>
+    <img id="studyPromoImg" src="images/study-italy-popup.jpg" alt="Study in Italy scholarship offer" />
   </div>
 </div>
 
@@ -1547,7 +1553,6 @@
         <button type="button" class="fp-tab-btn" data-fp-target="fp-belgium">🇧🇪 Belgium</button>
         <button type="button" class="fp-tab-btn" data-fp-target="fp-italy">🇮🇹 Italy</button>
         <button type="button" class="fp-tab-btn" data-fp-target="fp-poland">🇵🇱 Poland</button>
-        <button type="button" class="fp-tab-btn" data-fp-target="fp-malta">🇲🇹 Malta</button>
       </div>
 
       <p id="fpHint" class="fp-note" style="margin-bottom:1.5rem;">Select a country above to view the full file processing details.</p>
@@ -1800,75 +1805,6 @@
           <p style="margin-top:0.75rem;"><strong>Founder</strong><br>Minhaj Uddin Jesan<br>Facebook: Minhaj in EU</p>
         </div>
       </div>
-
-      <div class="fp-panel" id="fp-malta" style="display:none;">
-        <div class="fp-doc-kicker">Student Visa – Full Process by NSI</div>
-        <div class="fp-doc-title">MALTA STUDENT VISA – FULL PROCESS BY NSI (NextStep Immigration)</div>
-
-        <div class="fp-block">
-          <h4>Requirements</h4>
-          <ul>
-            <li>IELTS 6.0 (No band below 5.5)</li>
-            <li>PTE 52 (Writing 51)</li>
-            <li>Duolingo 105 (No section below 95)</li>
-          </ul>
-        </div>
-
-        <div class="fp-block">
-          <h4>Budget Planner — Total Costs (Including NextStep Service Charges)</h4>
-          <ul>
-            <li>File Opening (NextStep Service Charge) (Non-refundable): BDT 10,000</li>
-            <li>Police Clearance: BDT 2,000</li>
-            <li>Attesting from Foreign Ministry of Bangladesh: BDT 2,000</li>
-            <li>Tuition Fee (6,000–7,500 EUR, 300 EUR non-refundable): BDT 6,90,000 – BDT 10,87,000</li>
-            <li>CVU (180 EUR): BDT 26,100</li>
-            <li>Accommodation (800–1,000 EUR, refundable): BDT 1,16,000 – BDT 1,45,000</li>
-            <li>Health Insurance (575 EUR, GHIC/EU, refundable): BDT 83,000</li>
-            <li>VFS Fees (150 EUR): BDT 22,500</li>
-            <li>After Getting the Visa: BDT 1,40,000</li>
-          </ul>
-          <p><strong>Total Cost: BDT 10,86,600 – BDT 13,67,000</strong></p>
-          <p><strong>Sponsor's Fund:</strong> Savings account (minimum 3 months' statement) — BDT 25 Lacs – BDT 30 Lacs</p>
-          <p class="fp-note">These are your personal expenses, inclusive of NextStep service charges as noted above.</p>
-        </div>
-
-        <div class="fp-block">
-          <h4>GBS Malta — Bachelor Programs</h4>
-          <ul>
-            <li>BSc (Hons) Computer Science — 6,000 EUR — IELTS 6 (Duolingo 105/85)</li>
-            <li>BSc (Hons) Business and Management and Information Technology — 6,000 EUR — IELTS 6 (Duolingo 105/85)</li>
-            <li>BSc (Hons) Health, Social Care and Wellbeing — 6,000 EUR — IELTS 6 (Duolingo 105/85)</li>
-          </ul>
-        </div>
-
-        <div class="fp-block">
-          <h4>GBS Malta — Master's Programs</h4>
-          <p>Brand Management / MBA in Marketing Management / MBA Management Consulting / MBA Project Management / MBA Entrepreneurship / MBA in Global Investment Banking</p>
-          <p>Fees: 10,000 EUR per year (after 25% Scholarship: 7,500 EUR)</p>
-          <ul>
-            <li>MSc Information Technology Management (General Pathway)</li>
-            <li>MSc Information Technology Management and Cybersecurity</li>
-            <li>MSc Information Technology Management and Data Analytics</li>
-            <li>MSc Information Technology Management and Cloud Computing</li>
-            <li>MSc Information Technology Management and Artificial Intelligence (after 25% Scholarship: 7,500 EUR)</li>
-            <li>Master of Public Health</li>
-            <li>Master of Public Health with Epidemiology</li>
-            <li>Master of Public Health with Health Promotion</li>
-            <li>Master of Public Health with Leadership and Management</li>
-          </ul>
-          <p>Tuition fees: 10,000 EUR (after 25% Scholarship: 7,500 EUR)</p>
-        </div>
-
-        <div class="fp-block fp-contact">
-          <h4 style="border-bottom:none; margin-bottom:0.5rem;">Contact Us</h4>
-          <p>NextStep Immigration</p>
-          <p>📱 WhatsApp: +8801805-723581</p>
-          <p>Facebook &amp; Instagram: NextStep Immigration</p>
-          <p>Office Location: Chawkbazar, Chattogram, Bangladesh</p>
-          <p class="fp-note">(Office renovation status may apply.)</p>
-          <p style="margin-top:0.75rem;"><strong>Founder</strong><br>Minhaj Uddin Jesan<br>Facebook: Minhaj in EU</p>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -1933,14 +1869,6 @@
           <div class="ico">🕓</div>
           <div><b>Hours</b><span>Sat–Thu, 10am–6pm</span></div>
         </div>
-        <div class="info-row">
-          <div class="ico">📍</div>
-          <div><b>European office</b><span>Antwerpse straat 1, 4611 AA Bergen op Zoom, The Netherlands<br><a href="tel:+31164855118" style="color:inherit;">0031 164 855118</a></span></div>
-        </div>
-        <div class="info-row">
-          <div class="ico">📍</div>
-          <div><b>Bangladesh office</b><span>System Imperial Complex, 3rd Floor, Chawkbazar, Chittagong</span></div>
-        </div>
       </div>
 
       <form id="contactForm">
@@ -2003,12 +1931,6 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
         </a>
       </div>
-    </div>
-    <div class="footer-office-eu">
-      <p class="footer-address"><span class="ico">📍</span><span><b>European office</b>Antwerpse straat 1, 4611 AA Bergen op Zoom, The Netherlands<br><a href="tel:+31164855118" style="color:#B7C1D6;">📞 0031 164 855118</a></span></p>
-    </div>
-    <div class="footer-office-bd">
-      <p class="footer-address"><span class="ico">📍</span><span><b>Bangladesh office</b>System Imperial Complex, 3rd Floor, Chawkbazar, Chittagong</span></p>
     </div>
   </div>
   <div class="footer-bottom">
@@ -2390,6 +2312,8 @@
     continueBtn.addEventListener('click', function (e) {
       e.preventDefault();
       var action = continueBtn.dataset.action;
+      var role = document.querySelector('.welcome-role-btn.is-active');
+      role = role ? role.getAttribute('data-role') : null;
       if (!action || action === 'site') {
         welcome.classList.add('hidden');
         siteContent.style.display = 'block';
@@ -2397,10 +2321,46 @@
         window.setTimeout(function () {
           welcome.style.display = 'none';
         }, 450);
+        if (role === 'student') {
+          maybeShowStudyPromoPopup();
+        }
       } else {
         window.location.href = action;
       }
     });
+
+    // Study-abroad promo popup (student flow only), toggled from admin.html
+    function maybeShowStudyPromoPopup(){
+      var popup = document.getElementById('studyPromoPopup');
+      var closeBtn = document.getElementById('studyPromoCloseBtn');
+      var img = document.getElementById('studyPromoImg');
+      if (!popup) return;
+
+      function openPopup(imageUrl){
+        if (imageUrl) img.src = imageUrl;
+        popup.classList.add('is-open');
+        popup.setAttribute('aria-hidden', 'false');
+      }
+      function closePopup(){
+        popup.classList.remove('is-open');
+        popup.setAttribute('aria-hidden', 'true');
+      }
+      closeBtn.addEventListener('click', closePopup, { once: true });
+      popup.addEventListener('click', function (e) {
+        if (e.target === popup) closePopup();
+      }, { once: true });
+
+      fetch('/api/settings')
+        .then(function (res) { return res.json(); })
+        .then(function (settings) {
+          if (settings && settings.study_promo_popup_enabled) {
+            window.setTimeout(function () {
+              openPopup(settings.study_promo_popup_image);
+            }, 500);
+          }
+        })
+        .catch(function () { /* fail silently, no popup */ });
+    }
 
     // Skip the splash automatically when arriving with any deep link (e.g. #contact, #apply, #about)
     if (window.location.hash && window.location.hash !== '#') {
