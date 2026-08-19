@@ -137,6 +137,29 @@ const avatarUpload = multer({
   },
 }).single('avatar');
 
+// Separate storage/upload config for the "Study in Italy" popup flyer (own Cloudinary folder).
+const studyPromoImageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'nextstep-study-promo',
+    resource_type: 'image',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    // Generate a safe public_id ourselves — filenames with spaces or special
+    // characters (e.g. "Popup Italy image.png") can otherwise make Cloudinary
+    // throw a pattern-matching error when it tries to derive one automatically.
+    public_id: (req, file) => `study-promo-${Date.now()}`,
+  },
+});
+
+const studyPromoImageUpload = multer({
+  storage: studyPromoImageStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype);
+    cb(ok ? null : new Error('Only JPG, PNG, or WEBP images are allowed.'), ok);
+  },
+}).single('image');
+
 
 (async () => {
   try {
@@ -899,6 +922,8 @@ router.get('/settings', async (req, res) => {
       whatsapp_enabled: settings.whatsapp_enabled === 'true',
       whatsapp_number: settings.whatsapp_number || '',
       whatsapp_message: settings.whatsapp_message || 'Hi! I would like to know more about your services.',
+      study_promo_popup_enabled: settings.study_promo_popup_enabled === 'true',
+      study_promo_popup_image: settings.study_promo_popup_image || 'images/study-italy-popup.jpg',
     });
   } catch (err) {
     console.error('Fetch public settings error:', err.message);
@@ -1750,6 +1775,8 @@ router.get('/admin/settings', requireAdmin, async (req, res) => {
       whatsapp_enabled: settings.whatsapp_enabled === 'true',
       whatsapp_number: settings.whatsapp_number || '',
       whatsapp_message: settings.whatsapp_message || 'Hi! I would like to know more about your services.',
+      study_promo_popup_enabled: settings.study_promo_popup_enabled === 'true',
+      study_promo_popup_image: settings.study_promo_popup_image || 'images/study-italy-popup.jpg',
     });
   } catch (err) {
     console.error('Fetch admin settings error:', err.message);
@@ -1758,13 +1785,19 @@ router.get('/admin/settings', requireAdmin, async (req, res) => {
 });
 
 router.put('/admin/settings', requireAdmin, async (req, res) => {
-  const { whatsapp_enabled, whatsapp_number, whatsapp_message } = req.body;
+  const { whatsapp_enabled, whatsapp_number, whatsapp_message, study_promo_popup_enabled, study_promo_popup_image } = req.body;
   try {
     const entries = [
       ['whatsapp_enabled', String(!!whatsapp_enabled)],
       ['whatsapp_number', whatsapp_number || ''],
       ['whatsapp_message', whatsapp_message || ''],
+      ['study_promo_popup_enabled', String(!!study_promo_popup_enabled)],
     ];
+    // Only touch the image if one was actually supplied — lets the toggle be
+    // saved on its own without clobbering the currently-set flyer image.
+    if (study_promo_popup_image) {
+      entries.push(['study_promo_popup_image', study_promo_popup_image]);
+    }
     for (const [key, value] of entries) {
       await pool.query(
         `INSERT INTO site_settings (key, value) VALUES ($1, $2)
@@ -1777,6 +1810,33 @@ router.put('/admin/settings', requireAdmin, async (req, res) => {
     console.error('Update settings error:', err.message);
     res.status(500).json({ error: 'Could not update settings.' });
   }
+});
+
+// Upload/replace the "Study in Italy" popup flyer image — separate endpoint
+// so the rest of the settings form can stay a plain JSON PUT.
+router.post('/admin/settings/study-promo-image', requireAdmin, (req, res) => {
+  studyPromoImageUpload(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      console.error('Study promo image upload error:', uploadErr.message);
+      const message = uploadErr.code === 'LIMIT_FILE_SIZE'
+        ? 'Image is larger than 5MB.'
+        : uploadErr.message || 'Image upload failed.';
+      return res.status(400).json({ error: message });
+    }
+    if (!req.file) return res.status(400).json({ error: 'No image was uploaded.' });
+
+    try {
+      await pool.query(
+        `INSERT INTO site_settings (key, value) VALUES ('study_promo_popup_image', $1)
+         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`,
+        [req.file.path]
+      );
+      res.json({ success: true, image_url: req.file.path });
+    } catch (err) {
+      console.error('Save study promo image error:', err.message);
+      res.status(500).json({ error: 'Could not save the popup image.' });
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
