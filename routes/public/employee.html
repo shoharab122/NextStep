@@ -1216,8 +1216,17 @@
         .footer {
             background: linear-gradient(180deg, #12213B 0%, #1B2F52 100%);
             color: #B7C1D6;
-            border-top: 3px solid var(--yellow);
-            padding: 64px 0 32px;
+            padding: 68px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--yellow), var(--yellow-dark), var(--yellow), transparent);
         }
 
         .footer .footer-col h4,
@@ -1239,27 +1248,42 @@
 
         .footer-bottom {
             color: #8A93AC !important;
-            border-top-color: rgba(255,255,255,0.12) !important;
+            border-top-color: rgba(255,255,255,0.1) !important;
         }
 
         .footer-grid {
             display: grid;
             grid-template-columns: 1.8fr 1fr 1fr 1fr 1fr;
             gap: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
         }
 
         .footer-brand p {
             font-size: 14px;
-            line-height: 1.7;
+            line-height: 1.75;
             color: var(--text-muted);
             margin-top: 16px;
-            max-width: 300px;
+            max-width: 320px;
         }
 
         .footer-col h4 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-col h4::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 26px;
+            height: 2px;
+            background: var(--yellow);
+            border-radius: 2px;
         }
 
         .footer-col ul {
@@ -1275,26 +1299,136 @@
         .footer-col ul li a {
             font-size: 14px;
             color: var(--text-muted);
-            transition: color 0.2s;
+            position: relative;
+            width: fit-content;
+            display: inline-block;
+            transition: color 0.15s ease, transform 0.15s ease;
+        }
+
+        .footer-col ul li a::after {
+            content: "";
+            position: absolute;
+            left: 0; bottom: -3px;
+            width: 0; height: 1px;
+            background: var(--yellow-dark);
+            transition: width 0.16s ease;
         }
 
         .footer-col ul li a:hover {
-            color: var(--blue);
+            color: var(--yellow-dark);
+            transform: translateX(3px);
+        }
+
+        .footer-col ul li a:hover::after {
+            width: 100%;
+        }
+
+        .footer-brand-contact {
+            margin-top: 16px;
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: #9AA6BE;
+        }
+
+        .footer-brand-contact a { color: inherit; transition: color 0.15s ease; }
+        .footer-brand-contact a:hover { color: var(--yellow-dark); }
+
+        .footer-offices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .footer-office-card {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 14px 12px;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .footer-office-card:hover {
+            border-color: rgba(232,199,122,0.35);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .footer-office-pin {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: rgba(184,134,46,0.18);
+            color: var(--yellow-dark);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .footer-office-card h5 {
+            margin: 0 0 5px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--yellow-dark);
+        }
+
+        .footer-office-card p {
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.55;
+            color: #A9B4CB;
+        }
+
+        .footer-office-card .footer-office-phone {
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .footer-office-card .footer-office-phone a { color: #A9B4CB; }
+
+        .footer-social-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .footer-social-icon {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            color: #B7C1D6;
+            transition: all 0.18s ease;
+        }
+
+        .footer-social-icon:hover {
+            background: var(--yellow);
+            border-color: var(--yellow);
+            color: #12213B;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -6px rgba(184,134,46,0.6);
         }
 
         .footer-bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 24px 0;
-            margin-top: 40px;
-            border-top: 1px solid var(--border);
+            padding: 22px 0;
             font-size: 13px;
-            color: #999;
+            color: #8A93AC;
+        }
+
+        .footer-bottom strong {
+            color: var(--yellow-dark);
+            font-weight: 600;
         }
 
         .footer-bottom a:hover {
-            color: var(--blue);
+            color: var(--yellow-dark);
         }
 
         /* ===== SCROLL TO TOP ===== */
@@ -1519,6 +1653,15 @@
 
             .footer-col ul li a {
                 font-size: 12.5px;
+            }
+
+            .footer-offices {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .footer-social-row {
+                margin-top: 14px;
             }
 
             .benefits-box,
@@ -2137,12 +2280,33 @@
                         <span style="font-family:'Inter',sans-serif;"><span style="color:#8FB4E8;">Nextstep</span> <em style="font-style:italic;color:#E8746B;">Immigration</em></span>
                     </a>
                     <p>Nextstep Immigration connects qualified professionals and employers across study, work &amp; residency visas. Our streamlined approach and dedicated support ensure a smooth path, every step of the way.</p>
-                    <div style="margin-top:14px;font-size:14px;line-height:1.7;">
+
+                    <div class="footer-brand-contact">
                         <p>📧 support.nextstep1@gmail.com</p>
-                        <p>📞 <a href="tel:+8801805723581" style="color:inherit;">+880 1805-723581</a></p>
-                        <p style="margin-top:8px;">🏢 <strong>HQ</strong> &mdash; Antwerp, Belgium</p>
-                        <p>📍 <strong>European office</strong> &mdash; Antwerpse straat 1, 4611 AA Bergen op Zoom, The Netherlands<br>📞 <a href="tel:+31164855118" style="color:inherit;">0031 164 855118</a></p>
-                        <p>📍 <strong>Bangladesh office</strong> &mdash; System Imperial Complex, 3rd Floor, Chawkbazar, Chittagong</p>
+                        <p>📞 <a href="tel:+8801805723581">+880 1805-723581</a></p>
+                    </div>
+
+                    <div class="footer-offices">
+                        <div class="footer-office-card">
+                            <div class="footer-office-pin">📍</div>
+                            <h5>European office</h5>
+                            <p>Antwerpse straat 1, 4611 AA Bergen op Zoom, The Netherlands</p>
+                            <div class="footer-office-phone">📞 <a href="tel:+31164855118">0031 164 855118</a></div>
+                        </div>
+                        <div class="footer-office-card">
+                            <div class="footer-office-pin">📍</div>
+                            <h5>Bangladesh office</h5>
+                            <p>System Imperial Complex, 3rd Floor, Chawkbazar, Chittagong</p>
+                        </div>
+                    </div>
+
+                    <div class="footer-social-row">
+                        <a href="https://www.facebook.com/profile.php?id=61587097272961" target="_blank" rel="noopener" aria-label="Facebook" class="footer-social-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.5h2.85l.43-3.32H13.5V8.05c0-.96.27-1.62 1.65-1.62h1.76V3.46C16.6 3.4 15.53 3.3 14.28 3.3c-2.6 0-4.38 1.59-4.38 4.5v2.38H7.05v3.32H9.9V22h3.6z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/nextstep.immigration.be/" target="_blank" rel="noopener" aria-label="Instagram" class="footer-social-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+                        </a>
                     </div>
                 </div>
                 <div class="footer-col">
@@ -2171,7 +2335,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <span>Copyright ©2024 NextStep</span>
+                <span>&copy; 2026 Nextstep Immigration. All rights reserved. &middot; Powered by <strong>Minhaj Group</strong></span>
                 <a href="#">Privacybeleid</a>
             </div>
         </div>
@@ -2320,27 +2484,40 @@
 
     <!-- ===================== Login Modal ===================== -->
     <div class="ns-modal-overlay" id="loginModal" aria-hidden="true">
-        <div class="ns-modal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle" style="max-width:420px;">
+        <div class="ns-modal ns-login-modal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle" style="max-width:420px;">
             <button class="ns-modal-close" type="button" data-close-modal aria-label="Close">&times;</button>
-            <h3 id="loginModalTitle">Log in</h3>
-            <p class="ns-modal-sub">Welcome back — log in to your NextStep account.</p>
+
+            <div class="ns-login-badge" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12z" fill="currentColor" opacity="0.9"/>
+                    <path d="M12 14.3c-4.4 0-8.3 2.3-8.3 5.7 0 1 .8 1.8 1.8 1.8h13c1 0 1.8-.8 1.8-1.8 0-3.4-3.9-5.7-8.3-5.7z" fill="currentColor"/>
+                </svg>
+            </div>
+            <h3 id="loginModalTitle">Welcome back</h3>
+            <p class="ns-modal-sub">Log in to your NextStep Immigration account.</p>
             <div class="ns-form-msg" id="loginFormMsg"></div>
 
             <div class="ns-google-btn-wrap">
                 <div id="googleLoginBtn" class="ns-google-btn" data-role="jobseeker"></div>
             </div>
-            <div class="ns-or-divider"><span>or</span></div>
+            <div class="ns-or-divider"><span>or log in with email</span></div>
 
-            <form id="loginForm">
-                <div class="ns-form-group">
-                    <label for="login_email">Email *</label>
-                    <input type="email" id="login_email" name="email" required />
+            <form id="loginForm" class="ns-login-form">
+                <div class="ns-form-group ns-input-icon-group">
+                    <label for="login_email">Email address</label>
+                    <div class="ns-input-icon-wrap">
+                        <svg class="ns-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-11Z" stroke="currentColor" stroke-width="1.6"/><path d="m4 6.5 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <input type="email" id="login_email" name="email" placeholder="you@example.com" required />
+                    </div>
                 </div>
-                <div class="ns-form-group">
-                    <label for="login_password">Password *</label>
-                    <input type="password" id="login_password" name="password" required />
+                <div class="ns-form-group ns-input-icon-group">
+                    <label for="login_password">Password</label>
+                    <div class="ns-input-icon-wrap">
+                        <svg class="ns-input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10.5V7.8a4 4 0 1 1 8 0v2.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                        <input type="password" id="login_password" name="password" placeholder="Enter your password" required />
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-blue" id="loginSubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Log in</button>
+                <button type="submit" class="btn btn-blue ns-login-submit" id="loginSubmitBtn">Log in</button>
                 <p class="ns-form-switch">New here? <a href="#" data-switch-to="jobseeker">Create a jobseeker account</a> or <a href="#" data-switch-to="employer">an employer account</a></p>
             </form>
         </div>
@@ -2458,9 +2635,12 @@
             <button class="ns-modal-close" data-close-modal aria-label="Close">&times;</button>
 
             <div class="ns-profile-header">
+                <div class="ns-profile-header-bg" aria-hidden="true"></div>
                 <div class="ns-profile-avatar-wrap">
                     <img id="profileAvatarImg" src="" alt="" class="ns-profile-avatar" />
-                    <label for="profileAvatarInput" class="ns-profile-avatar-edit">✎</label>
+                    <label for="profileAvatarInput" class="ns-profile-avatar-edit" title="Change photo">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                    </label>
                     <input type="file" id="profileAvatarInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
                 </div>
                 <div class="ns-profile-header-text">
@@ -2470,14 +2650,25 @@
             </div>
 
             <div class="ns-tabs ns-profile-tabs">
-                <button type="button" class="ns-tab-btn active" data-profile-tab="details">Details</button>
-                <button type="button" class="ns-tab-btn" data-profile-tab="history">My Activity</button>
-                <button type="button" class="ns-tab-btn" data-profile-tab="messages">Messages <span id="profileUnreadBadge" class="ns-profile-badge"></span></button>
+                <button type="button" class="ns-tab-btn active" data-profile-tab="details">
+                    <svg class="ns-tab-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.7"/><path d="M4.5 20c1.2-3.8 4.2-5.8 7.5-5.8s6.3 2 7.5 5.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    <span>Details</span>
+                </button>
+                <button type="button" class="ns-tab-btn" data-profile-tab="history">
+                    <svg class="ns-tab-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 7v5.5l3.5 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.7"/></svg>
+                    <span>My Activity</span>
+                </button>
+                <button type="button" class="ns-tab-btn" data-profile-tab="messages">
+                    <svg class="ns-tab-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 5.5h16v10.5H8.8L4 19.8V5.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                    <span>Messages</span>
+                    <span id="profileUnreadBadge" class="ns-profile-badge"></span>
+                </button>
             </div>
 
             <div class="ns-form-msg" id="profileFormMsg"></div>
 
             <div id="profilePane-details" class="ns-profile-pane">
+                <p class="ns-profile-section-label">Basic information</p>
                 <div class="ns-form-row" id="profileNameRow"></div>
                 <div class="ns-form-row">
                     <div class="ns-form-group">
@@ -2486,9 +2677,11 @@
                     </div>
                     <div class="ns-form-group">
                         <label>Phone</label>
-                        <input type="tel" id="profilePhone" />
+                        <input type="tel" id="profilePhone" placeholder="e.g. +880 1XXX-XXXXXX" />
                     </div>
                 </div>
+
+                <p class="ns-profile-section-label">Public profile</p>
                 <div class="ns-form-row">
                     <div class="ns-form-group">
                         <label>Headline</label>
@@ -2504,11 +2697,11 @@
                     <label>About</label>
                     <textarea id="profileBio" rows="3" placeholder="Tell us a bit about yourself or your company..."></textarea>
                 </div>
-                <button type="button" class="btn btn-blue" id="profileSaveBtn" style="margin-top:0.6rem;">Save changes</button>
+                <button type="button" class="btn btn-blue" id="profileSaveBtn">Save changes</button>
             </div>
 
             <div id="profilePane-history" class="ns-profile-pane" style="display:none;">
-                <h4 class="ns-form-subhead" id="profileHistoryTitle">My applications</h4>
+                <p class="ns-profile-section-label" id="profileHistoryTitle">My applications</p>
                 <div id="profileHistoryList" class="ns-profile-scroll">
                     <p style="color:var(--text-muted); font-size:0.85rem;">Loading…</p>
                 </div>
@@ -2520,7 +2713,10 @@
                 </div>
                 <form id="profileMessageForm" class="ns-profile-message-form">
                     <input type="text" id="profileMessageInput" placeholder="Type a message to NextStep Immigration..." required />
-                    <button type="submit" class="btn btn-blue" id="profileMessageSendBtn">Send</button>
+                    <button type="submit" class="btn btn-blue" id="profileMessageSendBtn" aria-label="Send message">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20 20.5 12 4 4l1.8 6.9L15 12l-9.2 1.1L4 20Z" fill="currentColor"/></svg>
+                        <span>Send</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -2529,49 +2725,86 @@
     </div>
 
     <style>
-        .ns-modal-overlay{ display:none; position:fixed; inset:0; background:rgba(18,33,59,0.55); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
-        .ns-modal-overlay.open{ display:flex; }
-        .ns-modal{ background:#fff; border-radius:14px; padding:1.75rem; width:100%; max-width:560px; max-height:90vh; overflow-y:auto; position:relative; box-shadow:0 20px 60px -20px rgba(0,0,0,0.4); }
+        .ns-modal-overlay{ display:none; position:fixed; inset:0; background:rgba(18,33,59,0.6); backdrop-filter:blur(3px); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
+        .ns-modal-overlay.open{ display:flex; animation:ns-overlay-in 0.2s ease; }
+        @keyframes ns-overlay-in{ from{ opacity:0; } to{ opacity:1; } }
+        .ns-modal{ background:#fff; border-radius:16px; padding:1.75rem; width:100%; max-width:560px; max-height:90vh; overflow-y:auto; position:relative; box-shadow:0 24px 70px -20px rgba(18,33,59,0.45); animation:ns-modal-in 0.22s cubic-bezier(.2,.9,.3,1); }
+        @keyframes ns-modal-in{ from{ opacity:0; transform:translateY(10px) scale(0.98); } to{ opacity:1; transform:translateY(0) scale(1); } }
         .ns-modal h3{ margin:0 0 0.3rem; font-size:1.35rem; color:var(--text); }
         .ns-modal-sub{ color:var(--text-muted); font-size:0.9rem; margin-bottom:1.1rem; }
-        .ns-modal-close{ position:absolute; top:0.85rem; right:0.9rem; background:none; border:none; font-size:1.5rem; line-height:1; cursor:pointer; color:var(--text-muted); }
+        .ns-modal-close{ position:absolute; top:0.85rem; right:0.9rem; background:var(--bg-light); border:none; font-size:1.3rem; line-height:1; cursor:pointer; color:var(--text-muted); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.15s ease, color 0.15s ease; }
+        .ns-modal-close:hover{ background:var(--border); color:var(--text); }
         .ns-form-row{ display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; }
         @media (max-width:520px){ .ns-form-row{ grid-template-columns:1fr; } }
+
+        /* ===== Login modal ===== */
+        .ns-login-modal{ text-align:center; padding-top:2.1rem; }
+        .ns-login-badge{
+            width:52px; height:52px; margin:0 auto 0.9rem; border-radius:50%;
+            background:linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+            color:#fff; display:flex; align-items:center; justify-content:center;
+            box-shadow:0 6px 16px -4px rgba(27,78,155,0.5);
+        }
+        .ns-login-modal h3{ font-size:1.4rem; }
+        .ns-login-modal .ns-modal-sub{ margin-bottom:1.3rem; }
+        .ns-login-form{ text-align:left; }
+        .ns-input-icon-wrap{ position:relative; display:flex; align-items:center; }
+        .ns-input-icon{ position:absolute; left:0.75rem; color:var(--text-muted); pointer-events:none; }
+        .ns-input-icon-group input{ padding-left:2.35rem !important; }
+        .ns-login-submit{ width:100%; justify-content:center; margin-top:0.6rem; padding:0.8rem 1rem; font-size:0.95rem; box-shadow:0 6px 16px -6px rgba(27,78,155,0.55); }
 
         /* ===== Profile modal ===== */
         .ns-profile-modal{ padding-top:0; overflow:hidden; }
         .ns-profile-header{
-            display:flex; align-items:center; gap:1rem;
-            margin:0 -1.75rem 1.25rem; padding:1.6rem 1.75rem 1.3rem;
+            position:relative; display:flex; align-items:center; gap:1rem;
+            margin:0 -1.75rem 1.25rem; padding:1.7rem 1.75rem 1.4rem;
             background:linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
-            color:#fff;
+            color:#fff; overflow:hidden;
         }
-        .ns-profile-avatar-wrap{ position:relative; flex-shrink:0; }
+        .ns-profile-header-bg{
+            position:absolute; inset:0; opacity:0.5; pointer-events:none;
+            background-image:radial-gradient(circle at 85% -10%, rgba(184,134,46,0.55), transparent 55%),
+                              radial-gradient(circle at 10% 120%, rgba(255,255,255,0.12), transparent 50%);
+        }
+        .ns-profile-avatar-wrap{ position:relative; z-index:1; flex-shrink:0; }
         .ns-profile-avatar{
-            width:68px; height:68px; border-radius:50%; object-fit:cover;
-            background:var(--bg-light); border:3px solid rgba(255,255,255,0.85);
-            box-shadow:0 4px 14px rgba(0,0,0,0.25);
+            width:72px; height:72px; border-radius:50%; object-fit:cover;
+            background:var(--bg-light); border:3px solid rgba(255,255,255,0.9);
+            box-shadow:0 4px 16px rgba(0,0,0,0.3);
         }
         .ns-profile-avatar-edit{
             position:absolute; bottom:-2px; right:-2px; background:var(--yellow); color:var(--text);
-            width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-            font-size:12px; cursor:pointer; border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.25);
+            width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+            cursor:pointer; border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.3);
             transition:transform 0.15s ease;
         }
-        .ns-profile-avatar-edit:hover{ transform:scale(1.08); }
-        .ns-profile-header-text h3{ color:#fff; font-size:1.3rem; margin-bottom:2px; }
-        .ns-profile-headline{ color:rgba(255,255,255,0.85) !important; font-size:0.85rem; }
+        .ns-profile-avatar-edit:hover{ transform:scale(1.1); }
+        .ns-profile-header-text{ position:relative; z-index:1; min-width:0; }
+        .ns-profile-header-text h3{ color:#fff; font-size:1.3rem; margin-bottom:3px; }
+        .ns-profile-headline{
+            color:rgba(255,255,255,0.85) !important; font-size:0.85rem;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;
+        }
         .ns-profile-tabs{
-            display:flex; gap:0.4rem; margin-bottom:1.1rem; border-bottom:none;
-            background:var(--bg-light); padding:0.3rem; border-radius:10px;
+            display:flex; gap:0.35rem; margin-bottom:1.15rem; border-bottom:none;
+            background:var(--bg-light); padding:0.3rem; border-radius:12px;
         }
         .ns-profile-tabs .ns-tab-btn{
-            flex:1; padding:0.5rem 0.6rem !important; background:none; border:none !important;
-            border-radius:8px; font-weight:600; font-size:0.85rem; color:var(--text-muted);
+            flex:1; padding:0.55rem 0.5rem !important; background:none; border:none !important;
+            border-radius:9px; font-weight:600; font-size:0.83rem; color:var(--text-muted);
+            display:flex; align-items:center; justify-content:center; gap:0.35rem;
             transition:background 0.15s ease, color 0.15s ease;
         }
-        .ns-profile-tabs .ns-tab-btn.active{ background:#fff; color:var(--blue); box-shadow:0 1px 4px rgba(0,0,0,0.08); }
-        .ns-profile-badge{ background:#B3261E; color:#fff; border-radius:10px; font-size:0.7rem; padding:1px 6px; margin-left:2px; }
+        .ns-tab-icon{ flex-shrink:0; }
+        .ns-profile-tabs .ns-tab-btn.active{ background:#fff; color:var(--blue); box-shadow:0 1px 6px rgba(0,0,0,0.1); }
+        .ns-profile-tabs .ns-tab-btn.active .ns-tab-icon{ color:var(--blue); }
+        .ns-profile-badge{ background:#B3261E; color:#fff; border-radius:10px; font-size:0.68rem; padding:1px 6px; min-width:16px; }
+        .ns-profile-badge:empty{ display:none; }
+        .ns-profile-section-label{
+            font-size:0.72rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+            color:var(--text-muted); margin:0 0 0.55rem;
+        }
+        .ns-profile-section-label:not(:first-child){ margin-top:1.2rem; }
         .ns-profile-pane{ animation:ns-fade-in 0.18s ease; }
         @keyframes ns-fade-in{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:translateY(0);} }
         .ns-profile-scroll{
@@ -2585,7 +2818,8 @@
             border:1px solid var(--border); border-radius:20px; background:var(--bg);
         }
         .ns-profile-message-form input:focus{ outline:none; border-color:var(--blue); }
-        .ns-profile-message-form button{ border-radius:20px; padding:0.6rem 1.3rem; }
+        .ns-profile-message-form button{ border-radius:20px; padding:0.6rem 1.3rem; display:inline-flex; align-items:center; gap:0.4rem; }
+        #profileSaveBtn{ width:100%; justify-content:center; margin-top:0.9rem; padding:0.75rem 1rem; box-shadow:0 6px 16px -6px rgba(27,78,155,0.5); }
         /* ===== Mobile optimization: modals, profile, messages ===== */
         @media (max-width: 640px) {
             .ns-modal-overlay{ padding:0; align-items:flex-end; }
@@ -2673,8 +2907,9 @@
         }
         .ns-form-group{ margin-bottom:0.85rem; display:flex; flex-direction:column; gap:0.3rem; }
         .ns-form-group label{ font-size:0.82rem; font-weight:600; color:var(--text); }
-        .ns-form-group input, .ns-form-group textarea{ font-family:inherit; font-size:0.92rem; padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); }
-        .ns-form-group input:focus, .ns-form-group textarea:focus{ outline:none; border-color:var(--blue); }
+        .ns-form-group input, .ns-form-group textarea{ font-family:inherit; font-size:0.92rem; padding:0.6rem 0.75rem; border:1.5px solid var(--border); border-radius:9px; background:var(--bg); color:var(--text); transition:border-color 0.15s ease, box-shadow 0.15s ease; }
+        .ns-form-group input:focus, .ns-form-group textarea:focus{ outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(27,78,155,0.12); }
+        .ns-form-group input:disabled{ opacity:0.65; cursor:not-allowed; }
         .ns-form-msg{ display:none; padding:0.6rem 0.8rem; border-radius:8px; font-size:0.85rem; margin-bottom:0.9rem; }
         .ns-form-msg.show{ display:block; }
         .ns-form-msg.success{ background:#E6F4EA; color:#1E7A3B; }
