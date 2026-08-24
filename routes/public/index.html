@@ -1226,6 +1226,24 @@
       transition:none; animation:none;
     }
   }
+
+  /* ---------- Performance: faster scrolling & rendering, esp. on mobile / slow networks ---------- */
+  html{ scroll-behavior:auto; }
+  #siteContent .card, #siteContent .problem-card, #siteContent .figure-card,
+  #siteContent .uni-card, #siteContent .event-card, #siteContent .destination-card,
+  #siteContent .t-card{ content-visibility:auto; contain-intrinsic-size:0 280px; }
+  @media (max-width: 780px){
+    /* The sticky header + every glass card re-computing a blur on each scroll frame is the
+       single biggest cause of scroll lag on phones, especially on slower/older devices. */
+    #siteContent header{ -webkit-backdrop-filter:none; backdrop-filter:none; background:rgba(246,244,238,0.94); }
+    #siteContent .card, #siteContent .problem-card, #siteContent .figure-card,
+    #siteContent .uni-card, #siteContent .event-card, #siteContent .destination-card,
+    #siteContent .t-card{
+      -webkit-backdrop-filter:none; backdrop-filter:none;
+      background:rgba(255,255,255,0.9);
+    }
+    .study-promo-close{ -webkit-backdrop-filter:none; backdrop-filter:none; background:rgba(10,14,26,0.75); }
+  }
 </style>
 </head>
 <body>
