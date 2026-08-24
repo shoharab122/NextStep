@@ -1158,6 +1158,24 @@
     border-radius:999px; padding:0.35rem 0.85rem;
   }
 
+  /* ---------- Performance: faster scrolling & rendering, esp. on mobile / slow networks ---------- */
+  html{ scroll-behavior:auto; } /* smooth-scroll on huge admin pages costs more than it's worth */
+  .app-card, .kpi-card, .home-card, .contacts-grid > *{ content-visibility:auto; contain-intrinsic-size:0 220px; }
+  #loginScreen::before, #loginScreen::after{ will-change:transform; }
+  [style*="overflow-y:auto"], [style*="overflow-y: auto"], .sidebar, #jobAppsGrid, #appsGrid, .contacts-grid, .customers-grid{
+    -webkit-overflow-scrolling:touch;
+  }
+  @media (max-width: 780px){
+    /* Blur (backdrop-filter) and layered noise/mesh backgrounds are the biggest source of scroll jank on phones */
+    body::after{ display:none; }
+    body::before{ background:radial-gradient(60% 50% at 50% 0%, rgba(184,134,46,0.06), transparent 70%); }
+    #loginScreen::before, #loginScreen::after{ animation:none; filter:blur(40px); }
+    .login-badge, .login-card{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+    *{ background-attachment:scroll !important; }
+  }
+  @media (prefers-reduced-data: reduce), (max-width: 480px){
+    .login-card::before{ display:none; }
+  }
 </style>
 </head>
 <body>
@@ -2278,6 +2296,14 @@
   const API = '/api';
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  // Perf: debounce fast-typing search/filter inputs so we don't re-render on every keystroke
+  function debounce(fn, wait = 150) {
+    let t;
+    return function (...args) {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), wait);
+    };
+  }
 
   let token = localStorage.getItem('nextstep_admin_token') || null;
   let applications = [];
@@ -2864,7 +2890,7 @@
     `).join('');
   }
 
-  $('#appSearch').addEventListener('input', renderApplications);
+  $('#appSearch').addEventListener('input', debounce(renderApplications, 150));
   $('#statusFilter').addEventListener('change', renderApplications);
   $('#refreshAppsBtn').addEventListener('click', loadApplications);
 
@@ -3496,7 +3522,7 @@
     `).join('');
   }
 
-  $('#contactSearch').addEventListener('input', renderContacts);
+  $('#contactSearch').addEventListener('input', debounce(renderContacts, 150));
   $('#refreshContactsBtn').addEventListener('click', loadContacts);
 
   $('#contactsTableBody').addEventListener('click', async (e) => {
@@ -3568,7 +3594,7 @@
     `; }).join('');
   }
 
-  $('#customerSearch').addEventListener('input', renderCustomers);
+  $('#customerSearch').addEventListener('input', debounce(renderCustomers, 150));
   $('#customerRoleFilter').addEventListener('change', renderCustomers);
   $('#refreshCustomersBtn').addEventListener('click', loadCustomers);
 
@@ -3730,7 +3756,7 @@
     }
   }
 
-  $('#messageInboxSearch').addEventListener('input', loadMessageInbox);
+  $('#messageInboxSearch').addEventListener('input', debounce(loadMessageInbox, 250));
   $('#refreshMessagesBtn').addEventListener('click', loadMessageInbox);
 
   $('#messageInboxList').addEventListener('click', (e) => {
@@ -3891,7 +3917,7 @@
     }).join('');
   }
 
-  $('#todoSearch').addEventListener('input', renderTodos);
+  $('#todoSearch').addEventListener('input', debounce(renderTodos, 150));
   $('#todoStatusFilter').addEventListener('change', renderTodos);
   $('#todoPriorityFilter').addEventListener('change', renderTodos);
   $('#refreshTodosBtn').addEventListener('click', loadTodos);
@@ -4049,7 +4075,7 @@
     `).join('');
   }
 
-  $('#destinationSearch').addEventListener('input', renderDestinations);
+  $('#destinationSearch').addEventListener('input', debounce(renderDestinations, 150));
   $('#refreshDestinationsBtn').addEventListener('click', loadDestinations);
 
   function resetDestinationForm() {
@@ -4229,7 +4255,7 @@
     `).join('');
   }
 
-  $('#eventSearch').addEventListener('input', renderEvents);
+  $('#eventSearch').addEventListener('input', debounce(renderEvents, 150));
   $('#refreshEventsBtn').addEventListener('click', loadEvents);
 
   function resetEventForm() {
@@ -4421,7 +4447,7 @@
     }).join('');
   }
 
-  $('#invoiceSearch')?.addEventListener('input', renderInvoices);
+  $('#invoiceSearch')?.addEventListener('input', debounce(renderInvoices, 150));
   $('#invoiceStatusFilter')?.addEventListener('change', renderInvoices);
   $('#refreshInvoicesBtn')?.addEventListener('click', loadInvoices);
 
@@ -5005,7 +5031,7 @@
     $('#jobTypeJobseekerBtn').classList.remove('active');
     renderJobApps();
   });
-  $('#jobAppSearch').addEventListener('input', renderJobApps);
+  $('#jobAppSearch').addEventListener('input', debounce(renderJobApps, 150));
   $('#jobStatusFilter').addEventListener('change', renderJobApps);
   $('#refreshJobAppsBtn').addEventListener('click', () => { loadJobApplications(); loadEmployerInquiries(); });
 
@@ -5091,13 +5117,13 @@
   // Cosmetic: quick-search box in the topbar filters the sidebar nav items only (no backend calls)
   const adminQuickSearch = document.getElementById('adminQuickSearch');
   if (adminQuickSearch) {
-    adminQuickSearch.addEventListener('input', () => {
+    adminQuickSearch.addEventListener('input', debounce(() => {
       const q = adminQuickSearch.value.trim().toLowerCase();
       $$('.sidebar .tab-btn').forEach((btn) => {
         const label = btn.textContent.trim().toLowerCase();
         btn.parentElement.style.display = (!q || label.includes(q)) ? '' : 'none';
       });
-    });
+    }, 100));
   }
 
   $('#jobModalClose').addEventListener('click', () => $('#jobDetailModal').classList.remove('open'));
