@@ -279,6 +279,23 @@ const studyPromoImageUpload = multer({
     `);
 
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS expenses (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        category TEXT NOT NULL DEFAULT 'other',
+        amount NUMERIC(12,2) NOT NULL CHECK (amount > 0),
+        currency TEXT NOT NULL DEFAULT 'BDT',
+        expense_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        paid_to TEXT,
+        payment_method TEXT,
+        notes TEXT,
+        created_by TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS jobseeker_applications (
         id SERIAL PRIMARY KEY,
         full_name TEXT NOT NULL,
@@ -1842,7 +1859,7 @@ router.post('/admin/settings/study-promo-image', requireAdmin, (req, res) => {
 // ---------------------------------------------------------------------------
 // Admin (protected): invoices
 // ---------------------------------------------------------------------------
-const VALID_INVOICE_STATUSES = ['unpaid', 'paid', 'overdue', 'draft'];
+const VALID_INVOICE_STATUSES = ['unpaid', 'partial', 'paid', 'cancelled', 'overdue', 'draft'];
 
 function computeInvoiceTotal(items, discount, taxPercent) {
   const subtotal = (items || []).reduce(
@@ -2084,6 +2101,107 @@ router.delete('/admin/todos/:id', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('Delete todo error:', err.message);
     res.status(500).json({ error: 'Could not delete the task.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Admin (protected): expenses
+// ---------------------------------------------------------------------------
+const EXPENSE_CATEGORIES = ['rent', 'salaries', 'utilities', 'marketing', 'office', 'travel', 'software', 'fees', 'commission', 'other'];
+const EXPENSE_CURRENCIES = ['BDT', 'USD', 'EUR', 'GBP'];
+const EXPENSE_METHODS = ['cash', 'bank_transfer', 'bkash', 'nagad', 'card', 'other'];
+// expense_date is returned as plain text (YYYY-MM-DD) so timezones can never shift it by a day.
+const EXPENSE_COLS = `id, title, category, amount, currency, expense_date::text AS expense_date,
+  paid_to, payment_method, notes, created_by, created_at, updated_at`;
+
+function parseExpense(b) {
+  b = b || {};
+  const title = String(b.title || '').trim();
+  if (!title) return { error: 'A description is required.' };
+  if (title.length > 200) return { error: 'Description is too long (max 200 characters).' };
+
+  const amount = Math.round(Number(b.amount) * 100) / 100;
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 9999999999.99) {
+    return { error: 'Enter a valid amount greater than zero.' };
+  }
+
+  const date = String(b.expense_date || '');
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(date + 'T00:00:00Z') : null;
+  if (!d || isNaN(d) || d.toISOString().slice(0, 10) !== date) return { error: 'A valid date is required.' };
+
+  if (!EXPENSE_CATEGORIES.includes(b.category)) return { error: 'Please choose a valid category.' };
+  const currency = b.currency || 'BDT';
+  if (!EXPENSE_CURRENCIES.includes(currency)) return { error: 'Invalid currency.' };
+  const method = b.payment_method || null;
+  if (method && !EXPENSE_METHODS.includes(method)) return { error: 'Invalid payment method.' };
+
+  const paidTo = String(b.paid_to || '').trim();
+  const notes = String(b.notes || '').trim();
+  if (paidTo.length > 200) return { error: '"Paid to" is too long (max 200 characters).' };
+  if (notes.length > 1000) return { error: 'Notes are too long (max 1000 characters).' };
+
+  return { values: [title, b.category, amount, currency, date, paidTo || null, method, notes || null] };
+}
+
+router.get('/admin/expenses', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`SELECT ${EXPENSE_COLS} FROM expenses ORDER BY expense_date DESC, id DESC`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch expenses error:', err.message);
+    res.status(500).json({ error: 'Could not fetch expenses.' });
+  }
+});
+
+router.post('/admin/expenses', requireAdmin, async (req, res) => {
+  const parsed = parseExpense(req.body);
+  if (parsed.error) return res.status(400).json({ error: parsed.error });
+  try {
+    const result = await pool.query(
+      `INSERT INTO expenses (title, category, amount, currency, expense_date, paid_to, payment_method, notes, created_by)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+       RETURNING ${EXPENSE_COLS}`,
+      [...parsed.values, req.admin?.username || null]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Create expense error:', err.message);
+    res.status(500).json({ error: 'Could not save the expense.' });
+  }
+});
+
+router.put('/admin/expenses/:id', requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) return res.status(404).json({ error: 'Expense not found.' });
+  const parsed = parseExpense(req.body);
+  if (parsed.error) return res.status(400).json({ error: parsed.error });
+  try {
+    const result = await pool.query(
+      `UPDATE expenses SET
+        title=$1, category=$2, amount=$3, currency=$4, expense_date=$5, paid_to=$6,
+        payment_method=$7, notes=$8, updated_at=NOW()
+       WHERE id=$9
+       RETURNING ${EXPENSE_COLS}`,
+      [...parsed.values, id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Expense not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update expense error:', err.message);
+    res.status(500).json({ error: 'Could not update the expense.' });
+  }
+});
+
+router.delete('/admin/expenses/:id', requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) return res.status(404).json({ error: 'Expense not found.' });
+  try {
+    const result = await pool.query('DELETE FROM expenses WHERE id = $1 RETURNING id', [id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Expense not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete expense error:', err.message);
+    res.status(500).json({ error: 'Could not delete the expense.' });
   }
 });
 
