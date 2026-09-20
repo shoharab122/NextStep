@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Admin — Nextstep Immigration</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1212,6 +1212,702 @@
   .exp-neg{ color:var(--brand-red) !important; }
   .exp-pos{ color:var(--success) !important; }
   @media (max-width:640px){ .exp-grid2{ grid-template-columns:1fr !important; } }
+
+  /* ================= Dashboard redesign: framed layout, icon rail, gradient hero (colours from index.html) ================= */
+  .topnav{ display:none; }
+  .hero-stats{ margin-top:1.3rem; }
+  .hero-label{ font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.92); }
+  .hero-big{ font-family:'Inter', sans-serif; font-size:4.4rem; font-weight:700; letter-spacing:-0.03em; line-height:1; color:#fff; margin:0.35rem 0 1.1rem; font-variant-numeric:tabular-nums; }
+  .hero-mini{ display:flex; align-items:center; gap:0.7rem; margin-top:0.55rem; }
+  .hero-mini-icon{ width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.22); display:flex; align-items:center; justify-content:center; font-size:0.95rem; }
+  .hero-mini small{ display:block; font-size:0.7rem; color:rgba(255,255,255,0.82); font-weight:500; }
+  .hero-mini b{ font-size:1rem; color:#fff; font-variant-numeric:tabular-nums; }
+  .home-hero{
+    flex-direction:column; align-items:flex-start; justify-content:flex-start; min-height:310px; padding:30px 34px 78px;
+    background:linear-gradient(115deg, var(--brand-blue) 0%, #4F7FBF 42%, #DCD3BE 100%); border-radius:26px; box-shadow:none;
+  }
+  .home-hero::before{
+    content:''; inset:auto; right:-70px; top:34px; left:auto; bottom:auto; width:300px; height:300px; border-radius:50%; position:absolute; pointer-events:none;
+    border:2px solid rgba(255,255,255,0.24); background:none; font-size:0;
+    box-shadow:0 0 0 46px rgba(255,255,255,0.06), 0 0 0 92px rgba(255,255,255,0.04);
+  }
+  .home-hero-title{ font-family:'Inter', sans-serif; font-size:1.05rem; font-weight:600; }
+  .home-hero-actions{ position:absolute !important; right:0; bottom:0; z-index:2; }
+  .home-hero-actions .btn-ghost{
+    background:var(--ink-2); color:#fff; border:0; border-radius:24px 0 26px 0; padding:1rem 1.7rem;
+    font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; font-weight:700; box-shadow:none; backdrop-filter:none;
+  }
+  .home-hero-actions .btn-ghost:hover{ background:var(--ink); transform:none; }
+  .kpi-row{ padding:22px; border-radius:26px; background:linear-gradient(165deg, #F8E9C9, #F4D8C0); }
+  .kpi-row::before{ content:'Key figures'; grid-column:1 / -1; font-weight:700; font-size:0.95rem; color:var(--ink); }
+  .kpi-row .kpi-card{ background:rgba(255,255,255,0.65); border:0; box-shadow:none; border-radius:16px; padding:0.65rem 0.8rem; }
+  .kpi-row .kpi-card:hover{ transform:none; box-shadow:none; }
+  .kpi-row .kpi-body b{ font-size:1.15rem; }
+  .home-card{ background:#F7F6F1; border:0; box-shadow:none; border-radius:24px; }
+  .home-card-head{ border-bottom:0; }
+  .home-card-head h3{ font-family:'Inter', sans-serif; font-size:0.98rem; font-weight:700; }
+  .home-card-head h3::before{ display:none; }
+
+  @media (min-width:981px){
+    body:has(#dashboard[style*="block"]){ background:#33455F; }
+    body:has(#dashboard[style*="block"])::before, body:has(#dashboard[style*="block"])::after{ display:none; }
+    #dashboard[style*="block"]{
+      display:grid !important; grid-template-columns:112px minmax(0,1fr); grid-template-rows:auto 1fr;
+      max-width:1380px; margin:26px auto; min-height:calc(100vh - 52px); border-radius:34px;
+      background:linear-gradient(155deg, #24467F 0%, var(--ink-2) 48%, var(--ink) 100%);
+      box-shadow:0 40px 90px -30px rgba(0,0,0,0.55);
+    }
+    #dashboard main.container, #dashboard .app-shell{ display:contents; }
+
+    /* left icon rail */
+    #dashboard .sidebar{
+      grid-column:1; grid-row:1 / 3; position:sticky; top:26px; align-self:start; width:auto; max-height:calc(100vh - 52px);
+      overflow-y:auto; scrollbar-width:none; background:none; box-shadow:none; border-radius:0; padding:26px 8px 20px;
+    }
+    #dashboard .sidebar::-webkit-scrollbar{ display:none; }
+    #dashboard .sidebar-brand{ display:flex; flex-direction:column; align-items:center; gap:0.45rem; padding:0 0 22px; }
+    #dashboard .sidebar-brand-mark{ width:46px; height:46px; border-radius:16px; background:linear-gradient(135deg, var(--brass-light), var(--brass)); color:var(--ink); display:flex; align-items:center; justify-content:center; font-weight:800; }
+    #dashboard .sidebar-brand-text{ color:#fff; font-family:'Fraunces', serif; font-size:0.95rem; text-align:center; }
+    #dashboard .sidebar-brand-text small, #dashboard .sidebar-menu-label, #dashboard .sidebar .tab-group-label{ display:none; }
+    #dashboard .sidebar .tabs, #dashboard .sidebar .tab-group{ display:flex; flex-direction:column; gap:2px; }
+    #dashboard .sidebar .tab-btn{
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:6px; width:100%; padding:9px 4px; text-align:center;
+      font-size:0.6rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; line-height:1.2; color:rgba(255,255,255,0.62);
+      background:none; border:0; border-radius:14px; box-shadow:none; transform:none;
+    }
+    #dashboard .sidebar .tab-btn::before{ display:none; }
+    #dashboard .sidebar .tab-btn .tab-icon{
+      width:38px; height:38px; border-radius:50%; background:none; box-shadow:none; transform:none; font-size:1.15rem;
+      display:flex; align-items:center; justify-content:center; filter:grayscale(1) brightness(2.2); opacity:0.85;
+      transition:background .2s, width .2s, height .2s;
+    }
+    #dashboard .sidebar .tab-btn:hover{ background:none; color:#fff; transform:none; }
+    #dashboard .sidebar .tab-btn:hover .tab-icon{ background:rgba(255,255,255,0.12); transform:none; }
+    #dashboard .sidebar .tab-btn.active{ color:#fff; background:none; border:0; transform:none; }
+    #dashboard .sidebar .tab-btn.active .tab-icon{ width:52px; height:52px; background:#fff; filter:none; opacity:1; box-shadow:0 8px 20px -6px rgba(0,0,0,0.45); transform:none; }
+
+    /* top bar on the frame */
+    #dashboard header.topbar{ grid-column:2; grid-row:1; position:relative; background:none; backdrop-filter:none; border:0; box-shadow:none; overflow:visible; }
+    #dashboard header.topbar::before{ display:none; }
+    #dashboard .topbar .container{ max-width:none; margin:0; padding:0 28px 0 4px; }
+    #dashboard .topbar-inner{ height:92px; gap:1.25rem; }
+    #dashboard .menu-toggle{ display:none; }
+    #dashboard .topbar .logo, #dashboard .topbar .logo span{ color:#fff; font-size:1.05rem; }
+    #dashboard .topbar .logo .brand-blue{ color:var(--brass-light); }
+    #dashboard .topbar .logo::before{ background:linear-gradient(135deg, var(--brass-light), var(--brass)); }
+    #dashboard .topbar .logo::after{ color:var(--ink); }
+    #dashboard .topbar-search{ flex:0 1 230px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); box-shadow:none; }
+    #dashboard .topbar-search input{ color:#fff; }
+    #dashboard .topbar-search input::placeholder{ color:rgba(255,255,255,0.55); }
+    .topnav{ display:flex; gap:2.2rem; margin:0 auto; }
+    .topnav-link{ background:none; border:0; padding:0.4rem 0; font:700 0.74rem/1 'Inter', sans-serif; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,255,255,0.55); cursor:pointer; position:relative; }
+    .topnav-link:hover, .topnav-link.active{ color:#fff; }
+    .topnav-link.active::after{ content:''; position:absolute; left:0; right:0; bottom:-8px; height:2px; border-radius:2px; background:var(--brass-light); }
+    #dashboard .icon-pill{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); box-shadow:none; }
+    #dashboard #whoami{ color:#fff; background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); box-shadow:none; }
+    #dashboard #logoutBtn{ color:#fff; background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.35); }
+    #dashboard #logoutBtn:hover{ background:rgba(255,255,255,0.18); border-color:#fff; }
+
+    /* white content panel */
+    #dashboard .content-area{ grid-column:2; grid-row:2; background:#fff; border-radius:28px; margin:0 24px 24px 0; padding:28px 30px 32px; min-width:0; box-shadow:0 20px 50px -25px rgba(0,0,0,0.4); }
+
+    /* Home: hero + key figures on top, three cards below */
+    #panel-home.active{ display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:22px; }
+    #panel-home .home-hero{ grid-column:1; grid-row:1; margin:0; }
+    #panel-home .kpi-row{ grid-column:2; grid-row:1; margin:0; display:flex; flex-direction:column; gap:0.55rem; }
+    #panel-home .home-layout{ grid-column:1 / -1; grid-row:2; grid-template-columns:repeat(3, minmax(0,1fr)); gap:22px; }
+    #panel-home .home-main, #panel-home .home-side{ display:contents; }
+  }
+
+  /* =====================================================================
+     RESPONSIVE REFINEMENT PACK  —  laptop + tablet + phone
+     (appended last so it wins over earlier rules; no JS/markup changes)
+     ===================================================================== */
+
+  /* --- Aliases for variables referenced by inline styles / JS templates
+         (--border, --text-muted, --blue, --bg-light, --text were never
+         defined, so those borders and text colours rendered wrong). ----- */
+  :root{
+    --border: rgba(18,33,59,0.14);
+    --text: #12213B;
+    --text-muted: #5B6884;
+    --blue: #1B4E9B;
+    --bg-light: #EEEAE0;
+    --green: #3E7A4E;
+    --red: #D0342C;
+  }
+
+  :root{
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-l: env(safe-area-inset-left, 0px);
+    --safe-r: env(safe-area-inset-right, 0px);
+  }
+
+  /* --- Stacking order: drawer > backdrop > sticky header > page ------- */
+  header.topbar{ z-index:120; }
+  .mobile-menu-backdrop{ z-index:800 !important; }
+  .sidebar{ z-index:900 !important; }
+  .modal-overlay{ z-index:1000; }
+  .toast{ z-index:1100; }
+
+  /* --- Nothing may push the page sideways --------------------------- */
+  .app-shell, .content-area, main.container,
+  .home-layout, .home-main, .home-side,
+  .kpi-row, .kpi-card, .home-card{ min-width:0; }
+  .kpi-body{ min-width:0; }
+  .kpi-body b, .kpi-body span{ overflow-wrap:anywhere; }
+  img, svg, video{ max-width:100%; height:auto; }
+
+  /* --- LOGIN SCREEN: always fully visible, button never cut off ------ */
+  #loginScreen{
+    min-height:100vh; min-height:100dvh;
+    /* flex-start + margin:auto on the child centres the card when there is
+       room, but never clips the top (or the Sign-in button) when there isn't */
+    align-items:flex-start; justify-content:center;
+    overflow-y:auto; overflow-x:hidden;
+    padding:calc(1.5rem + var(--safe-t)) calc(1.5rem + var(--safe-r))
+            calc(1.5rem + var(--safe-b)) calc(1.5rem + var(--safe-l));
+  }
+  .login-wrap{ margin:auto; }
+  #loginForm{ display:block; }
+  #loginBtn,
+  #loginForm .btn-primary{
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    width:100% !important;
+    min-height:48px;
+    align-items:center; justify-content:center;
+    margin-top:0.85rem;
+    position:relative; z-index:2;
+    font-size:0.95rem;
+  }
+  #loginBtn:disabled{ opacity:0.6 !important; }
+  #loginError{ display:block; }
+
+  /* ===================== LAPTOPS (981px – 1400px) ==================== */
+  @media (min-width:981px) and (max-width:1400px){
+    #dashboard[style*="block"]{
+      margin:16px auto !important;
+      min-height:calc(100vh - 32px) !important;
+      border-radius:26px !important;
+    }
+    #dashboard .content-area{
+      margin:0 16px 16px 0 !important;
+      padding:22px 22px 26px !important;
+      border-radius:22px !important;
+    }
+    #dashboard .topbar-inner{ height:76px !important; gap:0.9rem !important; }
+    #dashboard .topbar .container{ padding:0 18px 0 4px !important; }
+    .topnav{ gap:1.4rem !important; }
+    .topnav-link{ font-size:0.68rem !important; letter-spacing:0.1em !important; }
+    #dashboard .topbar-search{ flex:0 1 190px !important; }
+    #dashboard .topbar .logo, #dashboard .topbar .logo span{ font-size:0.95rem !important; }
+  }
+
+  /* Small laptops / large tablets in landscape: stop the 3-up card row
+     and the hero+KPI split from squeezing. */
+  @media (min-width:981px) and (max-width:1240px){
+    #panel-home .home-layout{ grid-template-columns:repeat(2, minmax(0,1fr)) !important; }
+    #panel-home.active{ grid-template-columns:minmax(0,1fr) 300px !important; }
+    .home-hero{ min-height:0 !important; padding:26px 26px 72px !important; }
+    .hero-big{ font-size:3.4rem !important; }
+  }
+
+  @media (min-width:981px) and (max-width:1080px){
+    /* At this width the hero + key-figures side column collide — stack them */
+    #panel-home.active{ grid-template-columns:minmax(0,1fr) !important; }
+    #panel-home .home-hero{ grid-column:1 !important; grid-row:1 !important; }
+    #panel-home .kpi-row{
+      grid-column:1 !important; grid-row:2 !important;
+      display:grid !important; grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+      gap:0.7rem !important;
+    }
+    #panel-home .home-layout{ grid-row:3 !important; }
+    #panel-home .kpi-row .kpi-card{ width:auto !important; }
+  }
+
+  /* --- Desktop top bar: must never overflow the frame ---------------- */
+  @media (min-width:981px){
+    #dashboard .topbar-inner{ flex-wrap:nowrap; min-width:0; }
+    #dashboard .topbar .logo{
+      flex:0 1 auto; min-width:0; white-space:nowrap;
+      overflow:hidden; text-overflow:ellipsis;
+    }
+    #dashboard .topbar-search{ min-width:0; flex:1 1 150px; }
+    #dashboard .topbar-search input{ min-width:0; }
+    #dashboard .topnav{ flex:0 0 auto; margin:0 auto; white-space:nowrap; }
+    #dashboard .topbar-actions{ flex:0 0 auto; }
+    #dashboard #whoami{ white-space:nowrap; flex:0 0 auto; }
+    #dashboard #logoutBtn{ white-space:nowrap; flex:0 0 auto; }
+  }
+  /* Narrow laptops: shed the duplicate quick-links (the rail already has them) */
+  @media (min-width:981px) and (max-width:1200px){
+    #dashboard .topnav{ display:none !important; }
+    #dashboard .topbar-search{ flex:1 1 140px; }
+    #dashboard #whoami{ max-width:none; }
+  }
+  @media (min-width:981px) and (max-width:1060px){
+    #dashboard .topbar-search{ display:none !important; }
+    #dashboard #whoami{ max-width:none; }
+  }
+  /* Icon rail: keep labels on one tidy line where possible */
+  @media (min-width:981px) and (max-width:1200px){
+    #dashboard[style*="block"]{ grid-template-columns:96px minmax(0,1fr) !important; }
+    #dashboard .sidebar .tab-btn{ font-size:0.55rem !important; padding:8px 2px !important; }
+  }
+
+  /* Shorter laptop screens: keep the frame from forcing extra scroll */
+  @media (min-width:981px) and (max-height:820px){
+    #dashboard .sidebar{ padding:18px 8px 16px !important; }
+    #dashboard .sidebar .tab-btn{ padding:7px 4px !important; gap:4px !important; }
+    #dashboard .sidebar .tab-btn .tab-icon{ width:34px !important; height:34px !important; }
+    #dashboard .sidebar .tab-btn.active .tab-icon{ width:44px !important; height:44px !important; }
+  }
+
+  /* =================== TABLET & PHONE (≤980px) ======================= */
+  @media (max-width:980px){
+
+    /* ---- Top bar: one tidy row, nothing overlapping ---- */
+    header.topbar{ padding-top:var(--safe-t); }
+    .topbar-inner{
+      display:flex !important; flex-wrap:nowrap !important;
+      align-items:center; justify-content:flex-start;
+      gap:0.55rem !important; height:auto !important;
+      min-height:60px; padding:0.6rem 0 !important;
+    }
+    .menu-toggle{ flex:0 0 auto; width:42px; height:42px; }
+    .topbar .logo{
+      flex:1 1 auto; min-width:0; margin-right:auto;
+      font-size:0.95rem !important; line-height:1.25;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .topbar .logo::before, .topbar .logo::after{ width:28px; height:28px; font-size:0.85rem; }
+    .topnav{ display:none !important; }
+    .topbar-actions{
+      flex:0 0 auto; margin-left:auto; gap:0.4rem !important;
+      display:flex; align-items:center;
+    }
+    .icon-pill{ width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; }
+    #whoami{ max-width:none; white-space:nowrap; }
+    #logoutBtn{ padding:0.55rem 0.9rem; font-size:0.8rem; white-space:nowrap; }
+
+    /* ---- Drawer sits under the notch correctly ---- */
+    .sidebar{
+      height:100vh; height:100dvh;
+      padding-top:calc(1.1rem + var(--safe-t)) !important;
+      padding-bottom:calc(2rem + var(--safe-b)) !important;
+    }
+
+    /* ---- Drawer contents: clean single-column list (the 2-up grid was
+            staggering labels and buttons into an unreadable mess) ---- */
+    .sidebar .sidebar-brand{
+      display:flex !important; align-items:center; gap:0.6rem;
+      padding:0 0.2rem 1rem; margin-bottom:0.9rem;
+      border-bottom:1px solid var(--line);
+    }
+    .sidebar .sidebar-brand-mark{
+      width:38px; height:38px; border-radius:12px; flex:0 0 auto;
+      display:flex; align-items:center; justify-content:center; font-weight:800;
+      background:linear-gradient(135deg, var(--brass-light), var(--brass)); color:var(--ink);
+    }
+    .sidebar .sidebar-brand-text{ font-family:'Fraunces', serif; font-size:0.95rem; color:var(--ink); line-height:1.2; }
+    .sidebar .sidebar-brand-text small{ font-size:0.7rem; color:#5B6884; font-weight:500; }
+    .sidebar .sidebar-menu-label{
+      display:block !important; font-size:0.66rem; font-weight:700;
+      letter-spacing:0.12em; text-transform:uppercase; color:#8892A6; margin-bottom:0.5rem;
+    }
+    .sidebar .tabs{ display:flex !important; flex-direction:column; gap:1rem; }
+    .sidebar .tab-group{
+      display:flex !important; flex-direction:column !important;
+      grid-template-columns:none !important; gap:0.35rem !important;
+    }
+    .sidebar .tab-group-label{
+      display:block; width:100%; padding:0 0 0.2rem 0.15rem;
+      font-size:0.64rem; letter-spacing:0.1em;
+    }
+    .sidebar .tab-btn{
+      display:flex; align-items:center; justify-content:flex-start;
+      width:100%; min-height:46px !important;
+      padding:0.6rem 0.8rem !important; gap:0.6rem;
+      font-size:0.85rem !important; line-height:1.25; text-align:left;
+      white-space:normal; border-radius:11px;
+    }
+    .sidebar .tab-btn .tab-icon{ margin-top:0 !important; }
+    .sidebar .tab-divider{ display:none; }
+
+    main{ padding:1.4rem 0 3rem; }
+
+    /* ---- Hero: absolute CTA was overlapping text — put it in flow ---- */
+    .home-hero{
+      display:flex; flex-direction:column; align-items:flex-start;
+      min-height:0 !important;
+      padding:1.4rem 1.25rem !important;
+      border-radius:20px !important;
+    }
+    .home-hero::before{
+      width:180px !important; height:180px !important;
+      right:-70px !important; top:-30px !important;
+      box-shadow:0 0 0 28px rgba(255,255,255,0.05) !important;
+    }
+    .home-hero-title{ font-size:1.05rem !important; }
+    .hero-big{ font-size:2.6rem !important; margin:0.3rem 0 0.8rem !important; }
+    .hero-stats{ margin-top:1rem !important; width:100%; }
+    .home-hero-actions{
+      position:static !important; width:100%; margin-top:1.1rem;
+      inset:auto !important;
+    }
+    .home-hero-actions .btn-ghost{
+      width:100%; justify-content:center;
+      border-radius:999px !important; padding:0.85rem 1.2rem !important;
+      font-size:0.72rem; letter-spacing:0.12em;
+    }
+
+    /* ---- Key figures / KPI strip ---- */
+    .kpi-row{
+      display:grid !important;
+      grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+      gap:0.7rem !important; padding:16px !important; border-radius:20px !important;
+      margin-bottom:1.1rem;
+    }
+    .kpi-row::before{ font-size:0.9rem; }
+    .kpi-card{ padding:0.75rem 0.85rem !important; gap:0.65rem; }
+    .kpi-icon{ width:36px; height:36px; }
+    .kpi-body b{ font-size:1.15rem !important; }
+    .kpi-delta{ font-size:0.64rem; padding:0.2rem 0.42rem; }
+
+    /* ---- Analytics area stacks cleanly ---- */
+    /* NOTE: .home-layout ships with align-items:start — in a column flex box
+       that collapses children to content width. Force stretch. */
+    .home-layout{
+      display:flex !important; flex-direction:column !important;
+      align-items:stretch !important; gap:1rem !important;
+    }
+    .home-main, .home-side{
+      display:flex !important; flex-direction:column !important;
+      align-items:stretch !important; align-self:stretch !important;
+      width:100% !important; gap:1rem !important;
+    }
+    .home-card{ width:100% !important; }
+    .home-card{ padding:1.1rem 1.1rem !important; border-radius:18px !important; }
+    .home-card-head{ flex-wrap:wrap; gap:0.4rem; }
+    .overview-split{ justify-content:center; gap:1.2rem; }
+
+    /* ---- Toolbars / filter rows never overflow ---- */
+    .toolbar{ flex-wrap:wrap; }
+    .search-input{ min-width:0; }
+    .settings-subnav{ overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; }
+    .settings-subtab-btn{ white-space:nowrap; }
+
+    /* ---- Two-pane panels (Messages inbox + thread) stack full width ---- */
+    #panel-messages > div[style*="grid-template-columns:280px"],
+    div[style*="grid-template-columns:280px"]{
+      display:flex !important; flex-direction:column !important;
+      align-items:stretch !important; gap:1rem !important;
+    }
+    #messageInboxList, #messageThreadPanel{ width:100% !important; }
+    #messageInboxList{ max-height:260px !important; }
+    #messageThreadPanel{ min-height:340px !important; }
+  }
+
+  /* ---- Phones ---- */
+  @media (max-width:600px){
+    .kpi-row{ grid-template-columns:1fr !important; }
+    .topbar .logo{ font-size:0.86rem !important; }
+    #whoami{ display:none !important; }
+    .home-hero{ padding:1.2rem 1.05rem !important; }
+    .hero-big{ font-size:2.25rem !important; }
+    .status-donut{ width:110px; height:110px; }
+  }
+
+  @media (max-width:560px){
+    /* "Nextstep Immigration — Admin" is too long for a phone bar: drop the
+       middle word so it reads "Nextstep — Admin" and stops truncating */
+    .topbar .logo > span:nth-of-type(2){ display:none; }
+  }
+
+  @media (max-width:380px){
+    .menu-toggle{ width:38px; height:38px; }
+    #logoutBtn{ padding:0.5rem 0.7rem; font-size:0.75rem; }
+    .icon-pill{ width:36px; height:36px; }
+  }
+
+  /* ================= BUTTONS — consistent brand styling ============== */
+  .btn-primary, .btn-brass, .btn-ghost, .icon-btn, .settings-subtab-btn{
+    font-family:'Inter', sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    transition:background .18s var(--ease), border-color .18s var(--ease),
+               color .18s var(--ease), box-shadow .2s var(--ease), transform .12s var(--ease);
+  }
+  .btn-primary, .btn-brass, .btn-ghost{ min-height:44px; }
+
+  .btn-primary{
+    background:linear-gradient(150deg, var(--ink) 0%, var(--ink-2) 100%);
+    color:var(--paper); border:1px solid var(--ink); font-weight:700;
+    box-shadow:0 10px 24px -12px rgba(18,33,59,0.45);
+  }
+  .btn-primary:hover:not(:disabled){
+    background:linear-gradient(150deg, var(--brass) 0%, #A5721F 100%);
+    border-color:var(--brass);
+    box-shadow:0 12px 28px -12px rgba(184,134,46,0.6);
+    transform:translateY(-1px);
+  }
+  .btn-primary:active:not(:disabled){ transform:translateY(0) scale(0.985); }
+
+  .btn-ghost{
+    background:#fff; border:1.5px solid var(--line); color:var(--ink); font-weight:700;
+  }
+  .btn-ghost:hover{
+    border-color:var(--brass); background:rgba(184,134,46,0.08); color:var(--ink);
+    box-shadow:0 8px 20px -12px rgba(184,134,46,0.5); transform:translateY(-1px);
+  }
+  .btn-ghost:active{ transform:translateY(0) scale(0.985); }
+
+  .btn-brass{
+    background:linear-gradient(135deg, var(--brass), #A5721F);
+    border:1px solid var(--brass); color:#fff; font-weight:700;
+    box-shadow:0 6px 18px -8px rgba(184,134,46,0.55);
+  }
+  .btn-brass:hover:not(:disabled){
+    filter:brightness(1.08);
+    box-shadow:0 10px 24px -10px rgba(184,134,46,0.65); transform:translateY(-1px);
+  }
+
+  /* keep the hero / dark-frame ghost buttons readable on the navy frame */
+  #dashboard .home-hero-actions .btn-ghost{ background:var(--ink-2); border-color:transparent; color:#fff; }
+  #dashboard .home-hero-actions .btn-ghost:hover{ background:var(--brass); border-color:transparent; color:#fff; }
+  @media (max-width:980px){
+    #dashboard .home-hero-actions .btn-ghost{ background:rgba(255,255,255,0.16); border:1.5px solid rgba(255,255,255,0.45); }
+    #dashboard .home-hero-actions .btn-ghost:hover{ background:rgba(255,255,255,0.28); border-color:#fff; }
+  }
+  @media (min-width:981px){
+    #dashboard #logoutBtn{ background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.4); color:#fff; }
+    #dashboard #logoutBtn:hover{ background:var(--brass); border-color:var(--brass); color:#fff; }
+  }
+
+  /* The green "online" dot inside #whoami was being squashed to a sliver
+     once the pill started truncating — pin its size. */
+  #whoami::before{ flex:0 0 8px !important; width:8px !important; height:8px !important; }
+  #whoami{ gap:0.5rem; }
+
+  /* Touch targets on coarse pointers */
+  @media (pointer:coarse){
+    .icon-btn, .icon-pill, .tab-btn{ min-height:44px; }
+    .btn-primary:hover, .btn-ghost:hover, .btn-brass:hover{ transform:none; }
+  }
+
+  /* =====================================================================
+     POLISH PASS — icon rail contrast, logo colour, bell, alignment, speed
+     ===================================================================== */
+
+  /* ---------- Icon system (emoji → inline SVG) ---------------------- */
+  .tab-icon{
+    display:inline-flex; align-items:center; justify-content:center;
+    flex:0 0 auto; line-height:0;
+  }
+  .tab-icon svg{ width:20px; height:20px; display:block; }
+  .icon-pill svg.bell-ico{ width:19px; height:19px; display:block; }
+
+  /* ---------- Notification bell ------------------------------------- */
+  .icon-pill{
+    position:relative; display:inline-flex; align-items:center; justify-content:center;
+    width:40px; height:40px; border-radius:50%; padding:0; flex:0 0 auto;
+    color:var(--ink); background:#fff; border:1px solid var(--line);
+    box-shadow:var(--shadow-sm);
+    transition:background .18s var(--ease), color .18s var(--ease),
+               border-color .18s var(--ease), transform .12s var(--ease);
+  }
+  .icon-pill:hover{ color:var(--brass); border-color:var(--brass); background:rgba(184,134,46,0.08); transform:none; }
+  .icon-pill:active{ transform:scale(0.94); }
+  .icon-pill-dot{
+    position:absolute; top:7px; right:8px; width:9px; height:9px; border-radius:50%;
+    background:var(--brand-red); border:2px solid #fff; box-shadow:0 0 0 1px rgba(208,52,44,0.35);
+  }
+  @media (min-width:981px){
+    #dashboard .icon-pill{
+      color:#fff; background:rgba(255,255,255,0.12);
+      border:1px solid rgba(255,255,255,0.24); box-shadow:none;
+    }
+    #dashboard .icon-pill:hover{
+      color:var(--ink); background:var(--brass-light); border-color:var(--brass-light);
+    }
+    #dashboard .icon-pill-dot{ border-color:var(--ink-2); }
+  }
+
+  /* ---------- Brand logo: real brand colours, properly aligned ------- */
+  .topbar .logo{
+    display:inline-flex; align-items:center; gap:0.55rem;
+    font-family:'Fraunces', Georgia, serif; font-weight:600; letter-spacing:0.005em;
+  }
+  .topbar .logo .brand-blue{ color:var(--brand-blue); font-style:normal; font-weight:700; }
+  .topbar .logo > span:nth-of-type(2){ color:var(--brand-red); font-style:italic; font-weight:500; }
+  .topbar .logo::before{
+    content:''; width:34px; height:34px; border-radius:10px; flex:0 0 auto;
+    background:linear-gradient(140deg, var(--brand-blue), var(--ink));
+    box-shadow:0 2px 8px -2px rgba(18,33,59,0.45), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .topbar .logo::after{
+    content:'N'; position:absolute; left:0; top:50%; transform:translateY(-50%);
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:'Fraunces', serif; font-weight:700; font-size:1rem;
+  }
+
+  @media (min-width:981px){
+    /* On the navy frame the brand palette is lifted so it stays legible
+       while still reading as blue + red (same as the sign-in card). */
+    #dashboard .topbar .logo{ color:#fff; }
+    #dashboard .topbar .logo .brand-blue{ color:#8FB6F2 !important; }
+    #dashboard .topbar .logo > span:nth-of-type(2){ color:#F49A94 !important; font-style:italic; }
+    #dashboard .topbar .logo::before{
+      background:linear-gradient(140deg, var(--brass-light), var(--brass)) !important;
+      box-shadow:0 3px 10px -3px rgba(0,0,0,0.5);
+    }
+    #dashboard .topbar .logo::after{ color:var(--ink) !important; }
+  }
+
+  /* ---------- LEFT ICON RAIL: no more washed-out icons --------------- */
+  @media (min-width:981px){
+    #dashboard .sidebar{ padding:24px 10px 20px !important; }
+
+    #dashboard .sidebar-brand-mark{
+      background:linear-gradient(140deg, var(--brass-light), var(--brass));
+      color:var(--ink); box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
+    }
+    #dashboard .sidebar-brand-text{ color:#fff; letter-spacing:0.01em; }
+
+    #dashboard .sidebar .tab-group{ gap:4px !important; }
+
+    /* Uniform height so every label baseline lines up down the rail */
+    #dashboard .sidebar .tab-btn{
+      display:flex !important; flex-direction:column; align-items:center; justify-content:flex-start;
+      gap:7px !important; width:100%; min-height:78px;
+      padding:10px 2px 9px !important; border-radius:16px;
+      font-size:0.575rem !important; font-weight:700; line-height:1.25;
+      letter-spacing:0.045em !important; text-transform:uppercase; text-align:center;
+      color:rgba(255,255,255,0.78) !important;
+      overflow-wrap:break-word; word-break:normal; hyphens:none;
+      padding-left:3px !important; padding-right:3px !important;
+      transition:background .18s var(--ease), color .18s var(--ease);
+    }
+    /* THE FADE FIX: drop grayscale/brightness hacks that existed only to
+       neutralise the old emoji — SVG icons just inherit currentColor. */
+    #dashboard .sidebar .tab-btn .tab-icon{
+      width:40px !important; height:40px !important; border-radius:50%;
+      background:rgba(255,255,255,0.10) !important;
+      filter:none !important; opacity:1 !important; transform:none !important;
+      color:#fff; box-shadow:none;
+      transition:background .18s var(--ease), color .18s var(--ease),
+                 width .18s var(--ease), height .18s var(--ease);
+    }
+    #dashboard .sidebar .tab-btn .tab-icon svg{ width:19px; height:19px; }
+
+    #dashboard .sidebar .tab-btn:hover{ background:rgba(255,255,255,0.07) !important; color:#fff !important; }
+    #dashboard .sidebar .tab-btn:hover .tab-icon{ background:rgba(255,255,255,0.20) !important; }
+
+    #dashboard .sidebar .tab-btn.active{ color:#fff !important; background:rgba(255,255,255,0.06) !important; }
+    #dashboard .sidebar .tab-btn.active .tab-icon{
+      width:46px !important; height:46px !important;
+      background:linear-gradient(140deg, var(--brass-light), var(--brass)) !important;
+      color:var(--ink) !important;
+      box-shadow:0 8px 20px -8px rgba(0,0,0,0.6) !important;
+    }
+    #dashboard .sidebar .tab-btn.active .tab-icon svg{ width:21px; height:21px; stroke-width:2.1; }
+
+    /* Unread dot inside the rail button */
+    #dashboard .sidebar #messagesUnreadDot{
+      width:7px !important; height:7px !important; margin:0 !important;
+      position:absolute; top:12px; right:16px; box-shadow:0 0 0 2px var(--ink-2);
+    }
+    #dashboard .sidebar .tab-btn{ position:relative; }
+  }
+
+  /* Rail at narrow laptop widths: keep two-word labels tidy */
+  @media (min-width:981px) and (max-width:1200px){
+    #dashboard .sidebar .tab-btn{
+      font-size:0.52rem !important; letter-spacing:0.03em !important;
+      min-height:72px; padding:9px 1px 8px !important;
+    }
+    #dashboard .sidebar .tab-btn .tab-icon{ width:36px !important; height:36px !important; }
+    #dashboard .sidebar .tab-btn.active .tab-icon{ width:42px !important; height:42px !important; }
+  }
+
+  /* The generic .tabs chrome (light panel + bottom rule) leaks into the
+     navy rail and the mobile drawer — strip it in both contexts. */
+  .sidebar .tabs{
+    background:transparent !important; border-bottom:0 !important;
+    border-radius:0 !important; padding:0 !important; margin-bottom:0 !important;
+  }
+
+  /* ---------- Drawer icons (mobile) --------------------------------- */
+  @media (max-width:980px){
+    .sidebar .tab-btn .tab-icon{
+      width:32px; height:32px; border-radius:9px; flex:0 0 auto;
+      background:rgba(18,33,59,0.06); color:var(--brand-blue);
+      filter:none !important; opacity:1 !important;
+    }
+    .sidebar .tab-btn .tab-icon svg{ width:17px; height:17px; }
+    .sidebar .tab-btn.active .tab-icon{ background:rgba(255,255,255,0.18); color:#fff; }
+    .sidebar .tab-btn.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  }
+
+  /* ---------- "Signed in as …" pill ---------------------------------
+     It used to be one string clipped with an ellipsis, so the username —
+     the only part that actually matters — was the bit that got cut
+     ("Signed in as adm"). It is now two spans: the prefix label is
+     dropped first when the bar is tight, and the username is never
+     truncated. ------------------------------------------------------- */
+  #whoami{
+    display:inline-flex; align-items:center; gap:0.45rem;
+    max-width:none !important; overflow:visible !important;
+    white-space:nowrap; flex:0 0 auto; min-width:0;
+  }
+  #whoami:empty{ display:none !important; }
+  .whoami-label{ font-weight:600; opacity:0.72; }
+  .whoami-name{ font-weight:800; letter-spacing:0.005em; }
+
+  /* Below ~1320px the quick-links + search already compete for room, so
+     shed the prefix and keep just the dot + username. */
+  @media (max-width:1320px){
+    .whoami-label{ display:none; }
+    #whoami{ padding-left:0.7rem; padding-right:0.9rem; }
+  }
+
+  /* THE OTHER HALF OF THE FADE BUG: the base rule sets .tab-icon to
+     opacity:0.75 and spins it on hover. Both existed to tame the emoji;
+     with SVG they just make everything look washed out and jittery. */
+  .tab-btn .tab-icon{ opacity:1 !important; }
+  .tab-btn:hover .tab-icon,
+  .tab-btn.active:hover .tab-icon{ transform:none !important; }
+  .tab-btn:active .tab-icon{ transform:scale(0.95) !important; }
+  .sidebar .tab-btn:hover{ transform:none !important; box-shadow:none !important; }
+
+  /* ---------- Alignment tidy-ups ------------------------------------ */
+  .topbar-inner{ align-items:center; }
+  .topbar-actions{ align-items:center; }
+  .topbar-search{ align-items:center; }
+  .topbar-search-icon{ display:inline-flex; align-items:center; line-height:0; opacity:1; flex:0 0 auto; }
+  .topbar-search-icon svg{ width:16px; height:16px; opacity:0.6; }
+  #dashboard .topbar-search-icon svg{ opacity:0.75; color:#fff; }
+  .hero-mini-icon{ flex:0 0 auto; }
+  .hero-mini-icon svg{ width:17px; height:17px; color:#fff; }
+  .kpi-icon svg{ width:19px; height:19px; }
+  .home-card-head{ align-items:center; }
+  .kpi-card{ align-items:center; }
+  .kpi-icon{ flex:0 0 auto; }
+  .toolbar > div{ align-items:center; }
+  .btn-primary > svg, .btn-ghost > svg, .btn-brass > svg{ flex:0 0 auto; }
+
+  /* ---------- Performance ------------------------------------------- */
+  /* The fixed noise overlay repainted on every scroll for no visual gain. */
+  body::after{ display:none !important; }
+  body::before{ will-change:auto; }
+  .tab-btn, .kpi-card, .home-card, .icon-pill{ will-change:auto; }
+  .tab-icon svg, .icon-pill svg{ shape-rendering:geometricPrecision; }
+  .app-card, .kpi-card, .home-card, .contacts-grid > *{ contain-intrinsic-size:0 200px; }
+  @media (prefers-reduced-motion:reduce){
+    .tab-btn, .kpi-card, .icon-pill, .btn-primary, .btn-ghost, .btn-brass{ transition:none !important; }
+  }
 </style>
 </head>
 <body>
@@ -1265,12 +1961,17 @@
       </button>
       <div class="logo"><span class="brand-blue">Nextstep</span> <span>Immigration</span> — Admin</div>
       <div class="topbar-search">
-        <span class="topbar-search-icon">🔍</span>
-        <input type="text" id="adminQuickSearch" placeholder="Search sections, applications, or messages…" autocomplete="off" />
+        <span class="topbar-search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span>
+        <input type="text" id="adminQuickSearch" placeholder="Search…" autocomplete="off" />
       </div>
+      <nav class="topnav" aria-label="Quick links">
+        <button type="button" class="topnav-link active" data-tab-link="home">Dashboard</button>
+        <button type="button" class="topnav-link" data-tab-link="applications">Applications</button>
+        <button type="button" class="topnav-link" data-tab-link="invoices">Invoices</button>
+      </nav>
       <div class="topbar-actions">
         <button class="icon-pill" id="notifBellBtn" title="Notifications" aria-label="Notifications">
-          🔔<span class="icon-pill-dot" id="messagesUnreadDotTop" style="display:none;"></span>
+          <svg class="bell-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8.6a6 6 0 1 0-12 0c0 5-2 6.4-2 6.4h16s-2-1.4-2-6.4"/><path d="M13.7 19a2 2 0 0 1-3.4 0"/></svg><span class="icon-pill-dot" id="messagesUnreadDotTop" style="display:none;"></span>
         </button>
         <span id="whoami" class="row-sub"></span>
         <button class="btn-ghost" id="logoutBtn">Log out</button>
@@ -1291,33 +1992,33 @@
         <div class="tabs">
           <div class="tab-group" aria-label="Overview">
             <span class="tab-group-label">Overview</span>
-            <button class="tab-btn active" data-tab="home"><span class="tab-icon">🏠</span>Home</button>
+            <button class="tab-btn active" data-tab="home"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg></span>Home</button>
           </div>
           <div class="tab-divider"></div>
           <div class="tab-group" aria-label="Inbox">
             <span class="tab-group-label">Inbox</span>
-            <button class="tab-btn" data-tab="applications"><span class="tab-icon">📋</span>Student Applications</button>
-            <button class="tab-btn" data-tab="student-form"><span class="tab-icon">🖨️</span>Student Form</button>
-            <button class="tab-btn" data-tab="higher-ratio"><span class="tab-icon">🎯</span>Higher Ratio</button>
-            <button class="tab-btn" data-tab="contacts"><span class="tab-icon">✉️</span>Contact Messages</button>
-            <button class="tab-btn" data-tab="customers"><span class="tab-icon">👤</span>Customer Accounts</button>
-            <button class="tab-btn" data-tab="job-applications"><span class="tab-icon">💼</span>Job Applications</button>
-            <button class="tab-btn" data-tab="messages"><span class="tab-icon">💬</span>Messages<span id="messagesUnreadDot" style="display:none; width:8px; height:8px; border-radius:50%; background:#B3261E; margin-left:6px;"></span></button>
+            <button class="tab-btn" data-tab="applications"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M9 11h6M9 15h4"/></svg></span>Student Applications</button>
+            <button class="tab-btn" data-tab="student-form"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="7" rx="2"/><path d="M7 14h10v7H7z"/></svg></span>Student Form</button>
+            <button class="tab-btn" data-tab="higher-ratio"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg></span>Higher Ratio</button>
+            <button class="tab-btn" data-tab="contacts"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg></span>Contact Messages</button>
+            <button class="tab-btn" data-tab="customers"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg></span>Customer Accounts</button>
+            <button class="tab-btn" data-tab="job-applications"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/></svg></span>Job Applications</button>
+            <button class="tab-btn" data-tab="messages"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15a2 2 0 0 1-2 2H8l-4 3.5V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg></span>Messages<span id="messagesUnreadDot" style="display:none; width:8px; height:8px; border-radius:50%; background:#B3261E; margin-left:6px;"></span></button>
           </div>
           <div class="tab-divider"></div>
           <div class="tab-group" aria-label="Billing">
             <span class="tab-group-label">Billing</span>
-            <button class="tab-btn" data-tab="invoices"><span class="tab-icon">🧾</span>Invoices</button>
-            <button class="tab-btn" data-tab="expenses"><span class="tab-icon">💸</span>Expenses</button>
+            <button class="tab-btn" data-tab="invoices"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9.5 8h5M9.5 12h5"/></svg></span>Invoices</button>
+            <button class="tab-btn" data-tab="expenses"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 10v.01M18 14v.01"/></svg></span>Expenses</button>
           </div>
           <div class="tab-divider"></div>
           <div class="tab-group" aria-label="Team">
             <span class="tab-group-label">Team</span>
-            <button class="tab-btn" data-tab="todos"><span class="tab-icon">🗂️</span>MY Tasks</button>
+            <button class="tab-btn" data-tab="todos"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 11h18"/></svg></span>MY Tasks</button>
           </div>
           <div class="tab-group" aria-label="Site content">
             <span class="tab-group-label">Site Content</span>
-            <button class="tab-btn" data-tab="settings"><span class="tab-icon">⚙️</span>Settings</button>
+            <button class="tab-btn" data-tab="settings"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.4M12 18.8v2.4M4.5 12H2.1M21.9 12h-2.4M6.7 6.7 5 5M19 19l-1.7-1.7M6.7 17.3 5 19M19 5l-1.7 1.7"/></svg></span>Settings</button>
           </div>
         </div>
       </aside>
@@ -1331,6 +2032,12 @@
               <div class="home-hero-eyebrow" id="homeGreeting">Welcome back</div>
               <h2 class="home-hero-title">Here's how things stand today</h2>
               <p class="home-hero-date" id="homeDate">—</p>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-label">Applications received</div>
+              <div class="hero-big" id="heroApps">—</div>
+              <div class="hero-mini"><span class="hero-mini-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l2.8 1.8"/></svg></span><div><small>Pending review</small><b id="heroPending">—</b></div></div>
+              <div class="hero-mini"><span class="hero-mini-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.4v11.2"/><path d="M14.8 9.1A2.4 2.4 0 0 0 12.6 8h-1.2a2.1 2.1 0 0 0 0 4.2h1.2a2.1 2.1 0 0 1 0 4.2h-1.4a2.4 2.4 0 0 1-2.2-1.1"/></svg></span><div><small>Outstanding invoices</small><b id="heroOutstanding">—</b></div></div>
             </div>
             <div class="home-hero-actions">
               <button class="btn-ghost" id="homeRefreshBtn"><span style="display:inline-block;transform:translateY(-1px)">↻</span>&nbsp;Refresh overview</button>
@@ -1898,7 +2605,7 @@
         </label>
       </div>
       <div class="kpi-row">
-        <div class="kpi-card kpi-teal"><div class="kpi-icon" style="font-size:1.1rem;">💰</div>
+        <div class="kpi-card kpi-teal"><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="6" width="18.8" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/></svg></div>
           <div class="kpi-body"><b id="expKpiCollected">—</b><span>Total collected</span></div><span class="kpi-delta flat" id="expKpiCollectedDelta">—</span></div>
         <div class="kpi-card kpi-plum"><div class="kpi-icon" style="font-size:1.1rem;">💸</div>
           <div class="kpi-body"><b id="expKpiExpenses">—</b><span>Total expenses</span></div><span class="kpi-delta flat" id="expKpiExpensesDelta">—</span></div>
@@ -2451,7 +3158,15 @@
   function showDashboard(username) {
     $('#loginScreen').style.display = 'none';
     $('#dashboard').style.display = 'block';
-    $('#whoami').textContent = username ? `Signed in as ${username}` : '';
+    const who = $('#whoami');
+    if (username) {
+      who.innerHTML = `<span class="whoami-label">Signed in as</span>`
+                    + `<span class="whoami-name">${escapeHtml(username)}</span>`;
+      who.title = `Signed in as ${username}`;
+    } else {
+      who.textContent = '';
+      who.removeAttribute('title');
+    }
     loadEverything();
   }
 
@@ -2525,6 +3240,7 @@
     if (tabName === 'home') loadEverything();
     if (tabName === 'job-applications') { loadJobApplications(); loadEmployerInquiries(); }
     if (tabName === 'expenses') { loadInvoices(); loadExpenses(); }
+    $$('.topnav-link').forEach((b) => b.classList.toggle('active', b.dataset.tabLink === tabName));
   }
 
   $$('.tab-btn').forEach((btn) => {
@@ -2644,6 +3360,8 @@
     const pendingCount = byStatus.pending + byStatus.under_review;
 
     if ($('#kpiApplications')) $('#kpiApplications').textContent = totalApps;
+    if ($('#heroApps')) $('#heroApps').textContent = totalApps;
+    if ($('#heroPending')) $('#heroPending').textContent = pendingCount;
     if ($('#homeAppsTotal')) $('#homeAppsTotal').textContent = `${totalApps} total`;
     if ($('#statusDonutTotal')) $('#statusDonutTotal').textContent = totalApps;
     if ($('#kpiApplicationsDelta')) $('#kpiApplicationsDelta').textContent = `${pendingCount} pending`;
@@ -2756,6 +3474,7 @@
     if ($('#homeInvoiceCount')) $('#homeInvoiceCount').textContent = `${invoices.length} invoices`;
     if ($('#billingPaidAmt')) $('#billingPaidAmt').textContent = `৳${money(paidTotal)}`;
     if ($('#billingUnpaidAmt')) $('#billingUnpaidAmt').textContent = `৳${money(outstandingTotal)}`;
+    if ($('#heroOutstanding')) $('#heroOutstanding').textContent = `৳${money(outstandingTotal)}`;
     const billingTrackEl = $('#billingSplitTrack');
     if (billingTrackEl) {
       const billTotal = paidTotal + outstandingTotal;
