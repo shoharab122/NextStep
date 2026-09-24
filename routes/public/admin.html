@@ -3055,7 +3055,7 @@
       <div class="exp-grid3">
         <div class="field"><label for="exp_amount">Amount *</label><input type="number" id="exp_amount" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
         <div class="field"><label for="exp_currency">Currency</label><select id="exp_currency"><option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select></div>
-        <div class="field"><label for="exp_date">Date *</label><input type="date" id="exp_date" /></div>
+        <div class="field"><label for="exp_date">Date *</label><input type="date" id="exp_date" /><div class="row-sub" id="exp_date_hint" style="margin-top:0.25rem;"></div></div>
       </div>
       <div class="exp-grid2">
         <div class="field"><label for="exp_category">Category *</label><select id="exp_category"></select></div>
@@ -5950,10 +5950,16 @@
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
+  // Parse the YYYY-MM-DD part of an expense date straight from the text (no Date/timezone maths)
+  function expParts(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s || ''));
+    return m ? { y: m[1], m: m[2], d: m[3], ym: m[1] + '-' + m[2] } : null;
+  }
   function expDateLabel(s) {
-    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || '');
-    if (!m) return '—';
-    return new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    const p = expParts(s);
+    if (!p) return '—';
+    // Month is always spelled out (e.g. 12 Sep 2026) so day/month can never be confused
+    return new Date(+p.y, +p.m - 1, +p.d).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
   }
   function expMonthLabel(ym) {
     const [y, m] = ym.split('-');
@@ -5987,7 +5993,7 @@
     const spentC = mine.reduce((s, e) => s + centsOf(e.amount), 0);
     const now = new Date();
     const ym = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-    const monthC = mine.filter((e) => (e.expense_date || '').startsWith(ym)).reduce((s, e) => s + centsOf(e.amount), 0);
+    const monthC = mine.filter((e) => { const p = expParts(e.expense_date); return p && p.ym === ym; }).reduce((s, e) => s + centsOf(e.amount), 0);
     const netC = collectedC - spentC;
 
     $('#expKpiCollected').textContent = fmtMoney(cur, collectedC / 100);
@@ -6006,7 +6012,7 @@
     renderExpenseSummary();
 
     const monthSel = $('#expenseMonthFilter');
-    const months = [...new Set(expenses.map((e) => (e.expense_date || '').slice(0, 7)).filter(Boolean))].sort().reverse();
+    const months = [...new Set(expenses.map((e) => (expParts(e.expense_date) || {}).ym).filter(Boolean))].sort().reverse();
     const keep = monthSel.value;
     monthSel.innerHTML = '<option value="">All months</option>' +
       months.map((m) => `<option value="${m}">${escapeHtml(expMonthLabel(m))}</option>`).join('');
@@ -6017,7 +6023,7 @@
     const month = monthSel.value;
     const rows = expenses.filter((e) =>
       (!cat || e.category === cat) &&
-      (!month || (e.expense_date || '').startsWith(month)) &&
+      (!month || (expParts(e.expense_date) || {}).ym === month) &&
       (!q || [e.title, e.paid_to, e.notes].some((v) => (v || '').toLowerCase().includes(q)))
     );
 
@@ -6031,7 +6037,7 @@
     tbody.innerHTML = rows.map((e) => `
       <tr class="exp-row">
         <td class="exp-c-date" data-label="Date">${expDateLabel(e.expense_date)}</td>
-        <td class="exp-c-desc" data-label="Description"><span class="row-name">${escapeHtml(e.title)}</span><div class="row-sub">${escapeHtml([e.paid_to, e.notes].filter(Boolean).join(' · '))}</div></td>
+        <td class="exp-c-desc" data-label="Description"><span class="row-name">${escapeHtml(e.title)}${(e.expense_date || '').slice(0, 10) > localToday() ? ' <span class="exp-chip" style="background:#FDECEA;color:#B3261E;" title="This expense is dated in the future — check the date">Future date</span>' : ''}</span><div class="row-sub">${escapeHtml([e.paid_to, e.notes].filter(Boolean).join(' · '))}</div></td>
         <td class="exp-c-cat" data-label="Category"><span class="exp-chip">${escapeHtml(EXPENSE_CATEGORIES[e.category] || e.category || '—')}</span></td>
         <td class="exp-c-method" data-label="Method">${escapeHtml(EXPENSE_METHODS[e.payment_method] || '—')}</td>
         <td class="exp-amount exp-c-amt" data-label="Amount">${fmtMoney(e.currency || 'BDT', e.amount)}</td>
@@ -6064,10 +6070,21 @@
     } else {
       $('#exp_currency').value = $('#expSummaryCurrency').value || 'BDT';
     }
+    updateExpDateHint();
     $('#expenseModal').classList.add('open');
     $('#exp_title').focus();
   }
 
+  function updateExpDateHint() {
+    const v = $('#exp_date').value;
+    const hint = $('#exp_date_hint');
+    if (!v) { hint.textContent = ''; hint.style.color = ''; return; }
+    const future = v > localToday();
+    hint.textContent = 'Selected: ' + new Date(+v.slice(0, 4), +v.slice(5, 7) - 1, +v.slice(8, 10)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) + (future ? ' — this is a future date!' : '');
+    hint.style.color = future ? '#B3261E' : '';
+  }
+  $('#exp_date').addEventListener('input', updateExpDateHint);
+  $('#exp_date').addEventListener('change', updateExpDateHint);
   $('#addExpenseBtn').addEventListener('click', () => openExpenseModal(null));
   $('#expenseModalClose').addEventListener('click', () => $('#expenseModal').classList.remove('open'));
   $('#expenseCancelBtn').addEventListener('click', () => $('#expenseModal').classList.remove('open'));
@@ -6098,6 +6115,10 @@
     if (!Number.isFinite(amount) || amount <= 0) { status.textContent = 'Enter an amount greater than zero.'; return; }
     if (!payload.expense_date) { status.textContent = 'Please choose a date.'; return; }
     if (!payload.category) { status.textContent = 'Please choose a category.'; return; }
+    if (payload.expense_date > localToday()) {
+      const nice = new Date(+payload.expense_date.slice(0, 4), +payload.expense_date.slice(5, 7) - 1, +payload.expense_date.slice(8, 10)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      if (!confirm('This expense is dated ' + nice + ', which is in the future.\n\nIt will be counted in that month, not today\'s month. Save anyway?')) return;
+    }
 
     btn.disabled = true;
     status.textContent = 'Saving…';
@@ -6142,7 +6163,7 @@
 
   // ---------------- Yearly Expense Report (income tax filing) ----------------
   function populateReportYears() {
-    const fromData = [...new Set(expenses.map((e) => (e.expense_date || '').slice(0, 4)).filter(Boolean))];
+    const fromData = [...new Set(expenses.map((e) => (expParts(e.expense_date) || {}).y).filter(Boolean))];
     const currentYear = String(new Date().getFullYear());
     const years = [...new Set([currentYear, ...fromData])].sort().reverse();
     const sel = $('#reportYearSelect');
@@ -6154,13 +6175,13 @@
   function getYearlyReportData() {
     const year = $('#reportYearSelect').value || String(new Date().getFullYear());
     const cur = $('#reportCurrencySelect').value || 'BDT';
-    const rows = expenses.filter((e) => (e.expense_date || '').startsWith(year) && (e.currency || 'BDT') === cur);
+    const rows = expenses.filter((e) => { const p = expParts(e.expense_date); return p && p.y === year && (e.currency || 'BDT') === cur; });
     const monthly = {};
     for (let m = 1; m <= 12; m++) monthly[String(m).padStart(2, '0')] = { totalC: 0, count: 0 };
     const byCategory = {};
     let totalC = 0;
     rows.forEach((e) => {
-      const mm = (e.expense_date || '').slice(5, 7);
+      const mm = expParts(e.expense_date).m;
       if (monthly[mm]) { monthly[mm].totalC += centsOf(e.amount); monthly[mm].count++; }
       const cat = e.category || 'other';
       byCategory[cat] = (byCategory[cat] || 0) + centsOf(e.amount);
