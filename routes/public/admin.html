@@ -1219,7 +1219,6 @@
   @media (max-width:900px){ .report-grid{ grid-template-columns:1fr; } }
   .exp-neg{ color:var(--brand-red) !important; }
   .exp-pos{ color:var(--success) !important; }
-  @media (max-width:640px){ .exp-grid2{ grid-template-columns:1fr !important; } }
 
   /* ================= Dashboard redesign: framed layout, icon rail, gradient hero (colours from index.html) ================= */
   .topnav{ display:none; }
@@ -1916,6 +1915,132 @@
   @media (prefers-reduced-motion:reduce){
     .tab-btn, .kpi-card, .icon-pill, .btn-primary, .btn-ghost, .btn-brass{ transition:none !important; }
   }
+
+  /* ================= Expenses — optimised layout + mobile ================= */
+  #panel-expenses{ min-width:0; }
+  #panel-expenses .exp-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  #panel-expenses .exp-head > div{ min-width:0; flex:1 1 260px; }
+  .exp-cur{ flex-shrink:0; }
+  .exp-cur select{ min-width:120px; }
+  #panel-expenses .exp-note{ margin:-0.2rem 0 1rem; line-height:1.5; }
+  #panel-expenses .exp-kpis .kpi-body b{ overflow-wrap:anywhere; }
+  #panel-expenses .exp-toolbar{ position:sticky; top:0; z-index:5; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+  #panel-expenses .exp-toolbar .left{ flex:1 1 420px; min-width:0; }
+  #panel-expenses .exp-toolbar .left .search-input{ flex:1 1 220px; }
+  #panel-expenses .exp-toolbar .left select{ flex:0 1 auto; max-width:100%; }
+  .exp-toolbar-actions{ display:flex; gap:0.5rem; flex-shrink:0; }
+  .exp-toolbar-actions button{ white-space:nowrap; }
+  .exp-table thead th{ position:sticky; top:0; }
+  .exp-table .col-actions{ width:1%; }
+  .exp-foot td{ padding:0.9rem 1.1rem; }
+  .exp-c-date{ white-space:nowrap; color:#3D4A63; font-variant-numeric:tabular-nums; }
+  .exp-c-actions{ white-space:nowrap; text-align:right; }
+  .exp-c-desc{ min-width:180px; }
+  .exp-c-desc .row-sub{ overflow-wrap:anywhere; }
+  .exp-grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+  .exp-grid2{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .exp-form-actions{ display:flex; justify-content:flex-end; gap:0.75rem; margin-top:0.35rem; }
+  .exp-form-actions .btn-primary{ width:auto; padding:0.75rem 1.5rem; }
+  .exp-status:empty{ display:none; }
+  .exp-status{ margin-top:0.5rem; color:var(--danger); }
+  .report-selects{ display:flex; gap:0.5rem; }
+
+  /* tablets */
+  @media (max-width:980px){
+    #panel-expenses .exp-toolbar{ position:static; }
+    #panel-expenses .exp-kpis{ grid-template-columns:repeat(2, minmax(0,1fr)) !important; }
+  }
+
+  /* phones & small tablets: table → cards */
+  @media (max-width:700px){
+    #panel-expenses .exp-head{ align-items:stretch; }
+    #panel-expenses .exp-cur{ width:100%; justify-content:space-between; background:rgba(255,255,255,0.6); border:1px solid var(--line); border-radius:12px; padding:0.5rem 0.75rem; }
+    #panel-expenses .exp-cur select{ flex:0 0 46%; font-size:16px; }
+    #panel-expenses .exp-kpis{ grid-template-columns:repeat(2, minmax(0,1fr)) !important; gap:0.55rem !important; padding:12px !important; }
+    #panel-expenses .exp-kpis::before{ display:none; }
+    #panel-expenses .exp-kpis .kpi-card{ flex-wrap:wrap; align-items:flex-start; gap:0.4rem 0.5rem; padding:0.65rem 0.7rem !important; }
+    #panel-expenses .exp-kpis .kpi-icon{ width:30px; height:30px; border-radius:9px; font-size:0.95rem !important; }
+    #panel-expenses .exp-kpis .kpi-icon svg{ width:16px; height:16px; }
+    #panel-expenses .exp-kpis .kpi-body{ flex:1 1 100%; order:3; }
+    #panel-expenses .exp-kpis .kpi-body b{ font-size:1rem !important; }
+    #panel-expenses .exp-kpis .kpi-body span{ font-size:0.68rem; line-height:1.25; }
+    #panel-expenses .exp-kpis .kpi-delta{ margin-left:auto; order:2; font-size:0.6rem; }
+    #panel-expenses .exp-note{ font-size:0.74rem; }
+
+    #panel-expenses .exp-toolbar{ padding:0.7rem; }
+    #panel-expenses .exp-toolbar .left{ display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%; flex:none; }
+    #panel-expenses .exp-toolbar .left .search-input{ grid-column:1 / -1; }
+    #panel-expenses .exp-toolbar .left > *{ width:100%; min-width:0; }
+    #panel-expenses .exp-toolbar input, #panel-expenses .exp-toolbar select{ font-size:16px; }
+    .exp-toolbar-actions{ width:100%; }
+    .exp-toolbar-actions button{ flex:1; justify-content:center; padding:0.7rem 0.6rem; }
+    .exp-toolbar-actions .btn-brass{ flex:1.4; }
+
+    /* expenses list as cards */
+    #panel-expenses .exp-table-wrap{ background:none; border:0; box-shadow:none; overflow:visible; border-radius:0; }
+    #panel-expenses .exp-table{ min-width:0 !important; width:100%; display:block; }
+    #panel-expenses .exp-table thead{ display:none; }
+    #panel-expenses .exp-table tbody, #panel-expenses .exp-table tfoot{ display:block; }
+    #panel-expenses .exp-row{
+      display:flex; flex-wrap:wrap; align-items:center; gap:0.45rem 0.6rem; padding:0.85rem 0.9rem; margin-bottom:0.65rem;
+      background:#fff !important; border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow-sm);
+    }
+    #panel-expenses .exp-row:hover{ background:#fff !important; }
+    #panel-expenses .exp-row td{ display:block; padding:0 !important; border:0 !important; min-width:0; }
+    #panel-expenses .exp-c-desc{ order:1; flex:1 1 60%; min-width:0; }
+    #panel-expenses .exp-c-desc .row-name{ display:block; overflow-wrap:anywhere; }
+    #panel-expenses .exp-c-amt{ order:2; flex:0 0 auto; font-size:1rem; text-align:right; }
+    #panel-expenses .exp-c-cat{ order:3; }
+    #panel-expenses .exp-c-date{ order:4; font-size:0.74rem; color:#5B6884; }
+    #panel-expenses .exp-c-method{ order:5; font-size:0.74rem; color:#5B6884; }
+    #panel-expenses .exp-c-date::before, #panel-expenses .exp-c-method::before{ content:'•'; margin-right:0.6rem; color:#B8C0CF; }
+    #panel-expenses .exp-c-cat{ margin-left:0; }
+    #panel-expenses .exp-c-actions{ order:6; flex:1 1 100%; display:flex !important; gap:0.5rem; margin-top:0.2rem; padding-top:0.65rem !important; border-top:1px dashed var(--line) !important; }
+    #panel-expenses .exp-c-actions .icon-btn{ flex:1; margin:0; padding:0.6rem 0.5rem; text-align:center; justify-content:center; }
+    #panel-expenses .exp-empty-row{ display:block; }
+    #panel-expenses .exp-empty-row td{ display:block; padding:2rem 1rem; }
+    #panel-expenses .exp-foot{
+      display:flex; justify-content:space-between; align-items:center; gap:0.75rem; padding:0.85rem 0.95rem;
+      background:var(--paper-2); border:1px solid var(--line); border-radius:14px;
+    }
+    #panel-expenses .exp-foot td{ display:block; padding:0 !important; border:0 !important; background:none; }
+    #panel-expenses .exp-foot .exp-foot-x{ display:none; }
+    #panel-expenses .exp-foot-label{ font-size:0.78rem; color:#3D4A63; }
+    #panel-expenses .exp-foot-total{ font-size:1rem; }
+
+    /* yearly report */
+    #yearlyReportCard{ padding:1rem 0.9rem 1.1rem; border-radius:16px; margin-top:1.3rem; }
+    #yearlyReportCard .report-card-head{ flex-direction:column; align-items:stretch; gap:0.8rem; }
+    #yearlyReportCard .report-controls{ display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; width:100%; }
+    #yearlyReportCard .report-selects{ grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr; }
+    #yearlyReportCard .report-controls select{ font-size:16px; width:100%; }
+    #yearlyReportCard .report-controls button{ justify-content:center; padding:0.65rem 0.5rem; white-space:nowrap; }
+    #yearlyReportCard .report-grid{ gap:0.8rem; }
+    #yearlyReportCard .report-table{ min-width:0 !important; font-size:0.8rem; }
+    #yearlyReportCard .report-table thead th, #yearlyReportCard .report-table tbody td, #yearlyReportCard .report-table tfoot td{ padding:0.55rem 0.6rem; }
+    #yearlyReportCard .report-table thead th{ font-size:0.64rem; letter-spacing:0.03em; }
+    #yearlyReportCard .exp-amount{ white-space:normal; }
+
+    /* add / edit modal — bottom sheet with sticky actions */
+    #expenseModal .modal{ padding:1.25rem 1rem 0; max-height:94vh; max-height:94dvh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    #expenseModal .modal-head{ position:sticky; top:-1.25rem; background:var(--paper); z-index:2; margin:-1.25rem -1rem 1rem; padding:1.25rem 1rem 0.8rem; }
+    #expenseModal .modal-head .row-sub{ margin-top:0.2rem; }
+    #expenseModal input, #expenseModal select{ font-size:16px; }
+    .exp-grid3{ grid-template-columns:1fr 1fr; gap:0 0.75rem; }
+    .exp-grid3 > .field:nth-child(3){ grid-column:1 / -1; }
+    .exp-grid2{ grid-template-columns:1fr; gap:0; }
+    .exp-form-actions{
+      position:sticky; bottom:0; background:linear-gradient(180deg, rgba(255,255,255,0), var(--paper) 22%);
+      margin:0 -1rem; padding:0.9rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px)); z-index:2;
+    }
+    .exp-form-actions .btn-primary{ flex:1.6; padding:0.85rem 1rem; }
+    .exp-form-actions .exp-cancel{ flex:1; justify-content:center; }
+  }
+
+  @media (max-width:360px){
+    #panel-expenses .exp-kpis{ grid-template-columns:1fr !important; }
+    #yearlyReportCard .report-controls{ grid-template-columns:1fr; }
+  }
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" href="/favicon-48.png" sizes="48x48">
@@ -2608,16 +2733,16 @@
 
     <!-- Expenses panel -->
     <section class="panel" id="panel-expenses">
-      <div class="panel-header">
-        <h2>Expenses</h2>
-        <p>Record what the business spends and see what is left of the money collected.</p>
-      </div>
-      <div style="display:flex; justify-content:flex-end; margin-bottom:0.8rem;">
-        <label class="exp-cur" for="expSummaryCurrency">Summary currency
+      <div class="panel-header exp-head">
+        <div>
+          <h2>Expenses</h2>
+          <p>Record what the business spends and see what is left of the money collected.</p>
+        </div>
+        <label class="exp-cur" for="expSummaryCurrency"><span>Summary currency</span>
           <select id="expSummaryCurrency"><option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select>
         </label>
       </div>
-      <div class="kpi-row">
+      <div class="kpi-row exp-kpis">
         <div class="kpi-card kpi-teal"><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="6" width="18.8" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/></svg></div>
           <div class="kpi-body"><b id="expKpiCollected">—</b><span>Total collected</span></div><span class="kpi-delta flat" id="expKpiCollectedDelta">—</span></div>
         <div class="kpi-card kpi-plum"><div class="kpi-icon" style="font-size:1.1rem;">💸</div>
@@ -2628,20 +2753,20 @@
           <div class="kpi-body"><b id="expKpiMonth">—</b><span>Expenses this month</span></div></div>
       </div>
       <p class="exp-note">Collected = invoices marked <b>Paid</b> in the summary currency. Partially paid and unpaid invoices are not counted until they are marked Paid.</p>
-      <div class="toolbar">
+      <div class="toolbar exp-toolbar">
         <div class="left">
-          <input type="text" id="expenseSearch" class="search-input" placeholder="Search description, paid to, notes…" />
-          <select id="expenseCategoryFilter"></select>
-          <select id="expenseMonthFilter"><option value="">All months</option></select>
+          <input type="search" id="expenseSearch" class="search-input" placeholder="Search description, paid to, notes…" autocomplete="off" />
+          <select id="expenseCategoryFilter" aria-label="Filter by category"></select>
+          <select id="expenseMonthFilter" aria-label="Filter by month"><option value="">All months</option></select>
         </div>
-        <div>
-          <button class="btn-ghost" id="refreshExpensesBtn">Refresh</button>
-          <button class="btn-brass" id="addExpenseBtn">+ Add expense</button>
+        <div class="exp-toolbar-actions">
+          <button class="btn-ghost" id="refreshExpensesBtn" type="button">↻ Refresh</button>
+          <button class="btn-brass" id="addExpenseBtn" type="button">+ Add expense</button>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="col-amount">Amount</th><th></th></tr></thead>
+      <div class="table-wrap exp-table-wrap">
+        <table class="exp-table">
+          <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="col-amount">Amount</th><th class="col-actions"></th></tr></thead>
           <tbody id="expensesTableBody"><tr><td colspan="6" class="empty-state">Loading expenses…</td></tr></tbody>
           <tfoot id="expensesTableFoot"></tfoot>
         </table>
@@ -2655,14 +2780,14 @@
             <p class="row-sub">Full-year breakdown of every expense, organised by month and category — ready for income tax filing.</p>
           </div>
           <div class="report-controls">
-            <select id="reportYearSelect" aria-label="Report year"></select>
-            <select id="reportCurrencySelect" aria-label="Report currency"><option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select>
+            <div class="report-selects"><select id="reportYearSelect" aria-label="Report year"></select>
+            <select id="reportCurrencySelect" aria-label="Report currency"><option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select></div>
             <button class="btn-ghost" id="exportExpensesExcelBtn" type="button">⬇ Export Excel</button>
             <button class="btn-brass" id="printYearlyReportBtn" type="button">🖨 Print report</button>
           </div>
         </div>
 
-        <div class="kpi-row report-kpi-row">
+        <div class="kpi-row report-kpi-row exp-kpis">
           <div class="kpi-card kpi-plum"><div class="kpi-icon" style="font-size:1.1rem;">💸</div>
             <div class="kpi-body"><b id="reportKpiTotal">—</b><span>Total expenses (year)</span></div></div>
           <div class="kpi-card kpi-navy"><div class="kpi-icon" style="font-size:1.1rem;">🧾</div>
@@ -2674,15 +2799,15 @@
         </div>
 
         <div class="report-grid">
-          <div class="table-wrap">
-            <table>
+          <div class="table-wrap report-table-wrap">
+            <table class="report-table">
               <thead><tr><th>Month</th><th class="col-amount">Total</th><th class="col-amount"># entries</th></tr></thead>
               <tbody id="reportMonthlyBody"></tbody>
               <tfoot id="reportMonthlyFoot"></tfoot>
             </table>
           </div>
-          <div class="table-wrap">
-            <table>
+          <div class="table-wrap report-table-wrap">
+            <table class="report-table">
               <thead><tr><th>Category</th><th class="col-amount">Total</th><th class="col-amount">% of year</th></tr></thead>
               <tbody id="reportCategoryBody"></tbody>
               <tfoot id="reportCategoryFoot"></tfoot>
@@ -2912,7 +3037,7 @@
 
 <!-- ================= EXPENSE ADD/EDIT MODAL ================= -->
 <div class="modal-overlay" id="expenseModal">
-  <div class="modal" style="max-width:620px;">
+  <div class="modal exp-modal" style="max-width:620px;">
     <div class="modal-head">
       <div><h3 id="expenseModalTitle">Add expense</h3><p class="row-sub">Amounts are deducted from the collected money in the same currency.</p></div>
       <button class="modal-close" id="expenseModalClose" type="button">&times;</button>
@@ -2920,19 +3045,19 @@
     <form id="expenseForm" style="display:flex; flex-direction:column; gap:0.2rem;" novalidate>
       <input type="hidden" id="exp_id" />
       <div class="field"><label for="exp_title">Description *</label><input type="text" id="exp_title" maxlength="200" placeholder="e.g. Office rent — September" /></div>
-      <div class="exp-grid2" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
-        <div class="field"><label for="exp_amount">Amount *</label><input type="number" id="exp_amount" min="0.01" step="0.01" placeholder="0.00" /></div>
+      <div class="exp-grid3">
+        <div class="field"><label for="exp_amount">Amount *</label><input type="number" id="exp_amount" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
         <div class="field"><label for="exp_currency">Currency</label><select id="exp_currency"><option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select></div>
         <div class="field"><label for="exp_date">Date *</label><input type="date" id="exp_date" /></div>
       </div>
-      <div class="exp-grid2" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+      <div class="exp-grid2">
         <div class="field"><label for="exp_category">Category *</label><select id="exp_category"></select></div>
         <div class="field"><label for="exp_method">Payment method</label><select id="exp_method"></select></div>
       </div>
       <div class="field"><label for="exp_paid_to">Paid to (vendor / person)</label><input type="text" id="exp_paid_to" maxlength="200" placeholder="Optional" /></div>
       <div class="field"><label for="exp_notes">Notes</label><input type="text" id="exp_notes" maxlength="1000" placeholder="Optional" /></div>
-      <div style="display:flex; gap:0.75rem;"><button type="submit" class="btn-primary" id="expenseSaveBtn" style="width:fit-content; padding:0.75rem 1.5rem;">Save expense</button></div>
-      <p id="expenseFormStatus" class="row-sub"></p>
+      <p id="expenseFormStatus" class="row-sub exp-status" role="status"></p>
+      <div class="exp-form-actions"><button type="button" class="btn-ghost exp-cancel" id="expenseCancelBtn">Cancel</button><button type="submit" class="btn-primary" id="expenseSaveBtn">Save expense</button></div>
     </form>
   </div>
 </div>
@@ -5892,27 +6017,27 @@
     const tbody = $('#expensesTableBody');
     const tfoot = $('#expensesTableFoot');
     if (rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">${expenses.length ? 'No expenses match your filters.' : 'No expenses recorded yet.'}</td></tr>`;
+      tbody.innerHTML = `<tr class="exp-empty-row"><td colspan="6" class="empty-state">${expenses.length ? 'No expenses match your filters.' : 'No expenses recorded yet.'}</td></tr>`;
       tfoot.innerHTML = '';
       return;
     }
     tbody.innerHTML = rows.map((e) => `
-      <tr>
-        <td style="white-space:nowrap;">${expDateLabel(e.expense_date)}</td>
-        <td><span class="row-name">${escapeHtml(e.title)}</span><div class="row-sub">${escapeHtml([e.paid_to, e.notes].filter(Boolean).join(' · '))}</div></td>
-        <td><span class="exp-chip">${escapeHtml(EXPENSE_CATEGORIES[e.category] || e.category || '—')}</span></td>
-        <td>${escapeHtml(EXPENSE_METHODS[e.payment_method] || '—')}</td>
-        <td class="exp-amount">${fmtMoney(e.currency || 'BDT', e.amount)}</td>
-        <td style="white-space:nowrap;">
-          <button class="icon-btn" data-edit-expense="${e.id}">Edit</button>
-          <button class="icon-btn danger" data-delete-expense="${e.id}">Delete</button>
+      <tr class="exp-row">
+        <td class="exp-c-date" data-label="Date">${expDateLabel(e.expense_date)}</td>
+        <td class="exp-c-desc" data-label="Description"><span class="row-name">${escapeHtml(e.title)}</span><div class="row-sub">${escapeHtml([e.paid_to, e.notes].filter(Boolean).join(' · '))}</div></td>
+        <td class="exp-c-cat" data-label="Category"><span class="exp-chip">${escapeHtml(EXPENSE_CATEGORIES[e.category] || e.category || '—')}</span></td>
+        <td class="exp-c-method" data-label="Method">${escapeHtml(EXPENSE_METHODS[e.payment_method] || '—')}</td>
+        <td class="exp-amount exp-c-amt" data-label="Amount">${fmtMoney(e.currency || 'BDT', e.amount)}</td>
+        <td class="exp-c-actions">
+          <button type="button" class="icon-btn" data-edit-expense="${e.id}">Edit</button>
+          <button type="button" class="icon-btn danger" data-delete-expense="${e.id}">Delete</button>
         </td>
       </tr>`).join('');
 
     const totals = {};
     rows.forEach((e) => { const c = e.currency || 'BDT'; totals[c] = (totals[c] || 0) + centsOf(e.amount); });
-    tfoot.innerHTML = `<tr class="exp-foot"><td colspan="4">Showing ${rows.length} of ${expenses.length} · Total</td>
-      <td class="exp-amount">${Object.keys(totals).map((c) => fmtMoney(c, totals[c] / 100)).join('<br>')}</td><td></td></tr>`;
+    tfoot.innerHTML = `<tr class="exp-foot"><td colspan="4" class="exp-foot-label">Showing ${rows.length} of ${expenses.length} · Total</td>
+      <td class="exp-amount exp-foot-total">${Object.keys(totals).map((c) => fmtMoney(c, totals[c] / 100)).join('<br>')}</td><td class="exp-foot-x"></td></tr>`;
   }
 
   function openExpenseModal(exp) {
@@ -5938,6 +6063,7 @@
 
   $('#addExpenseBtn').addEventListener('click', () => openExpenseModal(null));
   $('#expenseModalClose').addEventListener('click', () => $('#expenseModal').classList.remove('open'));
+  $('#expenseCancelBtn').addEventListener('click', () => $('#expenseModal').classList.remove('open'));
   $('#expenseModal').addEventListener('click', (e) => { if (e.target === $('#expenseModal')) $('#expenseModal').classList.remove('open'); });
   $('#refreshExpensesBtn').addEventListener('click', () => { loadInvoices(); loadExpenses(); });
   $('#expenseSearch').addEventListener('input', debounce(renderExpenses, 150));
