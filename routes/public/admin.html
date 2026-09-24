@@ -1209,6 +1209,14 @@
   .exp-chip{ display:inline-block; padding:0.25rem 0.65rem; border-radius:999px; font-size:0.72rem; font-weight:700; background:rgba(18,33,59,0.07); color:var(--ink-2); white-space:nowrap; }
   .exp-amount{ text-align:right; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .exp-foot td{ font-weight:800; background:var(--paper-2); }
+  .report-card{ margin-top:1.8rem; padding:1.3rem 1.4rem 1.5rem; border:1px solid var(--line); border-radius:var(--radius-lg); background:rgba(255,255,255,0.6); box-shadow:var(--shadow-sm); }
+  .report-card-head{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1.1rem; }
+  .report-card-head h3{ font-size:1.12rem; margin-bottom:0.25rem; }
+  .report-controls{ display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; }
+  .report-controls select{ padding:0.5rem 0.7rem; font-size:0.85rem; border-radius:10px; border:1px solid var(--line); background:#fff; }
+  .report-kpi-row{ margin-bottom:1.25rem; }
+  .report-grid{ display:grid; grid-template-columns:1.25fr 1fr; gap:1.1rem; }
+  @media (max-width:900px){ .report-grid{ grid-template-columns:1fr; } }
   .exp-neg{ color:var(--brand-red) !important; }
   .exp-pos{ color:var(--success) !important; }
   @media (max-width:640px){ .exp-grid2{ grid-template-columns:1fr !important; } }
@@ -1913,6 +1921,7 @@
 <link rel="icon" type="image/png" href="/favicon-48.png" sizes="48x48">
 <link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -2636,6 +2645,50 @@
           <tbody id="expensesTableBody"><tr><td colspan="6" class="empty-state">Loading expenses…</td></tr></tbody>
           <tfoot id="expensesTableFoot"></tfoot>
         </table>
+      </div>
+
+      <!-- Yearly Expense Report — for income tax filing -->
+      <div class="report-card" id="yearlyReportCard">
+        <div class="report-card-head">
+          <div>
+            <h3>📊 Yearly Expense Report</h3>
+            <p class="row-sub">Full-year breakdown of every expense, organised by month and category — ready for income tax filing.</p>
+          </div>
+          <div class="report-controls">
+            <select id="reportYearSelect" aria-label="Report year"></select>
+            <select id="reportCurrencySelect" aria-label="Report currency"><option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select>
+            <button class="btn-ghost" id="exportExpensesExcelBtn" type="button">⬇ Export Excel</button>
+            <button class="btn-brass" id="printYearlyReportBtn" type="button">🖨 Print report</button>
+          </div>
+        </div>
+
+        <div class="kpi-row report-kpi-row">
+          <div class="kpi-card kpi-plum"><div class="kpi-icon" style="font-size:1.1rem;">💸</div>
+            <div class="kpi-body"><b id="reportKpiTotal">—</b><span>Total expenses (year)</span></div></div>
+          <div class="kpi-card kpi-navy"><div class="kpi-icon" style="font-size:1.1rem;">🧾</div>
+            <div class="kpi-body"><b id="reportKpiCount">—</b><span>Entries this year</span></div></div>
+          <div class="kpi-card kpi-brass"><div class="kpi-icon" style="font-size:1.1rem;">📈</div>
+            <div class="kpi-body"><b id="reportKpiAvgMonth">—</b><span>Average per month</span></div></div>
+          <div class="kpi-card kpi-teal"><div class="kpi-icon" style="font-size:1.1rem;">🏷️</div>
+            <div class="kpi-body"><b id="reportKpiTopCategory">—</b><span>Top category</span></div></div>
+        </div>
+
+        <div class="report-grid">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Month</th><th class="col-amount">Total</th><th class="col-amount"># entries</th></tr></thead>
+              <tbody id="reportMonthlyBody"></tbody>
+              <tfoot id="reportMonthlyFoot"></tfoot>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Category</th><th class="col-amount">Total</th><th class="col-amount">% of year</th></tr></thead>
+              <tbody id="reportCategoryBody"></tbody>
+              <tfoot id="reportCategoryFoot"></tfoot>
+            </table>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -5781,6 +5834,7 @@
       if (!res.ok) throw new Error('Could not load expenses. Make sure the server has the latest api.js.');
       expenses = await res.json();
       renderExpenses();
+      renderYearlyReport();
     } catch (err) {
       if (err.message !== 'Unauthorized') {
         $('#expensesTableBody').innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(err.message)}</td></tr>`;
@@ -5952,6 +6006,213 @@
       }
     }
   });
+
+  // ---------------- Yearly Expense Report (income tax filing) ----------------
+  function populateReportYears() {
+    const fromData = [...new Set(expenses.map((e) => (e.expense_date || '').slice(0, 4)).filter(Boolean))];
+    const currentYear = String(new Date().getFullYear());
+    const years = [...new Set([currentYear, ...fromData])].sort().reverse();
+    const sel = $('#reportYearSelect');
+    const keep = sel.value;
+    sel.innerHTML = years.map((y) => `<option value="${y}">${y}</option>`).join('');
+    sel.value = years.includes(keep) ? keep : currentYear;
+  }
+
+  function getYearlyReportData() {
+    const year = $('#reportYearSelect').value || String(new Date().getFullYear());
+    const cur = $('#reportCurrencySelect').value || 'BDT';
+    const rows = expenses.filter((e) => (e.expense_date || '').startsWith(year) && (e.currency || 'BDT') === cur);
+    const monthly = {};
+    for (let m = 1; m <= 12; m++) monthly[String(m).padStart(2, '0')] = { totalC: 0, count: 0 };
+    const byCategory = {};
+    let totalC = 0;
+    rows.forEach((e) => {
+      const mm = (e.expense_date || '').slice(5, 7);
+      if (monthly[mm]) { monthly[mm].totalC += centsOf(e.amount); monthly[mm].count++; }
+      const cat = e.category || 'other';
+      byCategory[cat] = (byCategory[cat] || 0) + centsOf(e.amount);
+      totalC += centsOf(e.amount);
+    });
+    return { year, cur, rows, monthly, byCategory, totalC };
+  }
+
+  const REPORT_MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function renderYearlyReport() {
+    if (!$('#panel-expenses')) return;
+    populateReportYears();
+    const { year, cur, rows, monthly, byCategory, totalC } = getYearlyReportData();
+
+    $('#reportKpiTotal').textContent = fmtMoney(cur, totalC / 100);
+    $('#reportKpiCount').textContent = String(rows.length);
+    const monthsWithData = Object.values(monthly).filter((m) => m.count > 0).length || 1;
+    $('#reportKpiAvgMonth').textContent = fmtMoney(cur, (totalC / 100) / monthsWithData);
+    const topCat = Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0];
+    $('#reportKpiTopCategory').textContent = topCat ? (EXPENSE_CATEGORIES[topCat[0]] || topCat[0]) : '—';
+
+    $('#reportMonthlyBody').innerHTML = Object.keys(monthly).map((mm, i) => `
+      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td class="exp-amount">${fmtMoney(cur, monthly[mm].totalC / 100)}</td><td class="exp-amount">${monthly[mm].count}</td></tr>
+    `).join('');
+    $('#reportMonthlyFoot').innerHTML = `<tr class="exp-foot"><td>Total (${escapeHtml(year)})</td><td class="exp-amount">${fmtMoney(cur, totalC / 100)}</td><td class="exp-amount">${rows.length}</td></tr>`;
+
+    const catEntries = Object.entries(byCategory).sort((a, b) => b[1] - a[1]);
+    $('#reportCategoryBody').innerHTML = catEntries.length
+      ? catEntries.map(([cat, c]) => `
+        <tr><td><span class="exp-chip">${escapeHtml(EXPENSE_CATEGORIES[cat] || cat)}</span></td><td class="exp-amount">${fmtMoney(cur, c / 100)}</td><td class="exp-amount">${totalC ? Math.round((c / totalC) * 100) : 0}%</td></tr>
+      `).join('')
+      : `<tr><td colspan="3" class="empty-state">No expenses recorded for ${escapeHtml(year)} in ${escapeHtml(cur)}.</td></tr>`;
+    $('#reportCategoryFoot').innerHTML = `<tr class="exp-foot"><td>Total</td><td class="exp-amount">${fmtMoney(cur, totalC / 100)}</td><td class="exp-amount">100%</td></tr>`;
+  }
+
+  $('#reportYearSelect').addEventListener('change', renderYearlyReport);
+  $('#reportCurrencySelect').addEventListener('change', renderYearlyReport);
+
+  // Export the selected year's expenses to an Excel workbook: all entries, month totals, category totals
+  $('#exportExpensesExcelBtn').addEventListener('click', () => {
+    if (typeof XLSX === 'undefined') { toast('Excel export library failed to load. Check your internet connection and try again.', true); return; }
+    const { year, cur, rows, monthly, byCategory, totalC } = getYearlyReportData();
+    if (!rows.length) { toast(`No expenses found for ${year} in ${cur}.`, true); return; }
+
+    const entrySheet = rows.slice()
+      .sort((a, b) => (a.expense_date || '').localeCompare(b.expense_date || ''))
+      .map((e) => ({
+        Date: expDateLabel(e.expense_date),
+        Description: e.title || '',
+        Category: EXPENSE_CATEGORIES[e.category] || e.category || '',
+        'Paid to': e.paid_to || '',
+        'Payment method': EXPENSE_METHODS[e.payment_method] || '',
+        Notes: e.notes || '',
+        Amount: Number(e.amount) || 0,
+        Currency: e.currency || 'BDT',
+      }));
+    entrySheet.push({ Date: '', Description: '', Category: '', 'Paid to': '', 'Payment method': '', Notes: 'TOTAL', Amount: totalC / 100, Currency: cur });
+
+    const monthlySheet = Object.keys(monthly).map((mm, i) => ({
+      Month: REPORT_MONTH_NAMES[i],
+      'Total expenses': monthly[mm].totalC / 100,
+      Entries: monthly[mm].count,
+    }));
+    monthlySheet.push({ Month: `TOTAL ${year}`, 'Total expenses': totalC / 100, Entries: rows.length });
+
+    const categorySheet = Object.entries(byCategory).sort((a, b) => b[1] - a[1]).map(([cat, c]) => ({
+      Category: EXPENSE_CATEGORIES[cat] || cat,
+      Total: c / 100,
+      '% of year': totalC ? Math.round((c / totalC) * 100) : 0,
+    }));
+    categorySheet.push({ Category: 'TOTAL', Total: totalC / 100, '% of year': 100 });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(entrySheet), 'All expenses');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(monthlySheet), 'By month');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(categorySheet), 'By category');
+    XLSX.writeFile(wb, `NextStep-Immigration-Expenses-${year}-${cur}.xlsx`);
+    toast('Excel file downloaded.');
+  });
+
+  // Printable yearly report — same letterhead pattern used for invoice printing
+  function openYearlyReportPrintWindow() {
+    const { year, cur, rows, monthly, byCategory, totalC } = getYearlyReportData();
+    const monthRows = Object.keys(monthly).map((mm, i) => `
+      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td style="text-align:right;">${fmtMoney(cur, monthly[mm].totalC / 100)}</td><td style="text-align:right;">${monthly[mm].count}</td></tr>
+    `).join('');
+    const catRows = Object.entries(byCategory).sort((a, b) => b[1] - a[1]).map(([cat, c]) => `
+      <tr><td>${escapeHtml(EXPENSE_CATEGORIES[cat] || cat)}</td><td style="text-align:right;">${fmtMoney(cur, c / 100)}</td><td style="text-align:right;">${totalC ? Math.round((c / totalC) * 100) : 0}%</td></tr>
+    `).join('');
+    const entryRows = rows.slice().sort((a, b) => (a.expense_date || '').localeCompare(b.expense_date || '')).map((e, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${expDateLabel(e.expense_date)}</td>
+        <td>${escapeHtml(e.title || '')}</td>
+        <td>${escapeHtml(EXPENSE_CATEGORIES[e.category] || e.category || '')}</td>
+        <td>${escapeHtml(e.paid_to || '—')}</td>
+        <td style="text-align:right;">${fmtMoney(e.currency || 'BDT', e.amount)}</td>
+      </tr>`).join('');
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Yearly Expense Report ${escapeHtml(year)}</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family:'Segoe UI', Arial, sans-serif; color:#12213B; margin:0; padding:32px 40px; }
+  .hdr { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #12213B; padding-bottom:14px; margin-bottom:18px; }
+  .brand { font-size:1.4rem; font-weight:700; }
+  .brand .blue{ color:#1B4E9B; } .brand .red{ color:#D0342C; }
+  .hdr-sub{ font-size:0.8rem; color:#5B6884; margin-top:2px; }
+  .hdr-right{ text-align:right; font-size:0.85rem; }
+  h2{ margin:24px 0 8px; font-size:1.05rem; }
+  table{ width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:8px; }
+  th, td{ padding:6px 8px; border-bottom:1px solid #e2dfd6; text-align:left; }
+  th{ background:#F6F4EE; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.03em; }
+  tfoot td{ font-weight:800; background:#EEEAE0; }
+  .grand{ text-align:right; font-size:1.1rem; font-weight:800; margin:14px 0 30px; }
+  .sign-row{ display:flex; justify-content:space-between; margin-top:60px; }
+  .sign{ width:42%; text-align:center; font-size:0.8rem; }
+  .sign-line{ border-top:1px solid #12213B; margin-bottom:6px; padding-top:36px; }
+  .toolbar-print{ text-align:center; padding:12px; }
+  .toolbar-print button{ font-family:Arial, sans-serif; font-size:14px; padding:10px 22px; border-radius:999px; border:1px solid #12213B; background:#12213B; color:#fff; cursor:pointer; margin:0 6px; }
+  @media print{ .no-print{ display:none; } body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:0 24px; } }
+</style>
+</head>
+<body>
+  <div class="toolbar-print no-print">
+    <button onclick="window.print()">🖨 Print / Save as PDF</button>
+  </div>
+  <div class="hdr">
+    <div>
+      <div class="brand"><span class="blue">Nextstep</span> <span class="red">Immigration</span></div>
+      <div class="hdr-sub">Study Abroad &amp; Immigration Consultancy</div>
+    </div>
+    <div class="hdr-right">
+      <div><b>Yearly Expense Report</b></div>
+      <div>Year: ${escapeHtml(year)}</div>
+      <div>Currency: ${escapeHtml(cur)}</div>
+      <div>Generated: ${new Date().toLocaleDateString()}</div>
+    </div>
+  </div>
+
+  <h2>Summary by month</h2>
+  <table>
+    <thead><tr><th>Month</th><th style="text-align:right;">Total</th><th style="text-align:right;"># entries</th></tr></thead>
+    <tbody>${monthRows}</tbody>
+    <tfoot><tr><td>Total (${escapeHtml(year)})</td><td style="text-align:right;">${fmtMoney(cur, totalC / 100)}</td><td style="text-align:right;">${rows.length}</td></tr></tfoot>
+  </table>
+
+  <h2>Summary by category</h2>
+  <table>
+    <thead><tr><th>Category</th><th style="text-align:right;">Total</th><th style="text-align:right;">% of year</th></tr></thead>
+    <tbody>${catRows}</tbody>
+    <tfoot><tr><td>Total</td><td style="text-align:right;">${fmtMoney(cur, totalC / 100)}</td><td style="text-align:right;">100%</td></tr></tfoot>
+  </table>
+
+  <h2>All expense entries</h2>
+  <table>
+    <thead><tr><th>#</th><th>Date</th><th>Description</th><th>Category</th><th>Paid to</th><th style="text-align:right;">Amount</th></tr></thead>
+    <tbody>${entryRows || `<tr><td colspan="6">No expenses recorded for ${escapeHtml(year)} in ${escapeHtml(cur)}.</td></tr>`}</tbody>
+  </table>
+
+  <div class="grand">Grand total for ${escapeHtml(year)}: ${fmtMoney(cur, totalC / 100)}</div>
+
+  <div class="sign-row">
+    <div class="sign"><div class="sign-line"></div>Prepared by</div>
+    <div class="sign"><div class="sign-line"></div>Authorized Signature</div>
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const blobUrl = URL.createObjectURL(blob);
+    const win = window.open(blobUrl, '_blank');
+    if (!win) {
+      URL.revokeObjectURL(blobUrl);
+      toast('Please allow popups to print the report.', true);
+      return;
+    }
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+  }
+
+  $('#printYearlyReportBtn').addEventListener('click', openYearlyReportPrintWindow);
 
   // ---------------- Job Applications (jobseekers + employers) ----------------
   let jobseekerApps = [];
