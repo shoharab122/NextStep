@@ -1923,7 +1923,14 @@
   .exp-cur{ flex-shrink:0; }
   .exp-cur select{ min-width:120px; }
   #panel-expenses .exp-note{ margin:-0.2rem 0 1rem; line-height:1.5; }
-  #panel-expenses .exp-kpis .kpi-body b{ overflow-wrap:anywhere; }
+  /* KPI cards: icon + badge on top, value and label stacked below (never squeezed into one row) */
+  #panel-expenses .exp-kpis{ grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); }
+  #panel-expenses .exp-kpis .kpi-card{ flex-wrap:wrap; align-items:center; align-content:flex-start; gap:0.6rem 0.5rem; padding:0.9rem 1rem !important; min-width:0; }
+  #panel-expenses .exp-kpis .kpi-icon{ order:1; }
+  #panel-expenses .exp-kpis .kpi-delta{ order:2; margin-left:auto; }
+  #panel-expenses .exp-kpis .kpi-body{ order:3; flex:1 1 100%; min-width:0; }
+  #panel-expenses .exp-kpis .kpi-body b{ font-size:clamp(1.05rem, 1.7vw, 1.35rem) !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; overflow-wrap:normal; word-break:normal; }
+  #panel-expenses .exp-kpis .kpi-body span{ white-space:normal; overflow-wrap:normal; word-break:normal; line-height:1.3; margin-top:0.25rem; }
   #panel-expenses .exp-toolbar{ position:sticky; top:0; z-index:5; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
   #panel-expenses .exp-toolbar .left{ flex:1 1 420px; min-width:0; }
   #panel-expenses .exp-toolbar .left .search-input{ flex:1 1 220px; }
