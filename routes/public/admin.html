@@ -6404,6 +6404,11 @@
     </div>
   </div>`;
   }
+  // NOTE: .voucher is now a flex column (see styles) so all content above
+  // stacks naturally and .sign-row is pinned to the bottom via margin-top:auto.
+  // This lets each voucher stretch to fill exactly half the printable A4
+  // page, whatever that half-height works out to be, instead of relying on
+  // a fixed 118mm height that could leave gaps or overflow the page.
 
   function openBlankVoucherPrintWindow() {
     const html = `<!DOCTYPE html>
@@ -6414,11 +6419,20 @@
 <style>
   * { box-sizing: border-box; }
   @page{ size: A4; margin: 8mm; }
+  html, body{ height:100%; }
   body { font-family:'Segoe UI', Arial, sans-serif; color:#12213B; margin:0; }
   .toolbar-print{ text-align:center; padding:12px; }
   .toolbar-print button{ font-family:Arial, sans-serif; font-size:14px; padding:10px 22px; border-radius:999px; border:1px solid #12213B; background:#12213B; color:#fff; cursor:pointer; margin:0 6px; }
 
-  .voucher{ height:118mm; padding:4mm 8mm; border:1px solid #cfc9ba; border-radius:6px; overflow:hidden; page-break-inside:avoid; break-inside:avoid; position:relative; }
+  /* .page fills the full printable A4 area (297mm - 2*8mm margin = 281mm)
+     and splits it into two equal voucher halves plus a thin cut-line strip,
+     so the two vouchers always cover the whole page edge-to-edge. */
+  .page{ display:flex; flex-direction:column; height:100%; }
+  .voucher{
+    flex:1 1 0; min-height:0; display:flex; flex-direction:column;
+    padding:4mm 8mm; border:1px solid #cfc9ba; border-radius:6px;
+    overflow:hidden; page-break-inside:avoid; break-inside:avoid;
+  }
   .hdr { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #12213B; padding-bottom:5px; margin-bottom:6px; }
   .brand { font-size:1rem; font-weight:700; }
   .brand .blue{ color:#1B4E9B; } .brand .red{ color:#D0342C; }
@@ -6445,12 +6459,16 @@
   .words-row .line{ flex:1; border-bottom:1px dotted #12213B; height:1.1em; }
   .mode-row{ font-size:0.66rem; margin-bottom:0; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
   .mode-row .label{ font-weight:600; margin-right:3px; }
-  .sign-row{ display:flex; justify-content:space-between; position:absolute; left:8mm; right:8mm; bottom:4mm; }
+  /* pinned to the bottom of whatever space the voucher ends up with */
+  .sign-row{ display:flex; justify-content:space-between; margin-top:auto; padding-top:10px; }
   .sign{ width:30%; text-align:center; font-size:0.64rem; }
   .sign-line{ border-top:1px solid #12213B; margin-bottom:3px; padding-top:15px; }
 
-  .cutline{ text-align:center; margin:1mm 0; border-top:1px dashed #9AA6BE; position:relative; }
-  .cutline span{ background:#fff; padding:0 8px; position:relative; top:-7px; font-size:0.62rem; color:#9AA6BE; }
+  /* fixed-height strip between the two vouchers, marking the exact
+     halfway point of the page so a straight cut/fold splits it cleanly */
+  .cutline{ flex:0 0 6mm; display:flex; align-items:center; justify-content:center; position:relative; }
+  .cutline::before{ content:''; position:absolute; left:0; right:0; top:50%; border-top:1px dashed #9AA6BE; }
+  .cutline span{ background:#fff; padding:0 8px; position:relative; font-size:0.62rem; color:#9AA6BE; }
 
   @media print{
     .no-print{ display:none; }
@@ -6463,9 +6481,11 @@
     <button onclick="window.print()">🖨 Print / Save as PDF (2 vouchers per A4 page)</button>
   </div>
 
-  ${voucherBlockHtml('Office Copy')}
-  <div class="cutline"><span>✂ cut along the line</span></div>
-  ${voucherBlockHtml('Accounts Copy')}
+  <div class="page">
+    ${voucherBlockHtml('Office Copy')}
+    <div class="cutline"><span>✂ cut along the line</span></div>
+    ${voucherBlockHtml('Accounts Copy')}
+  </div>
 </body>
 </html>`;
 
