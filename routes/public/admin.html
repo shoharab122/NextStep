@@ -2768,6 +2768,7 @@
         </div>
         <div class="exp-toolbar-actions">
           <button class="btn-ghost" id="refreshExpensesBtn" type="button">↻ Refresh</button>
+          <button class="btn-ghost" id="printBlankVoucherBtn" type="button">🧾 Blank Voucher</button>
           <button class="btn-brass" id="addExpenseBtn" type="button">+ Add expense</button>
         </div>
       </div>
@@ -3055,7 +3056,7 @@
       <div class="exp-grid3">
         <div class="field"><label for="exp_amount">Amount *</label><input type="number" id="exp_amount" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
         <div class="field"><label for="exp_currency">Currency</label><select id="exp_currency"><option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select></div>
-        <div class="field"><label for="exp_date">Date *</label><input type="date" id="exp_date" /><div class="row-sub" id="exp_date_hint" style="margin-top:0.25rem;"></div></div>
+        <div class="field"><label for="exp_date">Date *</label><input type="date" id="exp_date" /></div>
       </div>
       <div class="exp-grid2">
         <div class="field"><label for="exp_category">Category *</label><select id="exp_category"></select></div>
@@ -5950,16 +5951,10 @@
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
-  // Parse the YYYY-MM-DD part of an expense date straight from the text (no Date/timezone maths)
-  function expParts(s) {
-    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s || ''));
-    return m ? { y: m[1], m: m[2], d: m[3], ym: m[1] + '-' + m[2] } : null;
-  }
   function expDateLabel(s) {
-    const p = expParts(s);
-    if (!p) return '—';
-    // Month is always spelled out (e.g. 12 Sep 2026) so day/month can never be confused
-    return new Date(+p.y, +p.m - 1, +p.d).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || '');
+    if (!m) return '—';
+    return new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
   function expMonthLabel(ym) {
     const [y, m] = ym.split('-');
@@ -5993,7 +5988,7 @@
     const spentC = mine.reduce((s, e) => s + centsOf(e.amount), 0);
     const now = new Date();
     const ym = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-    const monthC = mine.filter((e) => { const p = expParts(e.expense_date); return p && p.ym === ym; }).reduce((s, e) => s + centsOf(e.amount), 0);
+    const monthC = mine.filter((e) => (e.expense_date || '').startsWith(ym)).reduce((s, e) => s + centsOf(e.amount), 0);
     const netC = collectedC - spentC;
 
     $('#expKpiCollected').textContent = fmtMoney(cur, collectedC / 100);
@@ -6012,7 +6007,7 @@
     renderExpenseSummary();
 
     const monthSel = $('#expenseMonthFilter');
-    const months = [...new Set(expenses.map((e) => (expParts(e.expense_date) || {}).ym).filter(Boolean))].sort().reverse();
+    const months = [...new Set(expenses.map((e) => (e.expense_date || '').slice(0, 7)).filter(Boolean))].sort().reverse();
     const keep = monthSel.value;
     monthSel.innerHTML = '<option value="">All months</option>' +
       months.map((m) => `<option value="${m}">${escapeHtml(expMonthLabel(m))}</option>`).join('');
@@ -6023,7 +6018,7 @@
     const month = monthSel.value;
     const rows = expenses.filter((e) =>
       (!cat || e.category === cat) &&
-      (!month || (expParts(e.expense_date) || {}).ym === month) &&
+      (!month || (e.expense_date || '').startsWith(month)) &&
       (!q || [e.title, e.paid_to, e.notes].some((v) => (v || '').toLowerCase().includes(q)))
     );
 
@@ -6037,7 +6032,7 @@
     tbody.innerHTML = rows.map((e) => `
       <tr class="exp-row">
         <td class="exp-c-date" data-label="Date">${expDateLabel(e.expense_date)}</td>
-        <td class="exp-c-desc" data-label="Description"><span class="row-name">${escapeHtml(e.title)}${(e.expense_date || '').slice(0, 10) > localToday() ? ' <span class="exp-chip" style="background:#FDECEA;color:#B3261E;" title="This expense is dated in the future — check the date">Future date</span>' : ''}</span><div class="row-sub">${escapeHtml([e.paid_to, e.notes].filter(Boolean).join(' · '))}</div></td>
+        <td class="exp-c-desc" data-label="Description"><span class="row-name">${escapeHtml(e.title)}</span><div class="row-sub">${escapeHtml([e.paid_to, e.notes].filter(Boolean).join(' · '))}</div></td>
         <td class="exp-c-cat" data-label="Category"><span class="exp-chip">${escapeHtml(EXPENSE_CATEGORIES[e.category] || e.category || '—')}</span></td>
         <td class="exp-c-method" data-label="Method">${escapeHtml(EXPENSE_METHODS[e.payment_method] || '—')}</td>
         <td class="exp-amount exp-c-amt" data-label="Amount">${fmtMoney(e.currency || 'BDT', e.amount)}</td>
@@ -6070,21 +6065,10 @@
     } else {
       $('#exp_currency').value = $('#expSummaryCurrency').value || 'BDT';
     }
-    updateExpDateHint();
     $('#expenseModal').classList.add('open');
     $('#exp_title').focus();
   }
 
-  function updateExpDateHint() {
-    const v = $('#exp_date').value;
-    const hint = $('#exp_date_hint');
-    if (!v) { hint.textContent = ''; hint.style.color = ''; return; }
-    const future = v > localToday();
-    hint.textContent = 'Selected: ' + new Date(+v.slice(0, 4), +v.slice(5, 7) - 1, +v.slice(8, 10)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) + (future ? ' — this is a future date!' : '');
-    hint.style.color = future ? '#B3261E' : '';
-  }
-  $('#exp_date').addEventListener('input', updateExpDateHint);
-  $('#exp_date').addEventListener('change', updateExpDateHint);
   $('#addExpenseBtn').addEventListener('click', () => openExpenseModal(null));
   $('#expenseModalClose').addEventListener('click', () => $('#expenseModal').classList.remove('open'));
   $('#expenseCancelBtn').addEventListener('click', () => $('#expenseModal').classList.remove('open'));
@@ -6115,10 +6099,6 @@
     if (!Number.isFinite(amount) || amount <= 0) { status.textContent = 'Enter an amount greater than zero.'; return; }
     if (!payload.expense_date) { status.textContent = 'Please choose a date.'; return; }
     if (!payload.category) { status.textContent = 'Please choose a category.'; return; }
-    if (payload.expense_date > localToday()) {
-      const nice = new Date(+payload.expense_date.slice(0, 4), +payload.expense_date.slice(5, 7) - 1, +payload.expense_date.slice(8, 10)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-      if (!confirm('This expense is dated ' + nice + ', which is in the future.\n\nIt will be counted in that month, not today\'s month. Save anyway?')) return;
-    }
 
     btn.disabled = true;
     status.textContent = 'Saving…';
@@ -6163,7 +6143,7 @@
 
   // ---------------- Yearly Expense Report (income tax filing) ----------------
   function populateReportYears() {
-    const fromData = [...new Set(expenses.map((e) => (expParts(e.expense_date) || {}).y).filter(Boolean))];
+    const fromData = [...new Set(expenses.map((e) => (e.expense_date || '').slice(0, 4)).filter(Boolean))];
     const currentYear = String(new Date().getFullYear());
     const years = [...new Set([currentYear, ...fromData])].sort().reverse();
     const sel = $('#reportYearSelect');
@@ -6175,15 +6155,14 @@
   function getYearlyReportData() {
     const year = $('#reportYearSelect').value || String(new Date().getFullYear());
     const cur = $('#reportCurrencySelect').value || 'BDT';
-    const rows = expenses.filter((e) => { const p = expParts(e.expense_date); return p && p.y === year && (e.currency || 'BDT') === cur; });
-    // Array (not an object): object keys like '10','11','12' are integer-like and JS would list them BEFORE '01'..'09',
-    // which shifted every month. Index 0 = January ... index 11 = December.
-    const monthly = Array.from({ length: 12 }, () => ({ totalC: 0, count: 0 }));
+    const rows = expenses.filter((e) => (e.expense_date || '').startsWith(year) && (e.currency || 'BDT') === cur);
+    const monthly = {};
+    for (let m = 1; m <= 12; m++) monthly[String(m).padStart(2, '0')] = { totalC: 0, count: 0 };
     const byCategory = {};
     let totalC = 0;
     rows.forEach((e) => {
-      const mi = Number(expParts(e.expense_date).m) - 1;
-      if (monthly[mi]) { monthly[mi].totalC += centsOf(e.amount); monthly[mi].count++; }
+      const mm = (e.expense_date || '').slice(5, 7);
+      if (monthly[mm]) { monthly[mm].totalC += centsOf(e.amount); monthly[mm].count++; }
       const cat = e.category || 'other';
       byCategory[cat] = (byCategory[cat] || 0) + centsOf(e.amount);
       totalC += centsOf(e.amount);
@@ -6200,13 +6179,13 @@
 
     $('#reportKpiTotal').textContent = fmtMoney(cur, totalC / 100);
     $('#reportKpiCount').textContent = String(rows.length);
-    const monthsWithData = monthly.filter((m) => m.count > 0).length || 1;
+    const monthsWithData = Object.values(monthly).filter((m) => m.count > 0).length || 1;
     $('#reportKpiAvgMonth').textContent = fmtMoney(cur, (totalC / 100) / monthsWithData);
     const topCat = Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0];
     $('#reportKpiTopCategory').textContent = topCat ? (EXPENSE_CATEGORIES[topCat[0]] || topCat[0]) : '—';
 
-    $('#reportMonthlyBody').innerHTML = monthly.map((mo, i) => `
-      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td class="exp-amount">${fmtMoney(cur, mo.totalC / 100)}</td><td class="exp-amount">${mo.count}</td></tr>
+    $('#reportMonthlyBody').innerHTML = Object.keys(monthly).map((mm, i) => `
+      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td class="exp-amount">${fmtMoney(cur, monthly[mm].totalC / 100)}</td><td class="exp-amount">${monthly[mm].count}</td></tr>
     `).join('');
     $('#reportMonthlyFoot').innerHTML = `<tr class="exp-foot"><td>Total (${escapeHtml(year)})</td><td class="exp-amount">${fmtMoney(cur, totalC / 100)}</td><td class="exp-amount">${rows.length}</td></tr>`;
 
@@ -6242,10 +6221,10 @@
       }));
     entrySheet.push({ Date: '', Description: '', Category: '', 'Paid to': '', 'Payment method': '', Notes: 'TOTAL', Amount: totalC / 100, Currency: cur });
 
-    const monthlySheet = monthly.map((mo, i) => ({
+    const monthlySheet = Object.keys(monthly).map((mm, i) => ({
       Month: REPORT_MONTH_NAMES[i],
-      'Total expenses': mo.totalC / 100,
-      Entries: mo.count,
+      'Total expenses': monthly[mm].totalC / 100,
+      Entries: monthly[mm].count,
     }));
     monthlySheet.push({ Month: `TOTAL ${year}`, 'Total expenses': totalC / 100, Entries: rows.length });
 
@@ -6267,8 +6246,8 @@
   // Printable yearly report — same letterhead pattern used for invoice printing
   function openYearlyReportPrintWindow() {
     const { year, cur, rows, monthly, byCategory, totalC } = getYearlyReportData();
-    const monthRows = monthly.map((mo, i) => `
-      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td style="text-align:right;">${fmtMoney(cur, mo.totalC / 100)}</td><td style="text-align:right;">${mo.count}</td></tr>
+    const monthRows = Object.keys(monthly).map((mm, i) => `
+      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td style="text-align:right;">${fmtMoney(cur, monthly[mm].totalC / 100)}</td><td style="text-align:right;">${monthly[mm].count}</td></tr>
     `).join('');
     const catRows = Object.entries(byCategory).sort((a, b) => b[1] - a[1]).map(([cat, c]) => `
       <tr><td>${escapeHtml(EXPENSE_CATEGORIES[cat] || cat)}</td><td style="text-align:right;">${fmtMoney(cur, c / 100)}</td><td style="text-align:right;">${totalC ? Math.round((c / totalC) * 100) : 0}%</td></tr>
@@ -6368,6 +6347,140 @@
   }
 
   $('#printYearlyReportBtn').addEventListener('click', openYearlyReportPrintWindow);
+
+  // ---------------- Blank Utility Expense Voucher (print-only, fill by hand, 2-up filling a full A4 page) ----------------
+  function voucherBlockHtml(copyLabel) {
+    const blankRow = () => `<tr><td class="v-no"></td><td></td><td></td></tr>`;
+    const rows = Array.from({ length: 4 }, blankRow).join('');
+    return `
+  <div class="voucher">
+    <div class="hdr">
+      <div>
+        <div class="brand"><span class="blue">Nextstep</span> <span class="red">Immigration</span></div>
+        <div class="hdr-sub">Study Abroad &amp; Immigration Consultancy</div>
+        <div class="hdr-addr">Imperial Complex, 3rd Floor, Chawkbazar, Chittagong</div>
+      </div>
+      <div class="hdr-right">${copyLabel}</div>
+    </div>
+
+    <div class="v-title">Utility Expense Voucher</div>
+
+    <div class="meta-row">
+      <div class="field" style="flex:1;"><span class="label">Voucher No:</span><span class="line"></span></div>
+      <div class="field" style="flex:1;"><span class="label">Date:</span><span class="line"></span></div>
+    </div>
+
+    <div class="field"><span class="label">Paid To:</span><span class="line"></span></div>
+
+    <div class="purpose-opts">
+      <span class="label" style="font-weight:600;">Purpose:</span>
+      <span><span class="box"></span>Electricity</span>
+      <span><span class="box"></span>Gas</span>
+      <span><span class="box"></span>Water</span>
+      <span><span class="box"></span>Internet</span>
+      <span><span class="box"></span>Other: <span class="line" style="display:inline-block; width:110px; border-bottom:1px dotted #12213B;"></span></span>
+    </div>
+
+    <table>
+      <thead><tr><th style="width:32px;">#</th><th>Particulars</th><th class="col-amt">Amount (৳)</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="2" style="text-align:right;">Total</td><td class="col-amt"></td></tr></tfoot>
+    </table>
+
+    <div class="words-row"><span class="label">Amount in words:</span><span class="line"></span></div>
+
+    <div class="mode-row">
+      <span class="label">Payment Mode:</span>
+      <span><span class="box"></span>Cash</span>
+      <span><span class="box"></span>Bank Transfer</span>
+      <span><span class="box"></span>bKash / Nagad</span>
+      <span><span class="box"></span>Cheque</span>
+    </div>
+
+    <div class="sign-row">
+      <div class="sign"><div class="sign-line"></div>Prepared by</div>
+      <div class="sign"><div class="sign-line"></div>Approved by</div>
+      <div class="sign"><div class="sign-line"></div>Received by</div>
+    </div>
+  </div>`;
+  }
+
+  function openBlankVoucherPrintWindow() {
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Utility Expense Voucher</title>
+<style>
+  * { box-sizing: border-box; }
+  @page{ size: A4; margin: 8mm; }
+  body { font-family:'Segoe UI', Arial, sans-serif; color:#12213B; margin:0; }
+  .toolbar-print{ text-align:center; padding:12px; }
+  .toolbar-print button{ font-family:Arial, sans-serif; font-size:14px; padding:10px 22px; border-radius:999px; border:1px solid #12213B; background:#12213B; color:#fff; cursor:pointer; margin:0 6px; }
+
+  .voucher{ height:118mm; padding:4mm 8mm; border:1px solid #cfc9ba; border-radius:6px; overflow:hidden; page-break-inside:avoid; break-inside:avoid; position:relative; }
+  .hdr { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #12213B; padding-bottom:5px; margin-bottom:6px; }
+  .brand { font-size:1rem; font-weight:700; }
+  .brand .blue{ color:#1B4E9B; } .brand .red{ color:#D0342C; }
+  .hdr-sub{ font-size:0.62rem; color:#5B6884; margin-top:1px; }
+  .hdr-addr{ font-size:0.6rem; color:#5B6884; margin-top:1px; }
+  .hdr-right{ text-align:right; font-size:0.68rem; font-weight:700; color:#5B6884; align-self:flex-start; }
+  .v-title{ text-align:center; font-size:0.85rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; margin:5px 0; }
+  .meta-row{ display:flex; justify-content:space-between; gap:16px; font-size:0.72rem; margin-bottom:5px; }
+  .meta-row .line{ flex:1; border-bottom:1px dotted #12213B; padding-bottom:2px; }
+  .field{ font-size:0.72rem; margin-bottom:5px; display:flex; align-items:flex-end; gap:6px; }
+  .field .label{ white-space:nowrap; font-weight:600; }
+  .field .line{ flex:1; border-bottom:1px dotted #12213B; height:1.1em; }
+  .purpose-opts{ font-size:0.68rem; margin-bottom:5px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .box{ display:inline-block; width:9px; height:9px; border:1.2px solid #12213B; margin-right:3px; vertical-align:-1px; }
+  table{ width:100%; border-collapse:collapse; font-size:0.74rem; margin-bottom:5px; }
+  th, td{ padding:4px 6px; border:1px solid #cfc9ba; text-align:left; }
+  th{ background:#F6F4EE; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.02em; }
+  td.v-no{ width:26px; color:#9AA6BE; }
+  td{ height:26px; }
+  tfoot td{ font-weight:800; background:#EEEAE0; }
+  .col-amt{ width:100px; text-align:right; }
+  .words-row{ font-size:0.68rem; margin-bottom:5px; display:flex; align-items:flex-end; gap:6px; }
+  .words-row .label{ white-space:nowrap; font-weight:600; }
+  .words-row .line{ flex:1; border-bottom:1px dotted #12213B; height:1.1em; }
+  .mode-row{ font-size:0.66rem; margin-bottom:0; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .mode-row .label{ font-weight:600; margin-right:3px; }
+  .sign-row{ display:flex; justify-content:space-between; position:absolute; left:8mm; right:8mm; bottom:4mm; }
+  .sign{ width:30%; text-align:center; font-size:0.64rem; }
+  .sign-line{ border-top:1px solid #12213B; margin-bottom:3px; padding-top:15px; }
+
+  .cutline{ text-align:center; margin:1mm 0; border-top:1px dashed #9AA6BE; position:relative; }
+  .cutline span{ background:#fff; padding:0 8px; position:relative; top:-7px; font-size:0.62rem; color:#9AA6BE; }
+
+  @media print{
+    .no-print{ display:none; }
+    body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
+</head>
+<body>
+  <div class="toolbar-print no-print">
+    <button onclick="window.print()">🖨 Print / Save as PDF (2 vouchers per A4 page)</button>
+  </div>
+
+  ${voucherBlockHtml('Office Copy')}
+  <div class="cutline"><span>✂ cut along the line</span></div>
+  ${voucherBlockHtml('Accounts Copy')}
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const blobUrl = URL.createObjectURL(blob);
+    const win = window.open(blobUrl, '_blank');
+    if (!win) {
+      URL.revokeObjectURL(blobUrl);
+      toast('Please allow popups to print the voucher.', true);
+      return;
+    }
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+  }
+
+  $('#printBlankVoucherBtn').addEventListener('click', openBlankVoucherPrintWindow);
 
   // ---------------- Job Applications (jobseekers + employers) ----------------
   let jobseekerApps = [];
