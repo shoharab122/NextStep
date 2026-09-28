@@ -1841,6 +1841,36 @@
   #success-stories .section-head .eyebrow{ background-position:50% center; }
 }
 </style>
+<style id="smooth-perf">
+/* Smooth scrolling with ALL animations kept: same look, far less work per frame. */
+/* Glass cards: the per-frame backdrop blur on every (animating) card was the biggest desktop cost.
+   A slightly more opaque white gradient looks the same on this paper background. */
+@media (min-width:901px){
+  #siteContent .card, #siteContent .problem-card, #siteContent .figure-card,
+  #siteContent .uni-card, #siteContent .event-card, #siteContent .destination-card{
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    background:linear-gradient(155deg, rgba(255,255,255,.90), rgba(255,255,255,.74));
+  }
+  /* sticky header keeps its glass, just a lighter blur to recompute while scrolling */
+  #siteContent header{ -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+}
+/* blend modes force an extra offscreen pass per card */
+#siteContent .card::after, #siteContent .problem-card::after,
+#siteContent .figure-card::after, #siteContent .uni-card::after{ mix-blend-mode:normal; opacity:.35; }
+/* per-card content-visibility caused re-layout/scroll jumps while cards animate; sections still skip offscreen work */
+#siteContent .card, #siteContent .problem-card, #siteContent .figure-card,
+#siteContent .uni-card, #siteContent .event-card, #siteContent .destination-card,
+#siteContent .t-card{ content-visibility:visible; }
+/* remember each section's real height once rendered -> no scrollbar/position jumps */
+section{ contain-intrinsic-size:auto 1px auto 800px; }
+/* huge animated SVG: no filter re-run every frame */
+.hero-illustration{ filter:none; }
+/* overflow-x:hidden on body made it a scroll container; clip does the same job without one */
+body{ overflow-x:clip; }
+/* pause looping animations in sections that are off screen */
+.is-offscreen, .is-offscreen *, .is-offscreen::before, .is-offscreen::after,
+.is-offscreen *::before, .is-offscreen *::after{ animation-play-state:paused !important; }
+</style>
 <style id="stats-attract">
   /* Animated stats: staggered pop-in, growing brass accent, count-up glow */
   .hero-stats .stat{ position:relative; }
@@ -3441,10 +3471,14 @@
 </script>
 <script>
 (function(){
-  // Faster mouse-wheel scrolling (desktop mouse only; touch, trackpads, inner scrollers and zoom are untouched)
+  // Fast + smooth mouse-wheel scrolling (desktop mouse only; touch, trackpads, inner scrollers, zoom untouched).
+  // Wheel ticks move a target; the page eases toward it every frame (time-based, so it feels the same at 60/120/144Hz).
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
-  var BOOST = 1.7;
+  var BOOST = 1.8, EASE = 0.11;
+  var root = document.documentElement;
+  var target = 0, cur = 0, raf = 0, last = 0;
+  function maxY(){ return Math.max(0, root.scrollHeight - window.innerHeight); }
   function innerScroller(el){
     while (el && el !== document.body && el !== document.documentElement){
       var st = getComputedStyle(el);
@@ -3453,15 +3487,52 @@
     }
     return false;
   }
+  function locked(){ return getComputedStyle(document.body).overflowY === 'hidden' || getComputedStyle(root).overflowY === 'hidden'; }
+  function write(y){ window.scrollTo({ top:y, left:0, behavior:'instant' }); }
+  function frame(t){
+    var dt = Math.min(50, (t - last) || 16.7); last = t;
+    var k = 1 - Math.pow(1 - EASE, dt / 16.7);
+    var d = target - cur;
+    if (Math.abs(d) < 0.4){ cur = target; write(cur); raf = 0; return; }
+    cur += d * k; write(cur);
+    raf = requestAnimationFrame(frame);
+  }
   window.addEventListener('wheel', function(e){
     if (e.ctrlKey || e.shiftKey || e.defaultPrevented) return;
     if (e.deltaMode !== 0 || Math.abs(e.deltaX) > 0) return;
     var d = e.deltaY;
     if (Math.abs(d) < 50 || d % 1 !== 0) return; // trackpads send small/fractional deltas
-    if (innerScroller(e.target)) return;
+    if (innerScroller(e.target) || locked()) return;
     e.preventDefault();
-    window.scrollBy(0, d * BOOST);
+    if (!raf){ cur = window.scrollY; target = cur; last = performance.now(); }
+    target = Math.max(0, Math.min(maxY(), target + d * BOOST));
+    if (!raf) raf = requestAnimationFrame(frame);
   }, { passive:false });
+  // If anything else scrolls the page (keyboard, scrollbar drag, anchor jump) hand control back immediately.
+  window.addEventListener('scroll', function(){
+    if (raf && Math.abs(window.scrollY - cur) > 3){ cancelAnimationFrame(raf); raf = 0; }
+  }, { passive:true });
+})();
+</script>
+<script>
+(function(){
+  // Keep every animation, but only run the ones you can actually see (big win for scroll smoothness).
+  if (!('IntersectionObserver' in window)) return;
+  var secs = document.querySelectorAll('main > section, footer');
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ e.target.classList.toggle('is-offscreen', !e.isIntersecting); });
+  }, { rootMargin:'200px 0px' });
+  secs.forEach(function(el){ io.observe(el); });
+  // The hero illustration is an SVG with hundreds of SMIL animations; pause them when scrolled past.
+  var svg = document.querySelector('.hero-illustration svg');
+  if (svg && svg.pauseAnimations){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting ? svg.unpauseAnimations() : svg.pauseAnimations(); });
+    }, { rootMargin:'60px 0px' }).observe(svg.parentNode);
+  }
+  document.addEventListener('visibilitychange', function(){
+    if (svg && svg.pauseAnimations) document.hidden ? svg.pauseAnimations() : svg.unpauseAnimations();
+  });
 })();
 </script>
 <script>
