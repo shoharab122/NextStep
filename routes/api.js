@@ -95,6 +95,25 @@ const destinationImageUpload = multer({
   },
 }).single('image');
 
+// Separate storage/upload config for success-story photos (own Cloudinary folder).
+const successStoryImageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'nextstep-success-stories',
+    resource_type: 'image',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+  },
+});
+
+const successStoryImageUpload = multer({
+  storage: successStoryImageStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = ['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype);
+    cb(ok ? null : new Error('Only JPG, PNG, or WEBP images are allowed.'), ok);
+  },
+}).single('image');
+
 // Separate storage/upload config for jobseeker resumes (own Cloudinary folder).
 const resumeStorage = new CloudinaryStorage({
   cloudinary,
@@ -245,6 +264,21 @@ const studyPromoImageUpload = multer({
         image_url TEXT,
         cta_label TEXT DEFAULT 'View tour',
         cta_link TEXT,
+        is_active BOOLEAN NOT NULL DEFAULT true,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS success_stories (
+        id SERIAL PRIMARY KEY,
+        client_name TEXT NOT NULL,
+        destination TEXT,
+        visa_type TEXT,
+        title TEXT NOT NULL,
+        story TEXT,
+        image_url TEXT,
         is_active BOOLEAN NOT NULL DEFAULT true,
         display_order INTEGER NOT NULL DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW()
@@ -925,6 +959,24 @@ router.get('/destinations', async (req, res) => {
   } catch (err) {
     console.error('Fetch public destinations error:', err.message);
     res.status(500).json({ error: 'Could not load destinations.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Public: success stories
+// ---------------------------------------------------------------------------
+router.get('/success-stories', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, client_name, destination, visa_type, title, story, image_url
+       FROM success_stories
+       WHERE is_active = true
+       ORDER BY display_order ASC, created_at DESC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch public success stories error:', err.message);
+    res.status(500).json({ error: 'Could not load success stories.' });
   }
 });
 
@@ -1778,6 +1830,132 @@ router.delete('/admin/destinations/:id', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('Delete destination error:', err.message);
     res.status(500).json({ error: 'Could not delete destination.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Admin (protected): success stories
+// ---------------------------------------------------------------------------
+router.get('/admin/success-stories', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM success_stories ORDER BY display_order ASC, created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch admin success stories error:', err.message);
+    res.status(500).json({ error: 'Could not fetch success stories.' });
+  }
+});
+
+router.post('/admin/success-stories', requireAdmin, (req, res) => {
+  successStoryImageUpload(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      console.error('Success story image upload error:', uploadErr.message);
+      const message = uploadErr.code === 'LIMIT_FILE_SIZE'
+        ? 'Image is larger than 5MB.'
+        : uploadErr.message || 'Image upload failed.';
+      return res.status(400).json({ error: message });
+    }
+
+    const b = req.body;
+    if (!b.client_name || !b.title) {
+      return res.status(400).json({ error: 'Client name and headline are required.' });
+    }
+
+    try {
+      const imageUrl = req.file ? req.file.path : (b.image_url || null);
+      const result = await pool.query(
+        `INSERT INTO success_stories
+          (client_name, destination, visa_type, title, story, image_url, is_active, display_order)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+         RETURNING *`,
+        [
+          b.client_name,
+          b.destination || null,
+          b.visa_type || null,
+          b.title,
+          b.story || null,
+          imageUrl,
+          b.is_active === undefined ? true : b.is_active === 'true' || b.is_active === true,
+          Number.isFinite(Number(b.display_order)) ? Number(b.display_order) : 0,
+        ]
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error('Create success story error:', err.message);
+      res.status(500).json({ error: 'Could not create success story.' });
+    }
+  });
+});
+
+router.put('/admin/success-stories/:id', requireAdmin, (req, res) => {
+  successStoryImageUpload(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      console.error('Success story image upload error:', uploadErr.message);
+      const message = uploadErr.code === 'LIMIT_FILE_SIZE'
+        ? 'Image is larger than 5MB.'
+        : uploadErr.message || 'Image upload failed.';
+      return res.status(400).json({ error: message });
+    }
+
+    const b = req.body;
+    if (!b.client_name || !b.title) {
+      return res.status(400).json({ error: 'Client name and headline are required.' });
+    }
+
+    try {
+      const existing = await pool.query('SELECT image_url FROM success_stories WHERE id = $1', [req.params.id]);
+      if (existing.rows.length === 0) return res.status(404).json({ error: 'Success story not found.' });
+
+      const imageUrl = req.file ? req.file.path : (b.image_url || existing.rows[0].image_url);
+
+      const result = await pool.query(
+        `UPDATE success_stories SET
+          client_name=$1, destination=$2, visa_type=$3, title=$4, story=$5,
+          image_url=$6, is_active=$7, display_order=$8
+         WHERE id=$9
+         RETURNING *`,
+        [
+          b.client_name,
+          b.destination || null,
+          b.visa_type || null,
+          b.title,
+          b.story || null,
+          imageUrl,
+          b.is_active === undefined ? true : b.is_active === 'true' || b.is_active === true,
+          Number.isFinite(Number(b.display_order)) ? Number(b.display_order) : 0,
+          req.params.id,
+        ]
+      );
+      res.json(result.rows[0]);
+    } catch (err) {
+      console.error('Update success story error:', err.message);
+      res.status(500).json({ error: 'Could not update success story.' });
+    }
+  });
+});
+
+router.patch('/admin/success-stories/:id/toggle', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'UPDATE success_stories SET is_active = NOT is_active WHERE id = $1 RETURNING *',
+      [req.params.id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Success story not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Toggle success story error:', err.message);
+    res.status(500).json({ error: 'Could not update success story.' });
+  }
+});
+
+router.delete('/admin/success-stories/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM success_stories WHERE id = $1 RETURNING id', [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Success story not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete success story error:', err.message);
+    res.status(500).json({ error: 'Could not delete success story.' });
   }
 });
 
