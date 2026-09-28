@@ -400,7 +400,43 @@
   @keyframes waPulse{ 0%{ transform:scale(1); opacity:0.7; } 100%{ transform:scale(1.5); opacity:0; } }
   @media (max-width:640px){ #waFloat{ right:1rem; bottom:1rem; width:54px; height:54px; } #waFloat svg{ width:26px; height:26px; } }
 
-  #testimonials{ background:var(--ink); }
+  /* Success stories (admin-managed) */
+  #success-stories{ background:var(--paper); border-top:1px solid var(--line); }
+  .ss-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+  .ss-card{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+  .ss-card:hover{ transform:translateY(-3px); border-color:var(--brass); box-shadow:0 18px 34px -22px rgba(18,33,59,0.35); }
+  .ss-media{ position:relative; aspect-ratio:4/3; background:var(--paper-2); overflow:hidden; }
+  .ss-media img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .ss-badge{ position:absolute; left:0.8rem; bottom:0.8rem; background:rgba(18,33,59,0.82); color:var(--brass-light); font-size:0.74rem; font-weight:700; letter-spacing:0.04em; padding:0.32rem 0.7rem; border-radius:999px; }
+  .ss-body{ padding:1.35rem 1.4rem 1.5rem; display:flex; flex-direction:column; gap:0.6rem; flex:1; }
+  .ss-visa{ color:var(--brass); font-size:0.76rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+  .ss-body h3{ font-size:1.15rem; margin:0; line-height:1.3; }
+  .ss-text{ font-size:0.92rem; color:#4A5670; margin:0; line-height:1.6; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
+  .ss-text.open{ display:block; -webkit-line-clamp:unset; }
+  .ss-more{ align-self:flex-start; background:none; border:0; padding:0; color:var(--brass); font-weight:600; font-size:0.85rem; cursor:pointer; }
+  .ss-name{ margin-top:auto; padding-top:0.6rem; border-top:1px solid var(--line); font-weight:600; font-size:0.88rem; color:var(--ink); }
+  @media (max-width:900px){ .ss-grid{ grid-template-columns:1fr 1fr; } }
+  .ss-empty{ text-align:center; color:#5B6884; font-size:0.95rem; padding:1.5rem 0; }
+  .ss-dots{ display:none; }
+  @media (max-width:640px){
+    #success-stories .section-head{ text-align:center; }
+    .ss-grid{
+      display:flex; grid-template-columns:none; gap:0.9rem;
+      overflow-x:auto; overflow-y:hidden;
+      scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+      overscroll-behavior-x:contain; scrollbar-width:none;
+      margin:0 -1.15rem; padding:0.25rem 1.15rem 0.5rem; scroll-padding:0 1.15rem;
+    }
+    .ss-grid::-webkit-scrollbar{ display:none; }
+    .ss-card{ flex:0 0 100%; min-width:0; scroll-snap-align:center; scroll-snap-stop:always; }
+    .ss-media{ aspect-ratio:16/11; }
+    .ss-body{ padding:1.15rem 1.15rem 1.3rem; }
+    .ss-dots{ display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-top:1.1rem; }
+    .ss-dot{ width:8px; height:8px; padding:0; border:0; border-radius:999px; background:rgba(18,33,59,0.22); cursor:pointer; transition:width .2s ease, background .2s ease; }
+    .ss-dot.active{ width:24px; background:var(--brass); }
+  }
+
+  #testimonials{ background:var(--ink); }  #testimonials{ background:var(--ink); }
   #testimonials .section-head h2, #testimonials .section-head p{ color:var(--paper); }
   #testimonials .section-head p{ color:#B7C1D6; }
   #testimonials .eyebrow{ color:var(--brass-light); }
@@ -1326,7 +1362,7 @@
       <a href="#apply">Apply</a>
       <a href="#destinations">Destinations</a>
       <a href="#events">Events</a>
-      <a href="#testimonials">Testimonials</a>
+      <a href="#success-stories" id="navSuccessStories">Success Stories</a>
       <a href="#contact" class="btn-primary jump-link">Book a consultation</a>
     </nav>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
@@ -1969,30 +2005,15 @@
     </div>
   </section>
 
-  <section id="testimonials">
+  <section id="success-stories">
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">Client stories</div>
-        <h2>What our clients say</h2>
-        <p>Real outcomes from students and families we've helped relocate.</p>
+        <div class="eyebrow">Success stories</div>
+        <h2>Journeys that ended in approval.</h2>
+        <p>Real students and families we've guided from first consultation to landing.</p>
       </div>
-      <div class="t-grid">
-        <div class="t-card">
-          <span class="quote-mark">&ldquo;</span>
-          <p>Nextstep made my student visa process so smooth. Every document was ready before the deadline.</p>
-          <h4>Fatima R. — Student visa</h4>
-        </div>
-        <div class="t-card">
-          <span class="quote-mark">&ldquo;</span>
-          <p>Professional, responsive, and honest from day one. They helped my whole family relocate together.</p>
-          <h4>Karim A. — Family sponsorship</h4>
-        </div>
-        <div class="t-card">
-          <span class="quote-mark">&ldquo;</span>
-          <p>My work visa was approved faster than I expected, thanks to how thoroughly they prepared everything.</p>
-          <h4>Nusrat J. — Work visa</h4>
-        </div>
-      </div>
+      <div class="ss-grid" id="successStoriesGrid"></div>
+      <p id="successStoriesEmpty" class="ss-empty" style="display:none;">Our latest client success stories are coming soon.</p>
     </div>
   </section>
 
@@ -2351,6 +2372,104 @@
       empty.style.display = 'block';
     }
   }
+  async function loadSuccessStories() {
+    const section = document.getElementById('success-stories');
+    const grid = document.getElementById('successStoriesGrid');
+    const emptyMsg = document.getElementById('successStoriesEmpty');
+    if (!section || !grid) return;
+    try {
+      const res = await fetch('/api/success-stories');
+      const stories = await res.json();
+      if (!res.ok || !Array.isArray(stories) || stories.length === 0) {
+        if (emptyMsg) emptyMsg.style.display = 'block';
+        return;
+      }
+      if (emptyMsg) emptyMsg.style.display = 'none';
+      grid.innerHTML = stories.map((s) => {
+        const badge = s.destination ? `<span class="ss-badge">${escapeHtml(s.destination)}</span>` : '';
+        const long = s.story && s.story.length > 220;
+        return `
+          <article class="ss-card">
+            ${s.image_url ? `<div class="ss-media"><img src="${escapeHtml(s.image_url)}" alt="${escapeHtml(s.client_name)}" loading="lazy" />${badge}</div>` : ''}
+            <div class="ss-body">
+              ${s.visa_type ? `<div class="ss-visa">${escapeHtml(s.visa_type)}</div>` : ''}
+              <h3>${escapeHtml(s.title)}</h3>
+              ${s.story ? `<p class="ss-text">${escapeHtml(s.story)}</p>` : ''}
+              ${long ? `<button type="button" class="ss-more">Read more</button>` : ''}
+              <div class="ss-name">${escapeHtml(s.client_name)}</div>
+            </div>
+          </article>`;
+      }).join('');
+      grid.querySelectorAll('.ss-more').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const p = btn.previousElementSibling;
+          const open = p.classList.toggle('open');
+          btn.textContent = open ? 'Show less' : 'Read more';
+        });
+      });
+      section.style.display = '';
+      // Mobile carousel: one story at a time, always moving left -> right
+      (function initStoryCarousel() {
+        const cards = grid.querySelectorAll('.ss-card');
+        if (cards.length < 2) return;
+        const mq = window.matchMedia('(max-width:640px)');
+        let dots = document.querySelector('.ss-dots');
+        if (!dots) {
+          dots = document.createElement('div');
+          dots.className = 'ss-dots';
+          grid.parentNode.insertBefore(dots, grid.nextSibling);
+        }
+        dots.innerHTML = Array.from(cards).map((_, i) => `<button type="button" class="ss-dot${i === 0 ? ' active' : ''}" aria-label="Story ${i + 1}"></button>`).join('');
+        const dotEls = dots.querySelectorAll('.ss-dot');
+        let current = 0, timer = null, paused = false;
+        function leftFor(i) {
+          const pad = parseFloat(getComputedStyle(grid).paddingLeft) || 0;
+          return cards[i].getBoundingClientRect().left - grid.getBoundingClientRect().left + grid.scrollLeft - pad;
+        }
+        function goTo(i, instant) {
+          current = (i + cards.length) % cards.length;
+          grid.scrollTo({ left: leftFor(current), behavior: instant ? 'auto' : 'smooth' });
+        }
+        // Auto-advance always slides forward (left -> right); after the last story it wraps to the first.
+        function next() {
+          if (current >= cards.length - 1) {
+            grid.style.scrollSnapType = 'none';
+            goTo(0, true);
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              grid.style.scrollSnapType = '';
+              goTo(1);
+            }));
+          } else {
+            goTo(current + 1);
+          }
+        }
+        dotEls.forEach((d, i) => d.addEventListener('click', () => { goTo(i); restart(); }));
+        grid.addEventListener('scroll', () => {
+          const step = (cards[1].offsetLeft - cards[0].offsetLeft) || 1;
+          const i = Math.max(0, Math.min(cards.length - 1, Math.round(grid.scrollLeft / step)));
+          if (!dotEls[i].classList.contains('active')) {
+            current = i;
+            dotEls.forEach((d, k) => d.classList.toggle('active', k === i));
+          }
+        }, { passive: true });
+        function stop() { if (timer) { clearInterval(timer); timer = null; } }
+        function start() {
+          if (timer || !mq.matches || paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          timer = setInterval(next, 5000);
+        }
+        function restart() { stop(); start(); }
+        grid.addEventListener('touchstart', () => { paused = true; stop(); }, { passive: true });
+        grid.addEventListener('touchend', () => { paused = false; setTimeout(start, 4000); }, { passive: true });
+        grid.addEventListener('click', (e) => { if (e.target.closest('.ss-more')) { paused = true; stop(); } });
+        document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
+        mq.addEventListener ? mq.addEventListener('change', restart) : mq.addListener(restart);
+        start();
+      })();
+      const navLink = document.getElementById('navSuccessStories');
+      if (navLink) navLink.style.display = '';
+    } catch (err) { const em = document.getElementById('successStoriesEmpty'); if (em) em.style.display = 'block'; }
+  }
+  loadSuccessStories();
   loadDestinations();
   loadEvents();
 
@@ -2468,7 +2587,7 @@
 <script>
   (function(){
     // Auto-tag key elements for scroll-reveal animation (additive, no markup edits needed)
-    var sectionSelectors = ['#about', '#services', '#problems', '#apply', '#destinations', '#file-processing', '#events', '#testimonials', '#contact', 'footer'];
+    var sectionSelectors = ['#about', '#services', '#problems', '#apply', '#destinations', '#file-processing', '#events', '#success-stories', '#testimonials', '#contact', 'footer'];
     sectionSelectors.forEach(function(sel){
       var el = document.querySelector(sel);
       if (el) el.classList.add('reveal');
