@@ -790,9 +790,13 @@
     .hero::before{ background-size:16px 16px; }
     .hero-ctas{ flex-direction:column; align-items:stretch; }
     .hero-ctas .btn-primary, .hero-ctas .btn-ghost{ width:100%; }
-    .hero-stats{ flex-wrap:wrap; gap:1.25rem 1.5rem; margin-top:2.25rem; padding-top:1.5rem; }
-    .stat b{ font-size:1.4rem; }
-    .stat span{ font-size:0.78rem; }
+    /* Mobile stats: one tidy 3-column row with hairline dividers */
+    .hero-stats{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:0; margin-top:2.25rem; padding-top:1.5rem; }
+    .stat{ min-width:0; padding:0 0.75rem; border-left:1px solid var(--line); }
+    .stat:first-child{ padding-left:0; border-left:0; }
+    .stat:last-child{ padding-right:0; }
+    .stat b{ font-size:clamp(1.3rem, 6vw, 1.7rem); line-height:1.1; white-space:nowrap; margin-bottom:0.4rem; }
+    .stat span{ display:block; font-size:0.72rem; line-height:1.35; letter-spacing:0.01em; }
     .pass{ padding:1.5rem; max-width:100%; border-radius:12px; }
     .pass-wrap{ max-width:100%; }
     .hero-illustration{ width:clamp(260px, 82vw, 380px); top:34%; opacity:0.35; }
@@ -846,17 +850,12 @@
     .uni-marquee-track{ animation:none; }
     .uni-marquee-wrap{ overflow-x:auto; }
   }
-  @media (max-width: 420px){
-    .hero-stats{ gap:1rem 1.25rem; }
-    .stat{ min-width:calc(50% - 0.625rem); }
-  }
   @media (max-width: 380px){
     :root{ font-size:14.5px; }
     section{ padding:2.25rem 0; }
     .container{ padding:0 1rem; }
     form#contactForm{ padding:1.25rem; }
     .card, .problem-card, .figure-card, .uni-body{ padding:1.25rem; }
-    .stat{ min-width:100%; }
   }
 
   /* ---------- Welcome / splash screen ---------- */
