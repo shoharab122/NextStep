@@ -96,8 +96,32 @@
   }
   .btn-ghost:hover{ border-color:var(--ink); background:rgba(18,33,59,0.04); }
 
-  .nav-toggle{ display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:12px; min-width:44px; min-height:44px; align-items:center; justify-content:center; }
-  .nav-toggle span{ width:24px; height:2px; background:var(--ink); display:block; border-radius:2px; }
+  /* ---- Hamburger button: morphs into an X, brass pulse behind it ---- */
+  .nav-toggle{
+    display:none; position:relative; flex-direction:column; gap:5px;
+    background:none; border:none; cursor:pointer; padding:0;
+    width:48px; height:48px; min-width:48px; min-height:48px; margin-right:-8px;
+    align-items:center; justify-content:center; border-radius:50%;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .nav-toggle::before{
+    content:""; position:absolute; inset:4px; border-radius:50%;
+    background:rgba(184,134,46,0.16); transform:scale(0);
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .nav-toggle:active::before, .nav-toggle[aria-expanded="true"]::before{ transform:scale(1); }
+  .nav-toggle:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+  .nav-toggle span{
+    position:relative; width:24px; height:2px; background:var(--ink); display:block; border-radius:2px;
+    transform-origin:center;
+    transition:transform .4s cubic-bezier(.65,0,.35,1), opacity .2s ease, background-color .3s ease;
+  }
+  .nav-toggle span:nth-child(2){ width:16px; align-self:flex-end; margin-right:12px; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1){ transform:translateY(7px) rotate(45deg); background:var(--brass); }
+  .nav-toggle[aria-expanded="true"] span:nth-child(2){ opacity:0; transform:scaleX(0); }
+  .nav-toggle[aria-expanded="true"] span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); background:var(--brass); }
+  .nav-backdrop{ display:none; }
+  .nav-cta-arrow{ display:none; }
 
   .hero{
     position:relative; padding: 6rem 0 5rem; overflow:hidden;
@@ -771,16 +795,128 @@
   /* Switch to the hamburger menu earlier than the general mobile breakpoint below —
      the full nav (logo + 7 links + CTA button) needs more room than 720px to avoid
      the links crowding against the logo with no gap. */
+  @keyframes navItemIn{ from{ opacity:0; transform:translateX(-22px); } to{ opacity:1; transform:none; } }
+  @keyframes navCtaIn{ from{ opacity:0; transform:translateY(16px) scale(.96); } to{ opacity:1; transform:none; } }
+  @keyframes navSheen{ 0%{ left:-60%; } 55%,100%{ left:130%; } }
+  @keyframes navArrow{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(6px); } }
+  @keyframes navGlow{ 0%,100%{ box-shadow:0 10px 24px -10px rgba(18,33,59,.55), 0 0 0 0 rgba(184,134,46,.45), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 6px rgba(0,0,0,.25); }
+                      50%{ box-shadow:0 10px 24px -10px rgba(18,33,59,.55), 0 0 0 9px rgba(184,134,46,0), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 6px rgba(0,0,0,.25); } }
+
+  /* Switch to the hamburger menu earlier than the general mobile breakpoint below —
+     the full nav (logo + 7 links + CTA button) needs more room than 720px to avoid
+     the links crowding against the logo with no gap. */
   @media (max-width: 1080px){
     .nav-toggle{ display:flex; }
-    nav.main-nav{
-      position:absolute; top:72px; left:0; right:0; background:var(--paper);
-      border-bottom:1px solid var(--line); flex-direction:column; align-items:flex-start;
-      gap:0; padding:0.5rem 1.5rem 1rem; display:none;
+    html.nav-open, html.nav-open body{ overflow:hidden; }
+
+    /* Dimmed page behind the open menu — tap it to close */
+    .nav-backdrop{
+      display:block; position:fixed; left:0; right:0; bottom:0; top:72px; z-index:150;
+      background:rgba(18,33,59,0.42);
+      opacity:0; visibility:hidden;
+      transition:opacity .3s ease, visibility 0s linear .3s;
     }
-    nav.main-nav.open{ display:flex; }
-    nav.main-nav a{ width:100%; padding:0.85rem 0; border-bottom:1px solid var(--line); min-height:44px; display:flex; align-items:center; }
-    nav.main-nav a.btn-primary{ margin-top:0.75rem; text-align:center; display:inline-flex; }
+    .nav-backdrop.show{ opacity:1; visibility:visible; transition-delay:0s; }
+
+    /* The panel: slides + fades in, rounded bottom, scrolls if the screen is short */
+    nav.main-nav{
+      position:absolute; top:72px; left:0; right:0;
+      display:flex; flex-direction:column; align-items:stretch; gap:0;
+      padding:0.35rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+      background:linear-gradient(180deg, #FCFAF6 0%, var(--paper) 100%);
+      border-bottom:1px solid var(--line);
+      border-radius:0 0 26px 26px;
+      box-shadow:0 34px 50px -26px rgba(18,33,59,0.5);
+      max-height:calc(100vh - 72px); max-height:calc(100dvh - 72px);
+      overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+      visibility:hidden; opacity:0; pointer-events:none;
+      transform:translateY(-14px) scale(.985); transform-origin:top center;
+      transition:opacity .28s ease, transform .4s cubic-bezier(.22,1,.36,1), visibility 0s linear .4s;
+    }
+    nav.main-nav.open{
+      visibility:visible; opacity:1; pointer-events:auto; transform:none; transition-delay:0s;
+    }
+
+    /* Links */
+    nav.main-nav a:not(.btn-primary){
+      position:relative; display:flex; align-items:center; justify-content:space-between;
+      width:100%; min-height:56px; padding:0.9rem 0.25rem 0.9rem 1rem;
+      font-size:1.08rem; font-weight:500; color:var(--ink);
+      border-bottom:1px solid var(--line);
+      border-radius:0;
+      -webkit-tap-highlight-color:transparent;
+      transition:background-color .25s ease, padding-left .3s cubic-bezier(.22,1,.36,1), color .2s ease;
+    }
+    /* brass marker that grows in on press / current section */
+    nav.main-nav a:not(.btn-primary)::before{
+      content:""; position:absolute; left:0; top:24%; bottom:24%; width:3px; border-radius:3px;
+      background:linear-gradient(180deg, var(--brass-light), var(--brass));
+      transform:scaleY(0); transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    }
+    /* chevron replaces the desktop underline */
+    nav.main-nav a:not(.btn-primary)::after,
+    nav.main-nav a:not(.btn-primary):hover::after{
+      content:""; position:static; flex:none; width:18px; height:18px; margin-right:.5rem;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8862E' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") center/contain no-repeat;
+      opacity:.5; transform:translateX(-4px);
+      transition:transform .3s cubic-bezier(.22,1,.36,1), opacity .25s ease;
+    }
+    nav.main-nav a:not(.btn-primary):active,
+    nav.main-nav a:not(.btn-primary):focus-visible,
+    nav.main-nav a:not(.btn-primary)[aria-current="true"]{
+      background:linear-gradient(90deg, rgba(184,134,46,0.14), rgba(184,134,46,0));
+      padding-left:1.4rem; outline:none;
+    }
+    nav.main-nav a:not(.btn-primary):active::before,
+    nav.main-nav a:not(.btn-primary):focus-visible::before,
+    nav.main-nav a:not(.btn-primary)[aria-current="true"]::before{ transform:scaleY(1); }
+    nav.main-nav a:not(.btn-primary):active::after,
+    nav.main-nav a:not(.btn-primary):focus-visible::after,
+    nav.main-nav a:not(.btn-primary)[aria-current="true"]::after{ opacity:1; transform:translateX(2px); }
+    nav.main-nav a:not(.btn-primary)[aria-current="true"]{ font-weight:600; }
+    @media (hover:hover){
+      nav.main-nav a:not(.btn-primary):hover{
+        background:linear-gradient(90deg, rgba(184,134,46,0.10), rgba(184,134,46,0)); padding-left:1.4rem;
+      }
+      nav.main-nav a:not(.btn-primary):hover::before{ transform:scaleY(1); }
+      nav.main-nav a:not(.btn-primary):hover::after{ opacity:1; transform:translateX(2px); }
+    }
+
+    /* CTA button */
+    nav.main-nav a.btn-primary{
+      display:flex; width:100%; margin-top:1.1rem; min-height:54px;
+      gap:.6rem; font-size:1.05rem; text-align:center;
+      -webkit-tap-highlight-color:transparent;
+    }
+    nav.main-nav a.btn-primary:active{ transform:scale(.97); }
+    .nav-cta-arrow{ display:block; width:18px; height:18px; flex:none; position:relative; z-index:1; }
+
+    /* Entrance choreography — links cascade in, CTA pops up last */
+    nav.main-nav.open a:not(.btn-primary){
+      animation:navItemIn .5s cubic-bezier(.22,1,.36,1) backwards;
+    }
+    nav.main-nav.open a:nth-child(1){ animation-delay:.06s; }
+    nav.main-nav.open a:nth-child(2){ animation-delay:.11s; }
+    nav.main-nav.open a:nth-child(3){ animation-delay:.16s; }
+    nav.main-nav.open a:nth-child(4){ animation-delay:.21s; }
+    nav.main-nav.open a:nth-child(5){ animation-delay:.26s; }
+    nav.main-nav.open a:nth-child(6){ animation-delay:.31s; }
+    nav.main-nav.open a:nth-child(7){ animation-delay:.36s; }
+    nav.main-nav.open a.btn-primary{
+      animation:navCtaIn .55s cubic-bezier(.34,1.4,.64,1) .42s backwards, navGlow 2.4s ease-in-out 1.2s infinite;
+    }
+    nav.main-nav.open a.btn-primary::after{ animation:navSheen 2.6s ease-in-out 1s infinite; }
+    nav.main-nav.open .nav-cta-arrow{ animation:navArrow 1.6s ease-in-out 1s infinite; }
+  }
+  @media (max-width: 380px){
+    nav.main-nav{ padding-left:1rem; padding-right:1rem; }
+    nav.main-nav a:not(.btn-primary){ font-size:1.02rem; min-height:52px; }
+  }
+  @media (max-height: 520px) and (max-width: 1080px){
+    nav.main-nav a:not(.btn-primary){ min-height:46px; padding-top:.6rem; padding-bottom:.6rem; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    nav.main-nav, nav.main-nav *, .nav-toggle span, .nav-toggle::before, .nav-backdrop{ animation:none !important; transition-duration:.01ms !important; transition-delay:0s !important; }
   }
   @media (max-width: 720px){
     :root{ font-size:15px; }
@@ -1093,7 +1229,6 @@
     .footer-social-icon{ width:28px; height:28px; }
     .welcome-extras{ margin-top:1.4rem; }
     a, button{ -webkit-tap-highlight-color:rgba(184,134,46,0.15); }
-    .reveal, .reveal-stagger > *{ transition:none !important; animation:none !important; opacity:1 !important; transform:none !important; }
   }
   @media (max-width:480px){
     .hero h1{ font-size:clamp(2rem, 8vw, 2.6rem); line-height:1.15; }
@@ -1289,6 +1424,434 @@
 <link rel="icon" type="image/png" href="/favicon-48.png" sizes="48x48">
 <link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style id="problems-motion">
+/* ============================================================
+   "Why Applications Go Wrong" — living section (additive only).
+   Every rule is scoped to #problems. Motion = transform/opacity/translate only.
+   ============================================================ */
+#problems{ position:relative; }
+#problems > .container{ position:relative; z-index:1; }
+
+/* drifting brass light behind the cards */
+#problems::before, #problems::after{
+  content:""; position:absolute; z-index:0; pointer-events:none; border-radius:50%;
+  width:clamp(260px,46vw,520px); aspect-ratio:1;
+}
+#problems::before{
+  top:-14%; left:-10%;
+  background:radial-gradient(circle at 50% 50%, rgba(184,134,46,.20), rgba(184,134,46,0) 68%);
+  animation:probDriftA 15s ease-in-out infinite alternate;
+}
+#problems::after{
+  bottom:-16%; right:-12%;
+  background:radial-gradient(circle at 50% 50%, rgba(27,78,155,.13), rgba(27,78,155,0) 68%);
+  animation:probDriftB 18s ease-in-out infinite alternate;
+}
+@keyframes probDriftA{ from{ transform:translate3d(0,0,0) scale(1); }   to{ transform:translate3d(14%,18%,0) scale(1.18); } }
+@keyframes probDriftB{ from{ transform:translate3d(0,0,0) scale(1.1); } to{ transform:translate3d(-16%,-14%,0) scale(.92); } }
+
+/* heading: "Wrong" shimmers, and jolts once like an error when the section arrives */
+#problems h2 em{
+  display:inline-block; transform-origin:50% 70%;
+  background:linear-gradient(110deg, var(--brass) 25%, #F2D286 46%, #FFF1C9 50%, #F2D286 54%, var(--brass) 75%);
+  background-size:250% auto;
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:transparent;
+  animation:probShimmer 3.8s linear infinite;
+}
+#problems.is-visible h2 em{
+  animation:probShimmer 3.8s linear infinite, probJolt 1s cubic-bezier(.36,.07,.19,.97) .55s both;
+}
+@keyframes probShimmer{ from{ background-position:250% center; } to{ background-position:-50% center; } }
+@keyframes probJolt{
+  0%{ transform:translateX(0) rotate(0); }
+  15%{ transform:translateX(-7px) rotate(-5deg); }
+  30%{ transform:translateX(6px) rotate(4deg); }
+  45%{ transform:translateX(-4px) rotate(-3deg); }
+  60%{ transform:translateX(3px) rotate(2deg); }
+  80%{ transform:translateX(-1px) rotate(-1deg); }
+  100%{ transform:translateX(0) rotate(0); }
+}
+
+/* cards: fly in from different directions, then keep floating gently */
+#problems .problems-grid:not(.is-visible) > .problem-card{ opacity:0; }
+#problems .problem-card{ isolation:isolate; }
+#problems .problem-card:nth-child(1){ --pd:0s;   --fx:-46px; --fy:34px; --fr:-7deg; --fdur:6.2s; }
+#problems .problem-card:nth-child(2){ --pd:.13s; --fx:0px;   --fy:64px; --fr:4deg;  --fdur:7.1s; }
+#problems .problem-card:nth-child(3){ --pd:.26s; --fx:0px;   --fy:64px; --fr:-4deg; --fdur:6.6s; }
+#problems .problem-card:nth-child(4){ --pd:.39s; --fx:46px;  --fy:34px; --fr:7deg;  --fdur:7.4s; }
+
+#problems .problems-grid.is-visible > .problem-card{
+  animation:
+    probCardIn .85s cubic-bezier(.22,1.15,.36,1) var(--pd) backwards,
+    probFloat var(--fdur) ease-in-out calc(var(--pd) + 1s) infinite;
+}
+@keyframes probCardIn{
+  from{ opacity:0; transform:translate3d(var(--fx),var(--fy),0) rotate(var(--fr)) scale(.86); }
+  to  { opacity:1; transform:none; }
+}
+@keyframes probFloat{
+  0%,100%{ translate:0 0; }
+  50%    { translate:0 -8px; }
+}
+#problems .problem-card:active{ transform:scale(.975); }
+
+/* light streak that glides across each card every few seconds */
+#problems .prob-shine{
+  position:absolute; top:0; left:0; width:55%; height:100%; z-index:2; pointer-events:none;
+  background:linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,236,190,.55) 50%, rgba(255,255,255,0) 100%);
+  transform:translateX(-160%) skewX(-18deg);
+  animation:probShine 5.5s ease-in-out infinite;
+}
+#problems .problem-card:nth-child(1) .prob-shine{ animation-delay:1.6s; }
+#problems .problem-card:nth-child(2) .prob-shine{ animation-delay:2.4s; }
+#problems .problem-card:nth-child(3) .prob-shine{ animation-delay:3.2s; }
+#problems .problem-card:nth-child(4) .prob-shine{ animation-delay:4s; }
+@keyframes probShine{
+  0%,55%{ transform:translateX(-160%) skewX(-18deg); }
+  100%  { transform:translateX(330%)  skewX(-18deg); }
+}
+
+/* card content cascades in after the card lands */
+#problems .problems-grid.is-visible .problem-card h3{ animation:probTextIn .6s cubic-bezier(.22,1,.36,1) calc(var(--pd) + .5s) backwards; }
+#problems .problems-grid.is-visible .problem-card p { animation:probTextIn .6s cubic-bezier(.22,1,.36,1) calc(var(--pd) + .62s) backwards; }
+@keyframes probTextIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+
+/* icons: spring in, then each one acts out its own problem */
+#problems .problem-icon{
+  transform-box:fill-box; transform-origin:50% 50%;
+  filter:drop-shadow(0 4px 8px rgba(184,134,46,.30));
+  transition:scale .3s cubic-bezier(.34,1.56,.64,1);
+}
+#problems .problem-card:hover .problem-icon{ scale:1.18; }
+#problems .problems-grid.is-visible .problem-icon{
+  animation:probIconPop .75s cubic-bezier(.34,1.56,.64,1) calc(var(--pd) + .3s) backwards;
+}
+@keyframes probIconPop{ from{ opacity:0; transform:scale(0) rotate(-140deg); } to{ opacity:1; transform:none; } }
+
+/* 1 · crossed-out route: gets denied — quick "no" shake */
+#problems .problems-grid.is-visible .problem-card:nth-child(1) .problem-icon{
+  animation:
+    probIconPop .75s cubic-bezier(.34,1.56,.64,1) calc(var(--pd) + .3s) backwards,
+    probNo 3.4s ease-in-out calc(var(--pd) + 1.6s) infinite;
+}
+@keyframes probNo{
+  0%,62%,100%{ transform:rotate(0) scale(1); }
+  68%{ transform:rotate(-14deg) scale(1.1); } 74%{ transform:rotate(12deg) scale(1.1); }
+  80%{ transform:rotate(-8deg) scale(1.05); } 86%{ transform:rotate(5deg) scale(1.02); }
+  92%{ transform:rotate(0) scale(1); }
+}
+/* 2 · rushing runner: dashes forward and snaps back */
+#problems .problems-grid.is-visible .problem-card:nth-child(2) .problem-icon{
+  animation:
+    probIconPop .75s cubic-bezier(.34,1.56,.64,1) calc(var(--pd) + .3s) backwards,
+    probRush 2.4s cubic-bezier(.6,0,.3,1) calc(var(--pd) + 1.6s) infinite;
+}
+@keyframes probRush{
+  0%,20%,100%{ transform:translateX(0) skewX(0); }
+  45%{ transform:translateX(14px) skewX(-14deg); }
+  55%{ transform:translateX(14px) skewX(-14deg); opacity:.55; }
+  56%{ transform:translateX(-12px) skewX(0); opacity:0; }
+  75%{ transform:translateX(-2px) skewX(0); opacity:1; }
+}
+/* 3 · idea bulb: warms up and flickers like a hidden risk switching on */
+#problems .problems-grid.is-visible .problem-card:nth-child(3) .problem-icon{
+  animation:
+    probIconPop .75s cubic-bezier(.34,1.56,.64,1) calc(var(--pd) + .3s) backwards,
+    probBulb 3s ease-in-out calc(var(--pd) + 1.6s) infinite;
+}
+@keyframes probBulb{
+  0%,100%{ filter:drop-shadow(0 4px 8px rgba(184,134,46,.30)); opacity:.85; }
+  40%{ filter:drop-shadow(0 0 3px rgba(240,190,70,.95)) drop-shadow(0 0 14px rgba(240,190,70,.75)); opacity:1; }
+  46%{ opacity:.55; } 50%{ opacity:1; } 54%{ opacity:.7; } 58%{ opacity:1; }
+  75%{ filter:drop-shadow(0 0 3px rgba(240,190,70,.9)) drop-shadow(0 0 12px rgba(240,190,70,.6)); opacity:1; }
+}
+/* 4 · late review: the document lines keep being written, one by one */
+#problems .problems-grid.is-visible .problem-card:nth-child(4) .problem-icon path{
+  stroke-dasharray:24; animation:probWrite 3.2s ease-in-out calc(var(--pd) + 1.4s) infinite;
+}
+#problems .problems-grid.is-visible .problem-card:nth-child(4) .problem-icon rect{
+  transform-box:fill-box; transform-origin:50% 100%; animation:probPage 3.2s ease-in-out calc(var(--pd) + 1.4s) infinite;
+}
+@keyframes probWrite{ 0%{ stroke-dashoffset:24; } 45%,80%{ stroke-dashoffset:0; } 100%{ stroke-dashoffset:-24; } }
+@keyframes probPage{ 0%,100%{ transform:rotate(0); } 50%{ transform:rotate(-4deg); } }
+
+/* ---- Phones: keep the 2-column layout (instead of 1 column) on every screen size ---- */
+@media (max-width:520px){
+  #problems .problems-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:.8rem; }
+  #problems .problem-card{ padding:1.15rem .95rem 1.2rem; border-radius:18px; min-width:0; }
+  #problems .problem-icon{ width:30px; height:30px; margin-bottom:1.5rem; }
+  #problems .problem-card h3{
+    font-size:clamp(.95rem, 4.2vw, 1.12rem); line-height:1.18; margin-bottom:.5rem;
+    overflow-wrap:break-word; hyphens:auto; -webkit-hyphens:auto;
+  }
+  #problems .problem-card p{ font-size:clamp(.78rem, 3.35vw, .9rem); line-height:1.55; overflow-wrap:break-word; }
+  @keyframes probFloat{ 0%,100%{ translate:0 0; } 50%{ translate:0 -5px; } }
+  #problems .problem-card:nth-child(1), #problems .problem-card:nth-child(3){ --fx:-30px; }
+  #problems .problem-card:nth-child(2), #problems .problem-card:nth-child(4){ --fx:30px; }
+  #problems .problem-card:nth-child(2), #problems .problem-card:nth-child(3){ --fy:50px; }
+  @keyframes probRush{
+    0%,20%,100%{ transform:translateX(0) skewX(0); }
+    45%,55%{ transform:translateX(9px) skewX(-14deg); }
+    56%{ transform:translateX(-8px) skewX(0); opacity:0; }
+    75%{ transform:translateX(-1px) skewX(0); opacity:1; }
+  }
+}
+@media (max-width:340px){
+  #problems .problems-grid{ gap:.6rem; }
+  #problems .problem-card{ padding:1rem .8rem 1.05rem; }
+  #problems .problem-icon{ margin-bottom:1.15rem; }
+}
+@media (prefers-reduced-motion: reduce){
+  #problems::before, #problems::after, #problems *, #problems .prob-shine{ animation:none !important; }
+  #problems .problems-grid:not(.is-visible) > .problem-card{ opacity:1; }
+  #problems h2 em{ background-position:50% center; }
+}
+</style>
+<style id="services-motion">
+/* ============================================================
+   "Every stage of the journey, one team." — living section (additive only).
+   Scoped to #services. Motion = transform / opacity / translate only.
+   ============================================================ */
+#services{ position:relative; }
+#services > .container{ position:relative; z-index:1; }
+
+/* soft drifting light behind the cards */
+#services::before, #services::after{
+  content:""; position:absolute; z-index:0; pointer-events:none; border-radius:50%;
+  width:clamp(260px,46vw,520px); aspect-ratio:1;
+}
+#services::before{
+  top:-10%; right:-12%;
+  background:radial-gradient(circle at 50% 50%, rgba(184,134,46,.17), rgba(184,134,46,0) 68%);
+  animation:svcDriftA 16s ease-in-out infinite alternate;
+}
+#services::after{
+  bottom:-14%; left:-14%;
+  background:radial-gradient(circle at 50% 50%, rgba(27,78,155,.11), rgba(27,78,155,0) 68%);
+  animation:svcDriftB 19s ease-in-out infinite alternate;
+}
+@keyframes svcDriftA{ from{ transform:translate3d(0,0,0) scale(1); }   to{ transform:translate3d(-14%,16%,0) scale(1.18); } }
+@keyframes svcDriftB{ from{ transform:translate3d(0,0,0) scale(1.1); } to{ transform:translate3d(16%,-12%,0) scale(.92); } }
+
+/* heading block: eyebrow shimmers, intro line fades up once the section arrives */
+#services .section-head .eyebrow{
+  background:linear-gradient(110deg, var(--brass) 25%, #F2D286 46%, #FFF1C9 50%, #F2D286 54%, var(--brass) 75%);
+  background-size:250% auto; -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:transparent;
+  animation:svcShimmer 4s linear infinite;
+}
+@keyframes svcShimmer{ from{ background-position:250% center; } to{ background-position:-50% center; } }
+#services.is-visible .section-head > p{ animation:svcTextIn .8s cubic-bezier(.22,1,.36,1) .3s backwards; }
+
+/* cards: fly in, then float gently */
+#services .features:not(.is-visible) > .card{ opacity:0; }
+#services .features > .card{ isolation:isolate; }
+#services .features > .card:nth-child(1){ --pd:0s;   --fx:-46px; --fy:34px; --fr:-5deg; --fdur:6.3s; --p:25%;  }
+#services .features > .card:nth-child(2){ --pd:.13s; --fx:0px;   --fy:60px; --fr:3deg;  --fdur:7.1s; --p:50%;  }
+#services .features > .card:nth-child(3){ --pd:.26s; --fx:0px;   --fy:60px; --fr:-3deg; --fdur:6.7s; --p:75%;  }
+#services .features > .card:nth-child(4){ --pd:.39s; --fx:46px;  --fy:34px; --fr:5deg;  --fdur:7.5s; --p:100%; }
+
+#services .features.is-visible > .card{
+  animation:
+    svcCardIn .85s cubic-bezier(.22,1.15,.36,1) var(--pd) backwards,
+    svcFloat var(--fdur) ease-in-out calc(var(--pd) + 1s) infinite;
+}
+@keyframes svcCardIn{
+  from{ opacity:0; transform:translate3d(var(--fx),var(--fy),0) rotate(var(--fr)) scale(.88); }
+  to  { opacity:1; transform:none; }
+}
+@keyframes svcFloat{ 0%,100%{ translate:0 0; } 50%{ translate:0 -7px; } }
+#services .features > .card:active{ transform:scale(.98); }
+
+/* light streak gliding over each card */
+#services .svc-shine{
+  position:absolute; top:0; left:0; width:50%; height:100%; z-index:2; pointer-events:none;
+  background:linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,236,190,.55) 50%, rgba(255,255,255,0) 100%);
+  transform:translateX(-160%) skewX(-18deg);
+  animation:svcShine 5.5s ease-in-out infinite;
+}
+#services .features > .card:nth-child(1) .svc-shine{ animation-delay:1.6s; }
+#services .features > .card:nth-child(2) .svc-shine{ animation-delay:2.4s; }
+#services .features > .card:nth-child(3) .svc-shine{ animation-delay:3.2s; }
+#services .features > .card:nth-child(4) .svc-shine{ animation-delay:4s; }
+@keyframes svcShine{
+  0%,55%{ transform:translateX(-160%) skewX(-18deg); }
+  100%  { transform:translateX(340%)  skewX(-18deg); }
+}
+
+/* journey progress bar along the bottom: 25% → 50% → 75% → 100% */
+#services .svc-bar{ position:absolute; left:0; right:0; bottom:0; height:4px; z-index:3; pointer-events:none; background:rgba(184,134,46,.12); }
+#services .svc-bar i{
+  display:block; height:100%; width:var(--p,25%); transform-origin:left center; border-radius:0 4px 4px 0;
+  background:linear-gradient(90deg, var(--brass), var(--brass-light), var(--brass));
+  background-size:200% 100%;
+}
+#services .features.is-visible .svc-bar i{
+  animation:
+    svcFill 1.3s cubic-bezier(.22,1,.36,1) calc(var(--pd) + .55s) backwards,
+    svcBarFlow 2.6s linear calc(var(--pd) + 1.9s) infinite;
+}
+@keyframes svcFill{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+@keyframes svcBarFlow{ from{ background-position:0 0; } to{ background-position:-200% 0; } }
+
+/* number badge: springs in, then ticks like a step counter */
+#services .card .num{ transform-origin:0 60%; }
+#services .features.is-visible .card .num{
+  animation:
+    svcNumIn .7s cubic-bezier(.34,1.56,.64,1) calc(var(--pd) + .3s) backwards,
+    svcTick 4.2s ease-in-out calc(var(--pd) + 2s) infinite;
+}
+@keyframes svcNumIn{ from{ opacity:0; transform:scale(0) rotate(-40deg); } to{ opacity:1; transform:none; } }
+@keyframes svcTick{
+  0%,80%,100%{ transform:none; }
+  86%{ transform:translateY(-5px) scale(1.25); }
+  93%{ transform:translateY(0) scale(.96); }
+}
+#services .features > .card:hover .num{ scale:1.2; transition:scale .3s cubic-bezier(.34,1.56,.64,1); }
+
+/* card text cascades in after the card lands */
+#services .features.is-visible .card h3{ animation:svcTextIn .6s cubic-bezier(.22,1,.36,1) calc(var(--pd) + .5s) backwards; }
+#services .features.is-visible .card p { animation:svcTextIn .6s cubic-bezier(.22,1,.36,1) calc(var(--pd) + .62s) backwards; }
+@keyframes svcTextIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+
+/* single-column phones: cards alternate in from left and right */
+@media (max-width:520px){
+  #services .features > .card:nth-child(odd){  --fx:-38px; --fy:26px; }
+  #services .features > .card:nth-child(even){ --fx:38px;  --fy:26px; }
+  @keyframes svcFloat{ 0%,100%{ translate:0 0; } 50%{ translate:0 -5px; } }
+}
+
+/* ---- Phones: 2-column layout, same as the "Why Applications Go Wrong" cards ---- */
+@media (max-width:720px){
+  #services .features{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:1.25rem; }
+  #services .features > .card{ padding:2rem 1.75rem 2.25rem; border-radius:18px; min-width:0; }
+  #services .card .num{ font-size:1.6rem; line-height:1; margin-bottom:2.25rem; }
+  #services .card h3{
+    font-size:1.2rem; line-height:1.18; margin-bottom:.75rem;
+    overflow-wrap:break-word; hyphens:auto; -webkit-hyphens:auto;
+  }
+  #services .card p{ font-size:.92rem; line-height:1.55; overflow-wrap:break-word; }
+}
+@media (max-width:520px){
+  #services .features{ gap:.8rem; }
+  #services .features > .card{ padding:1.15rem .95rem 1.4rem; }
+  #services .card .num{ font-size:1.35rem; margin-bottom:1.4rem; }
+  #services .card h3{ font-size:clamp(.95rem, 4.2vw, 1.12rem); margin-bottom:.5rem; }
+  #services .card p{ font-size:clamp(.78rem, 3.35vw, .9rem); }
+}
+@media (max-width:340px){
+  #services .features{ gap:.6rem; }
+  #services .features > .card{ padding:1rem .8rem 1.3rem; }
+}
+@media (prefers-reduced-motion: reduce){
+  #services::before, #services::after, #services *{ animation:none !important; }
+  #services .features:not(.is-visible) > .card{ opacity:1; }
+  #services .section-head .eyebrow{ background-position:50% center; }
+}
+</style>
+<style id="stats-attract">
+  /* Animated stats: staggered pop-in, growing brass accent, count-up glow */
+  .hero-stats .stat{ position:relative; }
+  .hero-stats .stat::before{
+    content:""; position:absolute; top:-2rem; left:0; height:2px; width:0;
+    background:linear-gradient(90deg, var(--brass), var(--brass-light));
+    transition:width .9s cubic-bezier(.22,1,.36,1);
+  }
+  .hero-stats .stat:not(:first-child)::before{ left:0.75rem; }
+  .hero-stats.stats-go .stat::before{ width:2.2rem; }
+  .hero-stats.stats-go .stat:nth-child(1)::before{ transition-delay:.05s; }
+  .hero-stats.stats-go .stat:nth-child(2)::before{ transition-delay:.25s; }
+  .hero-stats.stats-go .stat:nth-child(3)::before{ transition-delay:.45s; }
+  .hero-stats .stat b{ font-variant-numeric:tabular-nums; }
+  .hero-stats .stat b.counting{ color:var(--brass); text-shadow:0 0 18px rgba(184,134,46,.35); }
+  .hero-stats .stat b.done{ animation:statPop .55s cubic-bezier(.34,1.56,.64,1); }
+  .hero-stats .stat span{ opacity:0; transform:translateY(6px); transition:opacity .6s ease, transform .6s ease; }
+  .hero-stats.stats-go .stat span{ opacity:1; transform:none; }
+  .hero-stats.stats-go .stat:nth-child(1) span{ transition-delay:.3s; }
+  .hero-stats.stats-go .stat:nth-child(2) span{ transition-delay:.5s; }
+  .hero-stats.stats-go .stat:nth-child(3) span{ transition-delay:.7s; }
+  @keyframes statPop{ 0%{ transform:scale(1); } 45%{ transform:scale(1.12); } 100%{ transform:scale(1); } }
+  .hero-stats .stat b.done{ transition:color .8s ease, text-shadow .8s ease; }
+  @media (prefers-reduced-motion: reduce){
+    .hero-stats .stat span{ opacity:1; transform:none; transition:none; }
+    .hero-stats .stat::before{ width:2.2rem; transition:none; }
+    .hero-stats .stat b.done{ animation:none; }
+  }
+</style>
+<style id="reveal-everything">
+  @media (prefers-reduced-motion: no-preference){
+    /* Fast, GPU-only reveal so scrolling never feels slowed */
+    .rv{ opacity:0; }
+    .rv.rv-in{ animation:rvUp .28s cubic-bezier(.2,.7,.3,1) both; animation-delay:var(--rvd,0s); }
+    .rv.rv-left.rv-in{ animation-name:rvLeft; }
+    .rv.rv-right.rv-in{ animation-name:rvRight; }
+    .rv.rv-zoom.rv-in{ animation-name:rvZoom; }
+    @keyframes rvUp{ from{ opacity:0; transform:translate3d(0,26px,0) scale(.98); } to{ opacity:1; transform:none; } }
+    @keyframes rvLeft{ from{ opacity:0; transform:translate3d(-34px,0,0); } to{ opacity:1; transform:none; } }
+    @keyframes rvRight{ from{ opacity:0; transform:translate3d(34px,0,0); } to{ opacity:1; transform:none; } }
+    @keyframes rvZoom{ from{ opacity:0; transform:scale(.92); } to{ opacity:1; transform:none; } }
+    /* Headings: brass underline draws in */
+    .section-head h2{ position:relative; }
+    .section-head.rv-in h2::after, .section-head.rv-done h2::after{
+      content:""; display:block; height:3px; width:3rem; margin-top:.6rem; border-radius:2px;
+      background:linear-gradient(90deg,var(--brass),var(--brass-light));
+      transform-origin:left; animation:rvLine .7s .2s cubic-bezier(.2,.7,.3,1) both;
+    }
+    #testimonials .section-head.rv-in h2::after, #testimonials .section-head.rv-done h2::after{ margin-left:auto; margin-right:auto; transform-origin:center; }
+    @keyframes rvLine{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+    @media (max-width:640px){
+      @keyframes rvUp{ from{ opacity:0; transform:translate3d(0,18px,0); } to{ opacity:1; transform:none; } }
+      @keyframes rvLeft{ from{ opacity:0; transform:translate3d(-18px,0,0); } to{ opacity:1; transform:none; } }
+      @keyframes rvRight{ from{ opacity:0; transform:translate3d(18px,0,0); } to{ opacity:1; transform:none; } }
+    }
+  }
+</style>
+<style id="pass-anim">
+  /* Boarding pass: tidy alignment (left-aligned, 2-col grid, stamp never crowds the title) */
+  .pass{ text-align:left; }
+  .pass-top{ gap:.75rem; }
+  .pass-top .kicker{ white-space:nowrap; }
+  .pass-stamp{ flex-shrink:0; }
+  .pass-row{ display:grid; grid-template-columns:1fr 1fr; gap:.5rem 1rem; }
+  .pass-row > div{ min-width:0; text-align:left; }
+  .pass-row .value{ white-space:nowrap; }
+  @media (prefers-reduced-motion: no-preference){
+    /* typing */
+    .tw{ position:relative; display:block; }
+    .tw-ghost{ visibility:hidden; }
+    .tw-live{ position:absolute; left:0; top:0; white-space:nowrap; }
+    .tw-live.caret::after{ content:""; display:inline-block; width:2px; height:.95em; margin-left:2px; vertical-align:-.12em; background:var(--brass-light); animation:twBlink .7s steps(1) infinite; }
+    @keyframes twBlink{ 50%{ opacity:0; } }
+    .pass-top .kicker, .pass-row .label{ transition:opacity .4s ease, transform .4s ease; }
+    .pass.pass-arm .kicker, .pass.pass-arm .label{ opacity:0; transform:translateY(5px); }
+    /* stamp slam */
+    .pass.pass-arm .pass-stamp{ opacity:0; transform:rotate(-8deg) scale(2.2); }
+    .pass .pass-stamp.slam{ animation:stampSlam .5s cubic-bezier(.2,1.4,.4,1) both; }
+    @keyframes stampSlam{ 0%{ opacity:0; transform:rotate(-20deg) scale(2.4); } 60%{ opacity:1; transform:rotate(-6deg) scale(.92); } 100%{ opacity:1; transform:rotate(-8deg) scale(1); } }
+    /* live status dot */
+    .pass .value.live .tw-live::before, .pass .value.live .tw-ghost::before{
+      content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; background:#5FD08A;
+    }
+    .pass .value.live.done .tw-live::before{ animation:dotPulse 1.6s ease-out infinite; }
+    @keyframes dotPulse{ 0%{ box-shadow:0 0 0 0 rgba(95,208,138,.6); } 100%{ box-shadow:0 0 0 8px rgba(95,208,138,0); } }
+    /* barcode scanner + sheen sweep */
+    .pass-barcode{ overflow:hidden; }
+    .pass-barcode::after{
+      content:""; position:absolute; top:0; bottom:0; left:-20%; width:18%;
+      background:linear-gradient(90deg, transparent, rgba(232,199,122,.85), transparent);
+      filter:blur(1px); animation:barScan 2.6s ease-in-out 2.4s infinite;
+    }
+    @keyframes barScan{ 0%{ left:-20%; } 55%,100%{ left:105%; } }
+    .pass-sheen{ background-size:200% 100%; }
+    .pass-sheen::after{
+      content:""; position:absolute; top:-20%; bottom:-20%; width:35%; left:-50%;
+      background:linear-gradient(105deg, transparent, rgba(255,255,255,.14), transparent);
+      transform:skewX(-18deg); animation:passShine 5.5s ease-in-out 3s infinite;
+    }
+    @keyframes passShine{ 0%{ left:-50%; } 35%,100%{ left:150%; } }
+  }
+</style>
 </head>
 <body>
 
@@ -1362,13 +1925,14 @@
       <a href="#destinations">Destinations</a>
       <a href="#events">Events</a>
       <a href="#success-stories" id="navSuccessStories">Success Stories</a>
-      <a href="#contact" class="btn-primary jump-link">Book a consultation</a>
+      <a href="#contact" class="btn-primary jump-link"><span>Book a consultation</span><svg class="nav-cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </nav>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" type="button">
       <span></span><span></span><span></span>
     </button>
   </div>
 </header>
+<div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
 
 <main>
 
@@ -1485,21 +2049,29 @@
       </div>
       <div class="features">
         <div class="card">
+          <span class="svc-shine" aria-hidden="true"></span>
+          <span class="svc-bar" aria-hidden="true"><i></i></span>
           <span class="num">01</span>
           <h3>Student visas</h3>
           <p>University applications, financial documentation, and visa filing handled end to end.</p>
         </div>
         <div class="card">
+          <span class="svc-shine" aria-hidden="true"></span>
+          <span class="svc-bar" aria-hidden="true"><i></i></span>
           <span class="num">02</span>
           <h3>Work visas</h3>
           <p>Skilled worker and employer-sponsored pathways, simplified into a clear checklist.</p>
         </div>
         <div class="card">
+          <span class="svc-shine" aria-hidden="true"></span>
+          <span class="svc-bar" aria-hidden="true"><i></i></span>
           <span class="num">03</span>
           <h3>Permanent residency</h3>
           <p>PR and citizenship applications prepared and reviewed before you ever submit them.</p>
         </div>
         <div class="card">
+          <span class="svc-shine" aria-hidden="true"></span>
+          <span class="svc-bar" aria-hidden="true"><i></i></span>
           <span class="num">04</span>
           <h3>Family sponsorship</h3>
           <p>Spousal and family visa programs, so reuniting abroad doesn't take years.</p>
@@ -1515,21 +2087,25 @@
       </div>
       <div class="problems-grid">
         <div class="problem-card">
+          <span class="prob-shine" aria-hidden="true"></span>
           <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18M4 9h16M4 15h16"/></svg>
           <h3>Country Chosen Before Eligibility</h3>
           <p>Students select a destination without confirming whether their profile actually fits.</p>
         </div>
         <div class="problem-card problem-card--raised">
+          <span class="prob-shine" aria-hidden="true"></span>
           <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="5" r="1.6"/><path d="M14 10l-2.5 2 1 4-3 4M11.5 12L8 11l-2 3M14 10l3 1.5-1 3.5"/></svg>
           <h3>Rushed Decisions for Intakes</h3>
           <p>Applications are hurried to meet deadlines, reducing the quality of preparation.</p>
         </div>
         <div class="problem-card problem-card--mid">
+          <span class="prob-shine" aria-hidden="true"></span>
           <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3 11.2c.6.4 1 1.1 1 1.8h4c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg>
           <h3>Visa Risk Not Explained Clearly</h3>
           <p>Potential risks are ignored instead of being properly assessed and addressed early.</p>
         </div>
         <div class="problem-card">
+          <span class="prob-shine" aria-hidden="true"></span>
           <svg class="problem-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h5M8 12h8M8 16h6"/></svg>
           <h3>Profile Reviewed Too Late</h3>
           <p>Academic background, study gaps, and documents are checked after key decisions are made.</p>
@@ -2195,15 +2771,38 @@
 
   const navToggle = document.getElementById('navToggle');
   const mainNav = document.getElementById('mainNav');
-  navToggle.addEventListener('click', () => {
-    const isOpen = mainNav.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', isOpen);
-  });
-  mainNav.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      mainNav.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
+  const navBackdrop = document.getElementById('navBackdrop');
+  const navLinks = Array.prototype.slice.call(mainNav.querySelectorAll('a'));
+
+  // Highlight the section the visitor is currently viewing each time the menu opens
+  function markCurrentNavLink(){
+    let current = navLinks[0];
+    navLinks.forEach(a => {
+      if (a.classList.contains('btn-primary')) return;
+      const el = document.getElementById((a.getAttribute('href') || '').slice(1));
+      if (el && el.offsetParent !== null && el.getBoundingClientRect().top <= 140) current = a;
     });
+    navLinks.forEach(a => {
+      if (a === current) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  function setNav(open){
+    mainNav.classList.toggle('open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    if (navBackdrop) navBackdrop.classList.toggle('show', open);
+    document.documentElement.classList.toggle('nav-open', open);
+    if (open) markCurrentNavLink();
+  }
+  navToggle.addEventListener('click', () => setNav(!mainNav.classList.contains('open')));
+  navLinks.forEach(link => link.addEventListener('click', () => setNav(false)));
+  if (navBackdrop) navBackdrop.addEventListener('click', () => setNav(false));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && mainNav.classList.contains('open')) { setNav(false); navToggle.focus(); }
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1080 && mainNav.classList.contains('open')) setNav(false);
   });
 
   // ---------- Live progress indicator for the application form (purely visual, additive) ----------
@@ -2639,7 +3238,7 @@
         e.preventDefault();
         var headerOffset = 88;
         var targetY = target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-        smoothScrollTo(targetY, 260);
+        smoothScrollTo(targetY, 140);
         if (history.pushState) history.pushState(null, '', hash);
       });
     });
@@ -2664,6 +3263,172 @@
     window.addEventListener('scroll', onScroll, { passive:true });
     apply();
   })();
+</script>
+<script>
+(function(){
+  var box = document.querySelector('.hero-stats');
+  if(!box) return;
+  var nums = box.querySelectorAll('.stat b');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var parts = [];
+  nums.forEach(function(b){
+    var m = b.textContent.trim().match(/^(\D*)(\d+(?:\.\d+)?)(.*)$/);
+    parts.push(m ? {el:b, pre:m[1], n:parseFloat(m[2]), suf:m[3], final:b.textContent} : null);
+  });
+  function ease(t){ return 1 - Math.pow(1 - t, 4); }
+  function run(){
+    box.classList.add('stats-go');
+    if(reduce) return;
+    parts.forEach(function(p, i){
+      if(!p) return;
+      var dur = 1600, delay = i * 220, start = null;
+      p.el.classList.add('counting');
+      p.el.textContent = p.pre + '0' + p.suf;
+      function step(ts){
+        if(start === null) start = ts + delay;
+        var t = Math.min(Math.max((ts - start) / dur, 0), 1);
+        p.el.textContent = p.pre + Math.round(p.n * ease(t)) + p.suf;
+        if(t < 1){ requestAnimationFrame(step); }
+        else { p.el.textContent = p.final; p.el.classList.remove('counting'); p.el.classList.add('done'); }
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){
+      if(es[0].isIntersecting){ io.disconnect(); setTimeout(run, 700); }
+    }, {threshold:0.4});
+    io.observe(box);
+  } else { run(); }
+})();
+</script>
+<script>
+(function(){
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!('IntersectionObserver' in window)) return;
+  var SEL = ['.section-head','.about-grid > *','.card','.problem-card','.figure-card','.uni-card','.event-card',
+             '.destination-card','.t-card','.story-card','.fp-tabs','.fp-block','.contact-info','.contact-grid > form',
+             '.footer-grid > *'].join(',');
+  var root = document.getElementById('siteContent') || document.body;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting) return;
+      var el = en.target; io.unobserve(el);
+      el.classList.add('rv-in');
+      el.addEventListener('animationend', function done(e){
+        if(e.target !== el || e.animationName === 'rvLine') return;
+        el.classList.remove('rv','rv-in','rv-left','rv-right','rv-zoom');
+        el.classList.add('rv-done'); el.style.removeProperty('--rvd');
+        el.removeEventListener('animationend', done);
+      });
+    });
+  }, { threshold:0.06, rootMargin:'0px 0px 18% 0px' });
+
+  function tag(node){
+    if(node.nodeType !== 1) return;
+    var list = [];
+    if(node.matches && node.matches(SEL)) list.push(node);
+    if(node.querySelectorAll) node.querySelectorAll(SEL).forEach(function(n){ list.push(n); });
+    list.forEach(function(el){
+      if(el.classList.contains('rv') || el.classList.contains('rv-done')) return;
+      if(el.closest('.hero, .reveal-stagger, .uni-marquee-wrap, header')) return;
+      var sibs = el.parentElement ? Array.prototype.filter.call(el.parentElement.children, function(c){ return c.matches(SEL); }) : [el];
+      var i = Math.max(0, sibs.indexOf(el));
+      el.style.setProperty('--rvd', ((i % 4) * 0.04) + 's');
+      el.classList.add('rv');
+      if(el.parentElement && el.parentElement.matches('.about-grid')) el.classList.add(i === 0 ? 'rv-left' : 'rv-right');
+      else if(el.matches('.destination-card, .event-card, .t-card, .story-card, .uni-card')) el.classList.add('rv-zoom');
+      io.observe(el);
+    });
+  }
+  tag(root);
+  // catch cards rendered later by fetch() (destinations, events, universities, testimonials)
+  new MutationObserver(function(muts){
+    muts.forEach(function(m){ m.addedNodes.forEach(tag); });
+  }).observe(root, { childList:true, subtree:true });
+})();
+</script>
+<script>
+(function(){
+  // Faster mouse-wheel scrolling (desktop mouse only; touch, trackpads, inner scrollers and zoom are untouched)
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  var BOOST = 1.7;
+  function innerScroller(el){
+    while (el && el !== document.body && el !== document.documentElement){
+      var st = getComputedStyle(el);
+      if (/(auto|scroll)/.test(st.overflowY) && el.scrollHeight > el.clientHeight) return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+  window.addEventListener('wheel', function(e){
+    if (e.ctrlKey || e.shiftKey || e.defaultPrevented) return;
+    if (e.deltaMode !== 0 || Math.abs(e.deltaX) > 0) return;
+    var d = e.deltaY;
+    if (Math.abs(d) < 50 || d % 1 !== 0) return; // trackpads send small/fractional deltas
+    if (innerScroller(e.target)) return;
+    e.preventDefault();
+    window.scrollBy(0, d * BOOST);
+  }, { passive:false });
+})();
+</script>
+<script>
+(function(){
+  var pass = document.querySelector('.pass');
+  if(!pass) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var items = [];
+  var h3 = pass.querySelector('.pass-top h3');
+  if(h3) items.push({el:h3, kick:pass.querySelector('.pass-top .kicker')});
+  pass.querySelectorAll('.pass-row > div').forEach(function(col){
+    var v = col.querySelector('.value'), l = col.querySelector('.label');
+    if(v) items.push({el:v, kick:l});
+  });
+  // prepare: full text stays in layout (ghost) so nothing jumps while typing
+  items.forEach(function(it){
+    var t = it.el.textContent.trim();
+    it.text = t;
+    it.el.textContent = '';
+    it.el.classList.add('tw');
+    var g = document.createElement('span'); g.className = 'tw-ghost'; g.textContent = t;
+    var l = document.createElement('span'); l.className = 'tw-live';
+    it.el.appendChild(g); it.el.appendChild(l);
+    it.live = l;
+  });
+  var last = items[items.length-1];
+  if(last) last.el.classList.add('live');
+  pass.classList.add('pass-arm');
+  var stamp = pass.querySelector('.pass-stamp');
+
+  function typeItem(it, done){
+    if(it.kick){ it.kick.style.opacity = 1; it.kick.style.transform = 'none'; }
+    var i = 0;
+    it.live.classList.add('caret');
+    (function tick(){
+      i++;
+      it.live.textContent = it.text.slice(0, i);
+      if(i < it.text.length){ setTimeout(tick, 14 + Math.random()*10); }
+      else { it.el.classList.add('done'); if(it !== last) it.live.classList.remove('caret'); setTimeout(done, 50); }
+    })();
+  }
+  function start(){
+    var k = pass.querySelector('.pass-top .kicker');
+    if(k){ k.style.opacity = 1; k.style.transform = 'none'; }
+    var n = 0;
+    (function next(){
+      if(n >= items.length){ if(stamp) stamp.classList.add('slam'); return; }
+      typeItem(items[n++], next);
+    })();
+  }
+  function go(){ setTimeout(start, 350); }
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){
+      if(es[0].isIntersecting){ io.disconnect(); go(); }
+    }, {threshold:0.35});
+    io.observe(pass);
+  } else { go(); }
+})();
 </script>
 </body>
 </html>
