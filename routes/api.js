@@ -8,6 +8,13 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 const ExcelJS = require('exceljs');
+const crypto = require('crypto');
+// svg-captcha (npm i svg-captcha) draws the word as vector outlines. It is
+// optional: if it isn't installed the server still starts and uses a built-in
+// fallback drawing, so the login page never breaks.
+let svgCaptcha = null;
+try { svgCaptcha = require('svg-captcha'); }
+catch (e) { console.warn('[captcha] svg-captcha not installed - using built-in fallback. Run: npm install svg-captcha'); }
 
 const router = express.Router();
 
@@ -477,11 +484,111 @@ function requireAdmin(req, res, next) {
   }
 }
 
+// ---- CAPTCHA (admin login) -------------------------------------------------
+// A fresh image + code is generated every time /admin/captcha is called.
+// The answer only ever lives on the server (the SVG is drawn as vector paths,
+// so the text is NOT readable from the markup). Each captcha is single-use:
+// it is deleted the moment a login attempt is made with it (pass OR fail), and
+// it expires after 3 minutes.
+const CAPTCHA_TTL_MS = 3 * 60 * 1000;
+const CAPTCHA_MAX_STORED = 5000;
+const captchaStore = new Map(); // id -> { answer, exp }
+
+function pruneCaptchas() {
+  const now = Date.now();
+  for (const [id, c] of captchaStore) if (c.exp <= now) captchaStore.delete(id);
+  // hard cap so a flood of /captcha calls can't exhaust memory
+  while (captchaStore.size > CAPTCHA_MAX_STORED) {
+    captchaStore.delete(captchaStore.keys().next().value);
+  }
+}
+setInterval(pruneCaptchas, 60 * 1000).unref();
+
+function verifyAndConsumeCaptcha(id, answer) {
+  const entry = typeof id === 'string' ? captchaStore.get(id) : null;
+  if (entry) captchaStore.delete(id); // single use, always
+  if (!entry || entry.exp <= Date.now() || typeof answer !== 'string') return false;
+  const a = Buffer.from(answer.trim().toLowerCase());
+  const b = Buffer.from(entry.answer);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+// Letters-only "word" captcha: alternating consonant/vowel so it reads like a
+// word (e.g. "makolu"), but is random every time. Ambiguous letters (i, l, o,
+// q, j, x) are left out so people don't mistype it.
+const CAP_CONSONANTS = 'bcdfghkmnprstvwz';
+const CAP_VOWELS = 'aeu';
+const CAP_PATTERNS = ['CVCVC', 'CVCVCV', 'CVCCVC', 'VCVCVC'];
+function randomCaptchaWord() {
+  const pattern = CAP_PATTERNS[crypto.randomInt(CAP_PATTERNS.length)];
+  let word = '';
+  for (const ch of pattern) {
+    const set = ch === 'C' ? CAP_CONSONANTS : CAP_VOWELS;
+    word += set[crypto.randomInt(set.length)];
+  }
+  return word;
+}
+
+// Dark, readable letters (brand-toned) with light wavy lines behind them
+const CAP_INK = ['#12213B', '#1B4E9B', '#8A1F1A', '#3B2A5C', '#1F5F4A'];
+const CAP_LINES = ['#9AA6BE', '#C9A96A', '#B9A3A0'];
+const capPick = (arr) => arr[crypto.randomInt(arr.length)];
+
+// Built-in fallback drawing (no dependencies): each letter is its own rotated,
+// skewed, coloured <text> node, in shuffled order, with noise lines and dots.
+function fallbackCaptchaSvg(word) {
+  const W = 240, H = 70, r = (a, b) => a + crypto.randomInt(0, 1000) / 1000 * (b - a);
+  const step = (W - 40) / word.length;
+  const parts = [];
+  [...word].forEach((ch, i) => {
+    const x = 24 + i * step + r(-3, 3), y = 46 + r(-6, 6);
+    parts.push(`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${r(40, 50).toFixed(0)}" `
+      + `font-family="Georgia, 'Times New Roman', serif" font-weight="700" fill="${capPick(CAP_INK)}" `
+      + `transform="rotate(${r(-22, 22).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}) skewX(${r(-14, 14).toFixed(1)})">${ch}</text>`);
+  });
+  for (let i = 0; i < 4; i++) {
+    parts.push(`<path d="M${r(0, 30).toFixed(0)} ${r(8, 62).toFixed(0)} Q${r(60, 180).toFixed(0)} ${r(-10, 80).toFixed(0)} ${r(200, 240).toFixed(0)} ${r(8, 62).toFixed(0)}" `
+      + `stroke="${capPick(CAP_LINES)}" stroke-width="${r(1.2, 2.2).toFixed(1)}" fill="none"/>`);
+  }
+  for (let i = 0; i < 40; i++) {
+    parts.push(`<circle cx="${r(0, W).toFixed(0)}" cy="${r(0, H).toFixed(0)}" r="${r(0.6, 1.4).toFixed(1)}" fill="${capPick(CAP_LINES)}"/>`);
+  }
+  parts.sort(() => crypto.randomInt(0, 2) - 0.5);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`
+    + `<rect width="100%" height="100%" fill="#F6F4EE"/>${parts.join('')}</svg>`;
+}
+
+router.get('/admin/captcha', (req, res) => {
+  try {
+    const word = randomCaptchaWord();
+    let svg;
+    if (svgCaptcha) {
+      svg = svgCaptcha(word, { noise: 2, color: true, background: '#F6F4EE', width: 240, height: 70, fontSize: 64 })
+        .replace(/<path fill="#[0-9a-fA-F]{3,8}"/g, () => `<path fill="${capPick(CAP_INK)}"`)
+        .replace(/stroke="#[0-9a-fA-F]{3,8}"/g, () => `stroke="${capPick(CAP_LINES)}"`);
+    } else {
+      svg = fallbackCaptchaSvg(word);
+    }
+    const id = crypto.randomBytes(16).toString('hex');
+    captchaStore.set(id, { answer: word, exp: Date.now() + CAPTCHA_TTL_MS });
+    if (captchaStore.size > CAPTCHA_MAX_STORED) pruneCaptchas();
+    res.set('Cache-Control', 'no-store');
+    res.json({ id, svg });
+  } catch (err) {
+    console.error('Captcha error:', err.message);
+    res.status(500).json({ error: 'Could not create captcha.' });
+  }
+});
+
 router.post('/admin/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, captchaId, captcha } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required.' });
+  }
+  // Check the captcha first (cheap) so bots can't burn CPU on bcrypt.
+  if (!verifyAndConsumeCaptcha(captchaId, captcha)) {
+    return res.status(400).json({ error: 'Incorrect or expired captcha. Please try again.', captchaFailed: true });
   }
   if (!process.env.JWT_SECRET || !process.env.ADMIN_USERNAME || !process.env.ADMIN_PASSWORD_HASH) {
     console.error('Admin auth is not configured — missing JWT_SECRET / ADMIN_USERNAME / ADMIN_PASSWORD_HASH.');
