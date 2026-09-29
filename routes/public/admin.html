@@ -6888,44 +6888,48 @@
 <title>Utility Expense Voucher</title>
 <style>
   * { box-sizing: border-box; }
-  @page{ size: A4; margin: 8mm; }
-  body { font-family:'Segoe UI', Arial, sans-serif; color:#12213B; margin:0; }
+  @page{ size: A4; margin: 0; }
+  html, body{ width:210mm; height:297mm; margin:0; padding:0; overflow:hidden; }
+  body { font-family:'Segoe UI', Arial, sans-serif; color:#12213B; }
   .toolbar-print{ text-align:center; padding:12px; }
   .toolbar-print button{ font-family:Arial, sans-serif; font-size:14px; padding:10px 22px; border-radius:999px; border:1px solid #12213B; background:#12213B; color:#fff; cursor:pointer; margin:0 6px; }
 
-  .voucher{ height:118mm; padding:4mm 8mm; border:1px solid #cfc9ba; border-radius:6px; overflow:hidden; page-break-inside:avoid; break-inside:avoid; position:relative; }
-  .hdr { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #12213B; padding-bottom:5px; margin-bottom:6px; }
-  .brand { font-size:1rem; font-weight:700; }
+  .sheet{ position:relative; width:210mm; height:297mm; overflow:hidden; page-break-after:avoid; break-after:avoid; }
+  .half{ position:absolute; left:0; width:210mm; height:148.5mm; padding:6mm 8mm; }
+  .half.top{ top:0; } .half.bottom{ top:148.5mm; }
+  .voucher{ height:100%; display:flex; flex-direction:column; padding:5mm 9mm 4mm; border:1px solid #cfc9ba; border-radius:6px; overflow:hidden; page-break-inside:avoid; break-inside:avoid; position:relative; }
+  .hdr { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #12213B; padding-bottom:7px; margin-bottom:9px; }
+  .brand { font-size:1.3rem; font-weight:700; }
   .brand .blue{ color:#1B4E9B; } .brand .red{ color:#D0342C; }
-  .hdr-sub{ font-size:0.62rem; color:#5B6884; margin-top:1px; }
-  .hdr-addr{ font-size:0.6rem; color:#5B6884; margin-top:1px; }
-  .hdr-right{ text-align:right; font-size:0.68rem; font-weight:700; color:#5B6884; align-self:flex-start; }
-  .v-title{ text-align:center; font-size:0.85rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; margin:5px 0; }
-  .meta-row{ display:flex; justify-content:space-between; gap:16px; font-size:0.72rem; margin-bottom:5px; }
+  .hdr-sub{ font-size:0.74rem; color:#5B6884; margin-top:1px; }
+  .hdr-addr{ font-size:0.72rem; color:#5B6884; margin-top:1px; }
+  .hdr-right{ text-align:right; font-size:0.82rem; font-weight:700; color:#5B6884; align-self:flex-start; }
+  .v-title{ text-align:center; font-size:1.05rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; margin:8px 0 10px; }
+  .meta-row{ display:flex; justify-content:space-between; gap:16px; font-size:0.86rem; margin-bottom:9px; }
   .meta-row .line{ flex:1; border-bottom:1px dotted #12213B; padding-bottom:2px; }
-  .field{ font-size:0.72rem; margin-bottom:5px; display:flex; align-items:flex-end; gap:6px; }
+  .field{ font-size:0.86rem; margin-bottom:9px; display:flex; align-items:flex-end; gap:6px; }
   .field .label{ white-space:nowrap; font-weight:600; }
   .field .line{ flex:1; border-bottom:1px dotted #12213B; height:1.1em; }
-  .purpose-opts{ font-size:0.68rem; margin-bottom:5px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
-  .box{ display:inline-block; width:9px; height:9px; border:1.2px solid #12213B; margin-right:3px; vertical-align:-1px; }
-  table{ width:100%; border-collapse:collapse; font-size:0.74rem; margin-bottom:5px; }
+  .purpose-opts{ font-size:0.8rem; margin-bottom:9px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  .box{ display:inline-block; width:11px; height:11px; border:1.2px solid #12213B; margin-right:3px; vertical-align:-1px; }
+  table{ width:100%; border-collapse:collapse; font-size:0.88rem; margin-bottom:9px; }
   th, td{ padding:4px 6px; border:1px solid #cfc9ba; text-align:left; }
-  th{ background:#F6F4EE; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.02em; }
+  th{ background:#F6F4EE; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.02em; }
   td.v-no{ width:26px; color:#9AA6BE; }
-  td{ height:26px; }
+  td{ height:33px; }
   tfoot td{ font-weight:800; background:#EEEAE0; }
-  .col-amt{ width:100px; text-align:right; }
-  .words-row{ font-size:0.68rem; margin-bottom:5px; display:flex; align-items:flex-end; gap:6px; }
+  .col-amt{ width:120px; text-align:right; }
+  .words-row{ font-size:0.8rem; margin-bottom:9px; display:flex; align-items:flex-end; gap:6px; }
   .words-row .label{ white-space:nowrap; font-weight:600; }
   .words-row .line{ flex:1; border-bottom:1px dotted #12213B; height:1.1em; }
-  .mode-row{ font-size:0.66rem; margin-bottom:0; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .mode-row{ font-size:0.78rem; margin-bottom:0; display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
   .mode-row .label{ font-weight:600; margin-right:3px; }
-  .sign-row{ display:flex; justify-content:space-between; position:absolute; left:8mm; right:8mm; bottom:4mm; }
-  .sign{ width:30%; text-align:center; font-size:0.64rem; }
-  .sign-line{ border-top:1px solid #12213B; margin-bottom:3px; padding-top:15px; }
+  .sign-row{ display:flex; justify-content:space-between; margin-top:auto; }
+  .sign{ width:30%; text-align:center; font-size:0.76rem; }
+  .sign-line{ border-top:1px solid #12213B; margin-bottom:3px; padding-top:20px; }
 
-  .cutline{ text-align:center; margin:1mm 0; border-top:1px dashed #9AA6BE; position:relative; }
-  .cutline span{ background:#fff; padding:0 8px; position:relative; top:-7px; font-size:0.62rem; color:#9AA6BE; }
+  .cutline{ position:absolute; left:0; width:210mm; top:148.5mm; height:0; border-top:1px dashed #9AA6BE; margin-top:-0.5px; text-align:center; }
+  .cutline span{ background:#fff; padding:0 8px; position:absolute; left:50%; top:0; transform:translate(-50%,-50%); font-size:0.66rem; color:#9AA6BE; white-space:nowrap; }
 
   @media print{
     .no-print{ display:none; }
@@ -6934,9 +6938,11 @@
 </style>
 </head>
 <body>
-  ${voucherBlockHtml('Office Copy')}
+<div class="sheet">
+  <div class="half top">${voucherBlockHtml('Office Copy')}</div>
+  <div class="half bottom">${voucherBlockHtml('Accounts Copy')}</div>
   <div class="cutline"><span>✂ cut along the line</span></div>
-  ${voucherBlockHtml('Accounts Copy')}
+</div>
 </body>
 </html>`;
 
