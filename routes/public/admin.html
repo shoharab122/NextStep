@@ -6414,13 +6414,14 @@
     const year = $('#reportYearSelect').value || String(new Date().getFullYear());
     const cur = $('#reportCurrencySelect').value || 'BDT';
     const rows = expenses.filter((e) => (e.expense_date || '').startsWith(year) && (e.currency || 'BDT') === cur);
-    const monthly = {};
-    for (let m = 1; m <= 12; m++) monthly[String(m).padStart(2, '0')] = { totalC: 0, count: 0 };
+    // Array (index 0 = January ... 11 = December). Do NOT use an object keyed "01".."12":
+    // JS lists integer-like keys ("10","11","12") first, which shifted every month.
+    const monthly = Array.from({ length: 12 }, () => ({ totalC: 0, count: 0 }));
     const byCategory = {};
     let totalC = 0;
     rows.forEach((e) => {
-      const mm = (e.expense_date || '').slice(5, 7);
-      if (monthly[mm]) { monthly[mm].totalC += centsOf(e.amount); monthly[mm].count++; }
+      const mi = parseInt((e.expense_date || '').slice(5, 7), 10) - 1;
+      if (mi >= 0 && mi < 12) { monthly[mi].totalC += centsOf(e.amount); monthly[mi].count++; }
       const cat = e.category || 'other';
       byCategory[cat] = (byCategory[cat] || 0) + centsOf(e.amount);
       totalC += centsOf(e.amount);
@@ -6437,13 +6438,13 @@
 
     $('#reportKpiTotal').textContent = fmtMoney(cur, totalC / 100);
     $('#reportKpiCount').textContent = String(rows.length);
-    const monthsWithData = Object.values(monthly).filter((m) => m.count > 0).length || 1;
+    const monthsWithData = monthly.filter((m) => m.count > 0).length || 1;
     $('#reportKpiAvgMonth').textContent = fmtMoney(cur, (totalC / 100) / monthsWithData);
     const topCat = Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0];
     $('#reportKpiTopCategory').textContent = topCat ? (EXPENSE_CATEGORIES[topCat[0]] || topCat[0]) : '—';
 
-    $('#reportMonthlyBody').innerHTML = Object.keys(monthly).map((mm, i) => `
-      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td class="exp-amount">${fmtMoney(cur, monthly[mm].totalC / 100)}</td><td class="exp-amount">${monthly[mm].count}</td></tr>
+    $('#reportMonthlyBody').innerHTML = monthly.map((m, i) => `
+      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td class="exp-amount">${fmtMoney(cur, m.totalC / 100)}</td><td class="exp-amount">${m.count}</td></tr>
     `).join('');
     $('#reportMonthlyFoot').innerHTML = `<tr class="exp-foot"><td>Total (${escapeHtml(year)})</td><td class="exp-amount">${fmtMoney(cur, totalC / 100)}</td><td class="exp-amount">${rows.length}</td></tr>`;
 
@@ -6479,10 +6480,10 @@
       }));
     entrySheet.push({ Date: '', Description: '', Category: '', 'Paid to': '', 'Payment method': '', Notes: 'TOTAL', Amount: totalC / 100, Currency: cur });
 
-    const monthlySheet = Object.keys(monthly).map((mm, i) => ({
+    const monthlySheet = monthly.map((m, i) => ({
       Month: REPORT_MONTH_NAMES[i],
-      'Total expenses': monthly[mm].totalC / 100,
-      Entries: monthly[mm].count,
+      'Total expenses': m.totalC / 100,
+      Entries: m.count,
     }));
     monthlySheet.push({ Month: `TOTAL ${year}`, 'Total expenses': totalC / 100, Entries: rows.length });
 
@@ -6504,8 +6505,8 @@
   // Printable yearly report — same letterhead pattern used for invoice printing
   function openYearlyReportPrintWindow() {
     const { year, cur, rows, monthly, byCategory, totalC } = getYearlyReportData();
-    const monthRows = Object.keys(monthly).map((mm, i) => `
-      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td style="text-align:right;">${fmtMoney(cur, monthly[mm].totalC / 100)}</td><td style="text-align:right;">${monthly[mm].count}</td></tr>
+    const monthRows = monthly.map((m, i) => `
+      <tr><td>${REPORT_MONTH_NAMES[i]}</td><td style="text-align:right;">${fmtMoney(cur, m.totalC / 100)}</td><td style="text-align:right;">${m.count}</td></tr>
     `).join('');
     const catRows = Object.entries(byCategory).sort((a, b) => b[1] - a[1]).map(([cat, c]) => `
       <tr><td>${escapeHtml(EXPENSE_CATEGORIES[cat] || cat)}</td><td style="text-align:right;">${fmtMoney(cur, c / 100)}</td><td style="text-align:right;">${totalC ? Math.round((c / totalC) * 100) : 0}%</td></tr>
