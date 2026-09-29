@@ -1389,6 +1389,21 @@
     margin-top:0.85rem;
     position:relative; z-index:2;
     font-size:0.95rem;
+    /* Solid fallback colour + literal hex (no var()) so the button can never
+       render transparent, even if the gradient is dropped or overridden */
+    background-color:#12213B !important;
+    background-image:linear-gradient(150deg, #12213B 0%, #1B2F52 100%) !important;
+    color:#F6F4EE !important;
+    -webkit-text-fill-color:#F6F4EE;
+    border:1px solid #12213B !important;
+    -webkit-appearance:none; appearance:none;
+  }
+  #loginBtn:hover:not(:disabled),
+  #loginForm .btn-primary:hover:not(:disabled){
+    background-color:#B8862E !important;
+    background-image:linear-gradient(150deg, #B8862E 0%, #A5721F 100%) !important;
+    border-color:#B8862E !important;
+    color:#fff !important; -webkit-text-fill-color:#fff;
   }
   #loginBtn:disabled{ opacity:0.6 !important; }
   #loginError{ display:block; }
@@ -2048,6 +2063,116 @@
     #panel-expenses .exp-kpis{ grid-template-columns:1fr !important; }
     #yearlyReportCard .report-controls{ grid-template-columns:1fr; }
   }
+
+  /* ===================== LOGIN — refined look ===================== */
+  #loginScreen .login-wrap{ max-width:430px; }
+  #loginScreen .login-card{
+    padding:2.75rem 2.4rem 2.1rem; border-radius:26px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.86), rgba(253,251,247,0.9));
+    border:1px solid rgba(18,33,59,0.10);
+    box-shadow:0 40px 80px -30px rgba(18,33,59,0.30), 0 8px 24px -12px rgba(18,33,59,0.12),
+               inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  /* brand tri-colour hairline across the top (same as the dashboard top bar) */
+  #loginScreen .login-card::after{
+    left:28px; right:28px; height:4px; border-radius:0 0 6px 6px;
+    background:linear-gradient(90deg, var(--brand-blue), var(--brass) 50%, var(--brand-red));
+    opacity:.95;
+  }
+  #loginScreen .login-icon{
+    width:60px; height:60px; border-radius:18px; margin-bottom:1.25rem;
+    box-shadow:0 14px 28px -10px rgba(18,33,59,0.55), 0 0 0 6px rgba(184,134,46,0.10), inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  #loginScreen .login-icon svg{ width:26px; height:26px; }
+
+  /* Logo — same brand colours (blue + red italic), just a touch bigger */
+  #loginScreen .login-card .logo{ font-size:1.6rem; letter-spacing:-0.01em; margin-bottom:0.5rem; }
+  #loginScreen .login-card .logo .brand-blue{ color:var(--brand-blue); font-weight:700; font-style:normal; }
+  #loginScreen .login-card .logo span:not(.brand-blue){ color:var(--brand-red); font-style:italic; font-weight:500; }
+  #loginScreen .login-card h2{ font-size:1.05rem; font-family:'Inter', sans-serif; font-weight:600; letter-spacing:.02em; color:#3D4A63; margin-bottom:.3rem; }
+  #loginScreen .login-card .sub{ font-size:0.86rem; margin-bottom:2rem; }
+
+  #loginScreen .field label{ font-size:0.78rem; letter-spacing:.03em; text-transform:uppercase; color:#5B6884; }
+  #loginScreen .input-wrap input{
+    height:52px; padding:0 2.9rem 0 2.9rem; border-radius:14px; font-size:0.97rem;
+    background:rgba(255,255,255,0.95); border:1px solid rgba(18,33,59,0.16);
+    box-shadow:0 1px 2px rgba(18,33,59,0.04);
+  }
+  #loginScreen .input-wrap input:hover{ border-color:rgba(18,33,59,0.32); }
+  #loginScreen .input-wrap input:focus{
+    border-color:var(--brass); background:#fff;
+    box-shadow:0 0 0 4px rgba(184,134,46,0.16), 0 6px 16px -8px rgba(184,134,46,0.35);
+  }
+  #loginScreen .input-wrap > svg{ left:1rem; width:18px; height:18px; }
+
+  /* show / hide password */
+  #loginScreen .pw-toggle{
+    position:absolute; right:.55rem; top:50%; transform:translateY(-50%);
+    width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+    border:0; background:transparent; border-radius:10px; color:#9AA6BE; padding:0;
+    transition:background .18s var(--ease), color .18s var(--ease);
+  }
+  #loginScreen .pw-toggle:hover{ background:rgba(18,33,59,0.06); color:var(--ink); }
+  #loginScreen .input-wrap .pw-toggle svg{ position:static; width:18px; height:18px; color:inherit; }
+  #loginScreen .pw-toggle .eye-off{ display:none; }
+  #loginScreen .pw-toggle.on .eye{ display:none; }
+  #loginScreen .pw-toggle.on .eye-off{ display:block; }
+
+  /* Sign-in button: shine sweep + arrow */
+  #loginScreen #loginBtn{
+    min-height:54px; margin-top:1.25rem; border-radius:999px; font-size:1rem; letter-spacing:.02em;
+    gap:.6rem; overflow:hidden; isolation:isolate;
+    box-shadow:0 16px 30px -14px rgba(18,33,59,0.65), inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  #loginScreen #loginBtn::before{
+    content:''; position:absolute; inset:0; z-index:-1; transform:translateX(-120%);
+    background:linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.22) 50%, transparent 70%);
+    transition:transform .7s var(--ease);
+  }
+  #loginScreen #loginBtn:hover:not(:disabled)::before{ transform:translateX(120%); }
+  #loginScreen #loginBtn::after{ content:'\2192'; font-size:1.1rem; transition:transform .25s var(--ease); }
+  #loginScreen #loginBtn:hover:not(:disabled)::after{ transform:translateX(4px); }
+  #loginScreen #loginBtn:disabled::after{ display:none; }
+
+  /* Error message as a soft pill, only when there is text */
+  #loginScreen #loginError{
+    margin-top:1rem; padding:.65rem .9rem; border-radius:12px; text-align:center; font-size:.85rem; font-weight:500;
+    background:rgba(179,67,46,0.08); border:1px solid rgba(179,67,46,0.22); min-height:0;
+  }
+  #loginScreen #loginError:empty{ display:none; }
+
+  #loginScreen .login-foot{
+    margin-top:1.75rem; padding-top:1.15rem; border-top:1px solid rgba(18,33,59,0.08);
+    font-size:.75rem; letter-spacing:.01em;
+  }
+  #loginScreen .login-foot svg{ color:var(--brass); }
+
+  @media (max-width:480px){
+    #loginScreen .login-card{ padding:2rem 1.35rem 1.6rem; border-radius:22px; }
+    #loginScreen .login-card .logo{ font-size:1.4rem; }
+  }
+
+  /* CAPTCHA */
+  #loginScreen .captcha-field{ margin-bottom:.2rem; }
+  #loginScreen .captcha-row{ display:flex; gap:.6rem; align-items:stretch; }
+  #loginScreen .captcha-img{
+    flex:1; min-height:60px; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    background:#F6F4EE; border:1px solid rgba(18,33,59,0.16); user-select:none; -webkit-user-select:none;
+  }
+  #loginScreen .captcha-img img{ display:block; width:100%; height:100%; max-height:60px; object-fit:contain; pointer-events:none; }
+  #loginScreen .captcha-loading{ font-size:.8rem; color:#9AA6BE; }
+  #loginScreen .captcha-refresh{
+    width:60px; flex:0 0 60px; border-radius:14px; border:1px solid rgba(18,33,59,0.16); background:#fff; color:var(--ink);
+    display:flex; align-items:center; justify-content:center; padding:0;
+    transition:border-color .18s var(--ease), background .18s var(--ease), color .18s var(--ease);
+  }
+  #loginScreen .captcha-refresh svg{ width:20px; height:20px; transition:transform .5s var(--ease); }
+  #loginScreen .captcha-refresh:hover{ border-color:var(--brass); color:var(--brass); background:rgba(184,134,46,0.06); }
+  #loginScreen .captcha-refresh:hover svg{ transform:rotate(180deg); }
+  #loginScreen .captcha-refresh.spin svg{ animation:capSpin .6s linear infinite; }
+  @keyframes capSpin{ to{ transform:rotate(360deg); } }
+  #loginScreen #captchaInput{ letter-spacing:.14em; font-weight:600; }
+  #loginScreen #captchaInput::placeholder{ letter-spacing:0; font-weight:400; }
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" href="/favicon-48.png" sizes="48x48">
@@ -2084,6 +2209,23 @@
           <div class="input-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="9.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
             <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" required />
+            <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password" title="Show password">
+              <svg class="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.7 10.7 0 0 1 12 19c-6.4 0-10-7-10-7a17.6 17.6 0 0 1 4.1-4.9M9.9 5.2A9.7 9.7 0 0 1 12 5c6.4 0 10 7 10 7a17.7 17.7 0 0 1-2.2 3.2M1 1l22 22"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field captcha-field">
+          <label for="captchaInput">Security check</label>
+          <div class="captcha-row">
+            <div class="captcha-img" id="captchaImg" aria-live="polite"><span class="captcha-loading">Loading…</span></div>
+            <button type="button" class="captcha-refresh" id="captchaRefresh" aria-label="Get a new code" title="New code">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            </button>
+          </div>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+            <input type="text" id="captchaInput" name="captcha" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="8" placeholder="Type the word above" required />
           </div>
         </div>
         <button type="submit" class="btn-primary" id="loginBtn">Sign in</button>
@@ -3435,6 +3577,7 @@
   }
 
   function showLogin() {
+    loadCaptcha();
     $('#loginScreen').style.display = 'flex';
     $('#dashboard').style.display = 'none';
   }
@@ -3458,6 +3601,35 @@
     }
   }
 
+  // ---------------- Captcha ----------------
+  let captchaId = '';
+  async function loadCaptcha() {
+    const box = $('#captchaImg'), btn = $('#captchaRefresh'), inp = $('#captchaInput');
+    btn.classList.add('spin');
+    inp.value = '';
+    captchaId = '';
+    try {
+      const res = await fetch(API + '/admin/captcha?_=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('captcha ' + res.status);
+      const data = await res.json();
+      captchaId = data.id;
+      const img = document.createElement('img');
+      img.alt = 'Captcha word';
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(data.svg);
+      box.replaceChildren(img);
+    } catch (err) {
+      console.error('Captcha load failed:', err);
+      box.innerHTML = '<span class="captcha-loading">Could not load — tap refresh</span>';
+      const e = $('#loginError');
+      e.textContent = /404/.test(err.message)
+        ? 'Captcha route not found on the server. Replace api.js with the new version and restart the server.'
+        : 'Cannot reach the server for the captcha. Make sure the server is running (check its terminal for errors).';
+    } finally {
+      btn.classList.remove('spin');
+    }
+  }
+  $('#captchaRefresh').addEventListener('click', loadCaptcha);
+
   $('#loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = $('#loginBtn');
@@ -3473,6 +3645,8 @@
         body: JSON.stringify({
           username: $('#username').value,
           password: $('#password').value,
+          captchaId: captchaId,
+          captcha: $('#captchaInput').value,
         }),
       });
       const data = await res.json();
@@ -3480,17 +3654,31 @@
 
       token = data.token;
       localStorage.setItem('nextstep_admin_token', token);
+      const signedInAs = $('#username').value;
       $('#loginForm').reset();
-      showDashboard($('#username').value);
+      showDashboard(signedInAs);
     } catch (err) {
       errorEl.textContent = err.message || 'Network error. Please try again.';
     } finally {
       btn.disabled = false;
       btn.textContent = 'Sign in';
+      // Every attempt (success or fail) burns the old captcha, so always fetch a new one.
+      loadCaptcha();
     }
   });
 
   $('#logoutBtn').addEventListener('click', () => logout());
+
+  // Show / hide password
+  $('#pwToggle').addEventListener('click', () => {
+    const inp = $('#password'), t = $('#pwToggle');
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    t.classList.toggle('on', show);
+    t.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    t.title = show ? 'Hide password' : 'Show password';
+    inp.focus();
+  });
 
   // ---------------- Tabs ----------------
   function activateTab(tabName) {
@@ -4398,6 +4586,67 @@
     });
   }
 
+  // ---------------- Shared print helper (used by voucher, invoice, yearly report and student form) ----------------
+  // Prints a full HTML document through a hidden frame on THIS page. There is no popup, no blob link and no
+  // script inside the printed document, so popup blockers, expired blob links, tab discarding and strict
+  // security policies cannot stop it. If the frame route ever fails it falls back to a new tab.
+  let activePrintFrame = null;
+
+  function openPrintTab(html) {
+    const win = window.open('', '_blank');
+    if (!win) return false;
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    const go = () => { try { win.focus(); win.print(); } catch (e) { console.error('Print failed:', e); } };
+    if (win.document.readyState === 'complete') setTimeout(go, 300);
+    else win.addEventListener('load', () => setTimeout(go, 300));
+    return true;
+  }
+
+  function printHtmlDocument(html, docTitle) {
+    if (activePrintFrame) { activePrintFrame.remove(); activePrintFrame = null; }
+    const originalTitle = document.title;
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('aria-hidden', 'true');
+    iframe.setAttribute('title', 'Print');
+    iframe.tabIndex = -1;
+    // Off-screen but full A4 size (display:none / visibility:hidden frames print blank in some browsers).
+    iframe.style.cssText = 'position:fixed;left:-10000px;top:0;width:210mm;height:297mm;border:0;pointer-events:none;';
+    activePrintFrame = iframe;
+
+    let started = false;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      document.title = originalTitle;
+      setTimeout(() => { if (activePrintFrame === iframe) activePrintFrame = null; iframe.remove(); }, 1000);
+    };
+    const start = async () => {
+      if (started) return;
+      started = true;
+      try {
+        const w = iframe.contentWindow;
+        if (!w) throw new Error('Print frame is not available.');
+        try { await w.document.fonts.ready; } catch (e) { /* fonts API not available — print anyway */ }
+        if (docTitle) document.title = docTitle; // browsers use the page title as the default PDF file name
+        w.addEventListener('afterprint', finish);
+        w.focus();
+        w.print();
+        setTimeout(finish, 5 * 60 * 1000); // safety net for browsers that never fire afterprint
+      } catch (err) {
+        console.error('Frame print failed, opening a new tab instead:', err);
+        finish();
+        if (!openPrintTab(html)) toast('Could not open the print dialog. Please allow popups for this site and try again.', true);
+      }
+    };
+    iframe.addEventListener('load', () => setTimeout(start, 150));
+    setTimeout(start, 8000); // if the load event never arrives, still try to print
+    iframe.srcdoc = html;
+    document.body.appendChild(iframe);
+  }
+
   // ---------------- Student Form (print) ----------------
   function printField(label, value) {
     return `
@@ -4554,19 +4803,9 @@
 
   <div class="pf-footer">This form was generated from the Nextstep Immigration admin system on ${today}.</div>
 
-  <script>
-    window.onload = function() {
-      window.focus();
-      window.print();
-    };
-  <\/script>
 </body>
 </html>`;
-    const win = window.open('', '_blank', 'width=900,height=1000');
-    if (!win) { toast('Please allow pop-ups to print the student form.', true); return; }
-    win.document.open();
-    win.document.write(html);
-    win.document.close();
+    printHtmlDocument(html, `Student Form — ${a.full_name || 'Applicant'}`);
   }
 
   // ---------------- Contacts ----------------
@@ -6000,9 +6239,6 @@
 </style>
 </head>
 <body>
-  <div class="toolbar-print no-print">
-    <button onclick="window.print()">🖨 Print / Save as PDF</button>
-  </div>
   <div class="page">
     <div class="content">
       <div class="row">
@@ -6047,16 +6283,7 @@
 </body>
 </html>`;
 
-    const blob = new Blob([html], { type: 'text/html' });
-    const blobUrl = URL.createObjectURL(blob);
-    const win = window.open(blobUrl, '_blank');
-    if (!win) {
-      URL.revokeObjectURL(blobUrl);
-      toast('Please allow popups to print the invoice.', true);
-      return;
-    }
-    // Release the blob once the tab has had time to load it.
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+    printHtmlDocument(html, `Invoice ${inv.invoice_number || ''}`.trim());
   }
 
   // ---------------- Settings ----------------
@@ -6549,9 +6776,6 @@
 </style>
 </head>
 <body>
-  <div class="toolbar-print no-print">
-    <button onclick="window.print()">🖨 Print / Save as PDF</button>
-  </div>
   <div class="hdr">
     <div>
       <div class="brand"><span class="blue">Nextstep</span> <span class="red">Immigration</span></div>
@@ -6594,15 +6818,7 @@
 </body>
 </html>`;
 
-    const blob = new Blob([html], { type: 'text/html' });
-    const blobUrl = URL.createObjectURL(blob);
-    const win = window.open(blobUrl, '_blank');
-    if (!win) {
-      URL.revokeObjectURL(blobUrl);
-      toast('Please allow popups to print the report.', true);
-      return;
-    }
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+    printHtmlDocument(html, `Yearly Expense Report ${year}`);
   }
 
   $('#printYearlyReportBtn').addEventListener('click', openYearlyReportPrintWindow);
@@ -6718,25 +6934,13 @@
 </style>
 </head>
 <body>
-  <div class="toolbar-print no-print">
-    <button onclick="window.print()">🖨 Print / Save as PDF (2 vouchers per A4 page)</button>
-  </div>
-
   ${voucherBlockHtml('Office Copy')}
   <div class="cutline"><span>✂ cut along the line</span></div>
   ${voucherBlockHtml('Accounts Copy')}
 </body>
 </html>`;
 
-    const blob = new Blob([html], { type: 'text/html' });
-    const blobUrl = URL.createObjectURL(blob);
-    const win = window.open(blobUrl, '_blank');
-    if (!win) {
-      URL.revokeObjectURL(blobUrl);
-      toast('Please allow popups to print the voucher.', true);
-      return;
-    }
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+    printHtmlDocument(html, 'Utility Expense Voucher');
   }
 
   $('#printBlankVoucherBtn').addEventListener('click', openBlankVoucherPrintWindow);
