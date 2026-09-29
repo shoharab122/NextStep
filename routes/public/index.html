@@ -12,8 +12,8 @@
   :root{
     --ink:#12213B;
     --ink-2:#1B2F52;
-    --paper:#F6F4EE;
-    --paper-2:#EEEAE0;
+    --paper:#FFFFFF;
+    --paper-2:#FFFFFF;
     --brass:#B8862E;
     --brass-light:#E8C77A;
     --brand-blue:#1B4E9B;
@@ -44,14 +44,14 @@
 
   header{
     position:fixed; top:0; left:0; right:0; z-index:200;
-    background:rgba(246,244,238,0.97);
+    background:rgba(255,255,255,0.97);
     border-bottom:1px solid var(--line);
     transition:box-shadow .16s ease;
     transform:translateZ(0);
     will-change:box-shadow;
   }
   header.is-scrolled{
-    background:rgba(246,244,238,0.98);
+    background:rgba(255,255,255,0.98);
     box-shadow:0 6px 20px -10px rgba(18,33,59,0.25);
   }
   #siteContent{ padding-top:72px; }
@@ -126,13 +126,11 @@
   .hero{
     position:relative; padding: 6rem 0 5rem; overflow:hidden;
     background:
-      radial-gradient(50% 55% at 88% 8%, rgba(184,134,46,0.16), transparent 62%),
-      radial-gradient(40% 40% at 8% 95%, rgba(184,134,46,0.08), transparent 65%),
       var(--paper);
   }
   .hero::before{
     content:""; position:absolute; inset:0; pointer-events:none; opacity:0.22;
-    background-image: radial-gradient(rgba(18,33,59,0.06) 1px, transparent 1px);
+    background-image: none;
     background-size: 22px 22px;
   }
   .hero-grid{ position:relative; z-index:1; display:grid; grid-template-columns: 1.1fr 0.9fr; gap:3rem; align-items:center; }
@@ -238,7 +236,7 @@
   .section-head h2{ font-size:clamp(1.9rem, 3.4vw, 2.6rem); }
   .section-head p{ font-size:1.05rem; }
 
-  #about{ background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  #about{ background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
   .about-grid{ display:grid; grid-template-columns: 0.9fr 1.1fr; gap:3.5rem; align-items:start; }
   .about-figures{ display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
   .figure-card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:1.5rem; }
@@ -329,7 +327,7 @@
   @media (max-width:640px){ .events-grid{ grid-template-columns:1fr; } }
 
   /* Popular destinations (story-style cards) */
-  #destinations{ background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  #destinations{ background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
   .destinations-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
   .destination-card{
     position:relative; border-radius:var(--radius); overflow:hidden; aspect-ratio:3/4;
@@ -399,7 +397,7 @@
   .fp-block ul, .fp-block ol{ margin:0 0 0.6rem; padding-left:1.25rem; }
   .fp-block li{ font-size:0.95rem; color:#3D4A63; margin-bottom:0.45rem; line-height:1.5; }
   .fp-note{ font-size:0.88rem; color:#5B6884; font-style:italic; margin-top:0.4rem; }
-  .fp-contact{ background:var(--paper-2); border-radius:12px; padding:1.25rem 1.5rem; }
+  .fp-contact{ background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:1.25rem 1.5rem; }
   .fp-contact p{ margin-bottom:0.35rem; font-size:0.95rem; }
   .fp-contact p:last-child{ margin-bottom:0; }
   @media (max-width:640px){
@@ -517,9 +515,9 @@
     .field-row-2{ grid-template-columns:1fr; }
   }
 
-  #apply{ background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  #apply{ background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
 
-  #problems{ background:var(--paper-2); }
+  #problems{ background:var(--paper); }
   #problems h2 em{ font-style:italic; color:var(--brass); font-weight:500; }
   .problems-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:1.25rem; align-items:end; }
   .problem-card{
@@ -559,7 +557,7 @@
 
   /* Sticky progress indicator for the application form */
   .apply-progress-wrap{
-    position:sticky; top:72px; z-index:20; background:var(--paper-2);
+    position:sticky; top:72px; z-index:20; background:var(--paper);
     padding:0.9rem 0 1.1rem; margin-bottom:1.75rem; border-bottom:1px solid var(--line);
   }
   .apply-progress-bar{ height:6px; border-radius:999px; background:rgba(18,33,59,0.08); overflow:hidden; }
@@ -823,7 +821,7 @@
       position:absolute; top:72px; left:0; right:0;
       display:flex; flex-direction:column; align-items:stretch; gap:0;
       padding:0.35rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
-      background:linear-gradient(180deg, #FCFAF6 0%, var(--paper) 100%);
+      background:linear-gradient(180deg, #FFFFFF 0%, var(--paper) 100%);
       border-bottom:1px solid var(--line);
       border-radius:0 0 26px 26px;
       box-shadow:0 34px 50px -26px rgba(18,33,59,0.5);
@@ -954,8 +952,8 @@
     mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
   }
   .uni-marquee-fade{ position:absolute; top:0; bottom:0; width:70px; z-index:2; pointer-events:none; }
-  .uni-marquee-fade--l{ left:0; background:linear-gradient(90deg, var(--paper), rgba(246,244,238,0)); }
-  .uni-marquee-fade--r{ right:0; background:linear-gradient(270deg, var(--paper), rgba(246,244,238,0)); }
+  .uni-marquee-fade--l{ left:0; background:linear-gradient(90deg, var(--paper), rgba(255,255,255,0)); }
+  .uni-marquee-fade--r{ right:0; background:linear-gradient(270deg, var(--paper), rgba(255,255,255,0)); }
   .uni-marquee-track{ display:flex; width:max-content; animation: uni-scroll 34s linear infinite; }
   .uni-marquee-wrap:hover .uni-marquee-track{ animation-play-state:paused; }
   .uni-marquee-group{ display:flex; align-items:stretch; gap:1.1rem; padding:0 0.55rem; flex-shrink:0; }
@@ -999,8 +997,6 @@
   #welcomeScreen{
     position:fixed; inset:0; z-index:999;
     background:
-      radial-gradient(60% 50% at 85% 0%, rgba(184,134,46,0.14), transparent 62%),
-      radial-gradient(45% 40% at 10% 100%, rgba(27,78,155,0.08), transparent 65%),
       var(--paper);
     display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     padding:calc(3.5rem + env(safe-area-inset-top)) 1.5rem calc(3rem + env(safe-area-inset-bottom));
@@ -1010,7 +1006,7 @@
   #welcomeScreen.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
   #welcomeScreen::before{
     content:""; position:fixed; inset:0; pointer-events:none; opacity:0.22; z-index:-1;
-    background-image: radial-gradient(rgba(18,33,59,0.06) 1px, transparent 1px);
+    background-image: none;
     background-size: 22px 22px;
   }
   .welcome-inner{ width:100%; max-width:1080px; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
@@ -1243,14 +1239,14 @@
      #welcomeScreen (the gateway page) is intentionally untouched.
      ============================================================ */
   #siteContent header{
-    background: rgba(246,244,238,0.55);
+    background: rgba(255,255,255,0.55);
     -webkit-backdrop-filter: blur(18px) saturate(160%);
     backdrop-filter: blur(18px) saturate(160%);
     border-bottom: 1px solid rgba(255,255,255,0.35);
     box-shadow: 0 8px 32px -18px rgba(18,33,59,0.28), inset 0 1px 0 rgba(255,255,255,0.5);
   }
   #siteContent header.is-scrolled{
-    background: rgba(246,244,238,0.72);
+    background: rgba(255,255,255,0.72);
     box-shadow: 0 10px 34px -14px rgba(18,33,59,0.32), inset 0 1px 0 rgba(255,255,255,0.55);
   }
 
@@ -1407,7 +1403,7 @@
   @media (max-width: 900px){
     /* The sticky header + every glass card re-computing a blur on each scroll frame is the
        single biggest cause of scroll lag on phones, especially on slower/older devices. */
-    #siteContent header{ -webkit-backdrop-filter:none; backdrop-filter:none; background:rgba(246,244,238,0.94); }
+    #siteContent header{ -webkit-backdrop-filter:none; backdrop-filter:none; background:rgba(255,255,255,0.94); }
     #siteContent .card, #siteContent .problem-card, #siteContent .figure-card,
     #siteContent .uni-card, #siteContent .event-card, #siteContent .destination-card,
     #siteContent .t-card{
@@ -1439,12 +1435,12 @@
 }
 #problems::before{
   top:-14%; left:-10%;
-  background:radial-gradient(circle at 50% 50%, rgba(184,134,46,.20), rgba(184,134,46,0) 68%);
+  background:none;
   animation:probDriftA 15s ease-in-out infinite alternate;
 }
 #problems::after{
   bottom:-16%; right:-12%;
-  background:radial-gradient(circle at 50% 50%, rgba(27,78,155,.13), rgba(27,78,155,0) 68%);
+  background:none;
   animation:probDriftB 18s ease-in-out infinite alternate;
 }
 @keyframes probDriftA{ from{ transform:translate3d(0,0,0) scale(1); }   to{ transform:translate3d(14%,18%,0) scale(1.18); } }
@@ -1623,12 +1619,12 @@
 }
 #services::before{
   top:-10%; right:-12%;
-  background:radial-gradient(circle at 50% 50%, rgba(184,134,46,.17), rgba(184,134,46,0) 68%);
+  background:none;
   animation:svcDriftA 16s ease-in-out infinite alternate;
 }
 #services::after{
   bottom:-14%; left:-14%;
-  background:radial-gradient(circle at 50% 50%, rgba(27,78,155,.11), rgba(27,78,155,0) 68%);
+  background:none;
   animation:svcDriftB 19s ease-in-out infinite alternate;
 }
 @keyframes svcDriftA{ from{ transform:translate3d(0,0,0) scale(1); }   to{ transform:translate3d(-14%,16%,0) scale(1.18); } }
@@ -1762,8 +1758,8 @@
   content:""; position:absolute; z-index:0; pointer-events:none; border-radius:50%;
   width:clamp(260px,46vw,520px); aspect-ratio:1;
 }
-#success-stories::before{ top:-8%; left:-12%; background:radial-gradient(circle, rgba(184,134,46,.15), rgba(184,134,46,0) 68%); animation:svcDriftB 17s ease-in-out infinite alternate; }
-#success-stories::after{ bottom:-12%; right:-14%; background:radial-gradient(circle, rgba(27,78,155,.10), rgba(27,78,155,0) 68%); animation:svcDriftA 20s ease-in-out infinite alternate; }
+#success-stories::before{ top:-8%; left:-12%; background:none; animation:svcDriftB 17s ease-in-out infinite alternate; }
+#success-stories::after{ bottom:-12%; right:-14%; background:none; animation:svcDriftA 20s ease-in-out infinite alternate; }
 
 #success-stories .section-head .eyebrow{
   background:linear-gradient(110deg, var(--brass) 25%, #F2D286 46%, #FFF1C9 50%, #F2D286 54%, var(--brass) 75%);
