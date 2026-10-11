@@ -2125,6 +2125,24 @@ html, body{ background:#fff; }
 #services::before, #services::after,
 #success-stories::before, #success-stories::after{ display:none; }
 </style>
+<style id="logo-stack">
+/* Mobile header: logo on the left, "Nextstep" on the first line and "Immigration" beneath it */
+@media (max-width:720px){
+  header .logo{
+    display:grid; grid-template-columns:auto minmax(0,1fr); grid-template-rows:auto auto;
+    align-items:center; justify-items:start; column-gap:0.6rem; row-gap:0;
+    line-height:1.08; font-size:1.12rem; min-width:0;
+  }
+  header .logo .brand-logo-img{ grid-row:1 / span 2; grid-column:1; }
+  header .logo > span{ grid-column:2; display:block; white-space:nowrap; line-height:1.08; }
+  header .logo > .brand-blue{ grid-row:1; font-weight:600; letter-spacing:-0.01em; }
+  header .logo > span:not(.brand-blue){ grid-row:2; font-size:0.98em; padding-right:0.1em; }
+}
+@media (max-width:360px){
+  header .logo{ font-size:1rem; column-gap:0.5rem; }
+  header .logo .brand-logo-img{ height:34px; width:34px; }
+}
+</style>
 </head>
 <body>
 
