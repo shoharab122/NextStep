@@ -370,47 +370,163 @@
   @media (max-width:900px){ .destinations-grid{ grid-template-columns:1fr 1fr; } }
   @media (max-width:640px){ .destinations-grid{ grid-template-columns:1fr; } }
 
-  /* Belgium & Italy file processing */
-  #file-processing{ background:var(--paper); }
-  .fp-tabs{ display:flex; flex-direction:column; gap:0.75rem; margin:0 auto 2rem; max-width:560px; }
-  #fpHint{ text-align:center; }
-  .fp-tab-btn{
-    display:flex; align-items:center; justify-content:space-between; gap:0.75rem; width:100%; padding:1rem 1.35rem; text-align:left;
-    border-radius:16px; border:1px solid var(--line); background:var(--paper-2);
-    color:var(--ink); font-weight:600; font-size:0.95rem; cursor:pointer;
-    transition:background .13s ease, border-color .13s ease, color .13s ease;
-    font-family:'Inter', sans-serif;
+  /* Choose your Destination (file processing) */
+  #file-processing{
+    background:
+      radial-gradient(900px 380px at 50% -80px, rgba(184,134,46,0.10), transparent 70%),
+      var(--paper);
   }
-  .fp-tab-btn:hover{ border-color:var(--brass); }
-  .fp-tab-btn .fp-tab-arrow{ width:20px; height:20px; flex:0 0 auto; transition:transform .18s ease; }
-  .fp-tab-btn:hover .fp-tab-arrow{ transform:translateX(3px); }
-  .fp-tab-btn.active .fp-tab-arrow{ transform:rotate(90deg); }
-  .fp-tab-btn.active{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .fp-tabs{
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem;
+    margin:0 auto 1.5rem; max-width:var(--max);
+  }
+  #fpHint{
+    text-align:center; font-style:normal; background:none; border:0; padding:0;
+    color:#5B6884; font-size:0.9rem; margin-top:0;
+  }
+  .fp-region-title{
+    grid-column:1 / -1; display:flex; align-items:center; gap:0.75rem;
+    margin:0.9rem 0 0.1rem; font-size:0.78rem; font-weight:700;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--brass);
+  }
+  .fp-region-title:first-child{ margin-top:0; }
+  .fp-region-title::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg, var(--line), transparent); }
+
+  .fp-tab-btn{
+    position:relative; overflow:hidden; contain:layout style;
+    display:grid; grid-template-columns:auto 1fr auto; align-items:center; column-gap:0.9rem;
+    width:100%; min-width:0; padding:1.1rem 1.15rem; text-align:left;
+    border-radius:18px; border:1px solid var(--line); background:#fff;
+    color:var(--ink); cursor:pointer; font-family:'Inter', sans-serif;
+    box-shadow:0 10px 24px -18px rgba(18,33,59,0.35);
+    transition:transform .22s cubic-bezier(.2,.7,.3,1), border-color .2s ease, background-color .2s ease, color .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .fp-tab-btn::before{
+    content:""; position:absolute; left:0; right:0; top:0; height:3px;
+    background:linear-gradient(90deg, var(--brass), var(--brass-light));
+    transform:scaleX(0); transform-origin:left; transition:transform .3s ease;
+  }
+  .fp-tab-btn:hover{ transform:translateY(-3px); border-color:var(--brass); }
+  .fp-tab-btn:hover::before, .fp-tab-btn.active::before{ transform:scaleX(1); }
+  .fp-tab-btn:focus-visible{ outline:2px solid var(--brass); outline-offset:3px; }
+  .fp-tab-btn:active{ transform:translateY(-1px) scale(0.99); }
+
+  .fp-flag{
+    display:grid; place-items:center; width:52px; height:52px; border-radius:50%;
+    background:var(--paper-2); border:1px solid var(--line);
+    font-size:1.65rem; line-height:1; transition:background-color .2s ease, border-color .2s ease;
+  }
+  .fp-tab-text{ display:flex; flex-direction:column; gap:0.15rem; min-width:0; }
+  .fp-tab-name{
+    font-family:'Fraunces', Georgia, serif; font-weight:600; font-size:1.2rem;
+    line-height:1.15; letter-spacing:-0.01em; color:inherit;
+  }
+  .fp-tab-sub{ font-size:0.76rem; font-weight:500; color:#5B6884; line-height:1.3; transition:color .2s ease; }
+
+  .fp-tab-btn .fp-tab-arrow{
+    box-sizing:content-box; width:16px; height:16px; padding:8px; border-radius:50%;
+    border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    transition:transform .25s ease, background-color .2s ease, border-color .2s ease, color .2s ease;
+  }
+  .fp-tab-btn:hover .fp-tab-arrow{ transform:translateX(3px); background:var(--brass); border-color:var(--brass); color:#fff; }
+
+  .fp-tab-btn.active{ background:var(--ink); border-color:var(--ink); color:var(--paper); box-shadow:0 18px 34px -18px rgba(18,33,59,0.6); }
+  .fp-tab-btn.active .fp-flag{ background:rgba(246,244,238,0.12); border-color:var(--line-light); }
+  .fp-tab-btn.active .fp-tab-sub{ color:var(--brass-light); }
+  .fp-tab-btn.active .fp-tab-arrow,
+  .fp-tab-btn.active:hover .fp-tab-arrow{ transform:rotate(90deg); background:var(--brass); border-color:var(--brass); color:#fff; }
+
+  /* Panel */
   .fp-panel{
-    border:1px solid var(--line); border-radius:var(--radius); background:#fff;
-    padding:2.25rem; box-shadow:0 14px 30px -20px rgba(18,33,59,0.18);
+    position:relative; overflow:hidden; max-width:880px; margin:0 auto;
+    border:1px solid var(--line); border-radius:22px; background:#fff;
+    padding:2.5rem 2.5rem 2.25rem;
+    box-shadow:0 24px 48px -30px rgba(18,33,59,0.35);
+    animation:fpIn .3s ease both; scroll-margin-top:84px;
+  }
+  .fp-panel::before{
+    content:""; position:absolute; left:0; right:0; top:0; height:4px;
+    background:linear-gradient(90deg, var(--brass), var(--brass-light) 50%, var(--brand-blue));
+  }
+  @keyframes fpIn{ from{ opacity:0; } to{ opacity:1; } }
+  .fp-tabs{ scroll-margin-top:88px; }
+  .fp-back{
+    display:inline-flex; align-items:center; gap:0.4rem; margin:0 0 1.1rem; padding:0.5rem 0.95rem; min-height:40px;
+    border-radius:999px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    font:600 0.82rem 'Inter', sans-serif; cursor:pointer; -webkit-tap-highlight-color:transparent;
+    transition:border-color .2s ease, background-color .2s ease;
+  }
+  .fp-back:hover{ border-color:var(--brass); background:#fff; }
+
+  .fp-doc-kicker{
+    display:inline-block; font-size:0.72rem; letter-spacing:0.09em; text-transform:uppercase;
+    color:var(--brass); font-weight:700; margin-bottom:0.9rem;
+    padding:0.35rem 0.8rem; border-radius:999px; background:rgba(184,134,46,0.11);
   }
   .fp-doc-title{
-    font-family:'Fraunces', serif; font-size:1.4rem; font-weight:700; color:var(--ink);
-    margin-bottom:0.25rem;
+    font-family:'Fraunces', serif; font-size:clamp(1.15rem, 2.4vw, 1.5rem); font-weight:700; line-height:1.25;
+    color:var(--ink); margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid var(--line);
   }
-  .fp-doc-kicker{ font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--brass); font-weight:600; margin-bottom:1.75rem; }
+
   .fp-block{ margin-bottom:2rem; }
   .fp-block:last-child{ margin-bottom:0; }
   .fp-block h4{
-    font-family:'Fraunces', serif; font-size:1.05rem; font-weight:700; color:var(--ink);
-    margin-bottom:0.75rem; padding-bottom:0.5rem; border-bottom:2px dashed var(--line);
+    display:flex; align-items:center; gap:0.65rem;
+    font-family:'Fraunces', serif; font-size:1.08rem; font-weight:700; color:var(--ink);
+    margin-bottom:0.9rem; padding-bottom:0; border-bottom:0;
   }
-  .fp-block p{ font-size:0.95rem; margin-bottom:0.6rem; }
-  .fp-block ul, .fp-block ol{ margin:0 0 0.6rem; padding-left:1.25rem; }
-  .fp-block li{ font-size:0.95rem; color:#3D4A63; margin-bottom:0.45rem; line-height:1.5; }
-  .fp-note{ font-size:0.88rem; color:#5B6884; font-style:italic; margin-top:0.4rem; }
-  .fp-contact{ background:var(--paper-2); border-radius:12px; padding:1.25rem 1.5rem; }
+  .fp-block h4::before{
+    content:""; flex:0 0 auto; width:4px; height:1.15em; border-radius:2px;
+    background:linear-gradient(180deg, var(--brass), var(--brass-light));
+  }
+  .fp-block p{ font-size:0.95rem; margin-bottom:0.65rem; }
+  .fp-block ul{ list-style:none; margin:0 0 0.7rem; padding:0; }
+  .fp-block ul li{
+    position:relative; padding-left:1.35rem; break-inside:avoid;
+  }
+  .fp-block ul li::before{
+    content:""; position:absolute; left:0.1rem; top:0.62em; width:6px; height:6px; border-radius:50%;
+    background:var(--brass);
+  }
+  .fp-block ol{ margin:0 0 0.7rem; padding-left:1.4rem; }
+  .fp-block ol li::marker{ color:var(--brass); font-weight:700; }
+  .fp-block li{ font-size:0.95rem; color:#3D4A63; margin-bottom:0.5rem; line-height:1.55; }
+  .fp-block ul:has(li:nth-child(9)){ columns:2; column-gap:2rem; }
+
+  .fp-note{
+    font-size:0.86rem; color:#5B6884; font-style:normal; margin-top:0.5rem;
+    padding:0.65rem 0.9rem; border-left:3px solid var(--brass);
+    background:rgba(184,134,46,0.08); border-radius:0 10px 10px 0;
+  }
+  .fp-contact{
+    background:var(--paper-2); border-radius:16px; padding:1.4rem 1.6rem;
+    border:1px solid var(--line); border-left:4px solid var(--brass);
+  }
   .fp-contact p{ margin-bottom:0.35rem; font-size:0.95rem; }
   .fp-contact p:last-child{ margin-bottom:0; }
+
+  @media (max-width:900px){
+    .fp-tabs{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
   @media (max-width:640px){
-    .fp-panel{ padding:1.5rem; }
-    .fp-tab-btn{ padding:0.85rem 1.1rem; font-size:0.9rem; }
+    .fp-tabs{ gap:0.7rem; }
+    .fp-tab-btn{
+      grid-template-columns:1fr auto; grid-template-rows:auto auto; row-gap:0.7rem;
+      padding:0.95rem 0.9rem; border-radius:16px;
+    }
+    .fp-flag{ width:42px; height:42px; font-size:1.35rem; grid-row:1; grid-column:1; justify-self:start; }
+    .fp-tab-text{ grid-row:2; grid-column:1 / -1; }
+    .fp-tab-btn .fp-tab-arrow{ grid-row:1; grid-column:2; padding:6px; width:14px; height:14px; }
+    .fp-tab-name{ font-size:1.05rem; }
+    .fp-panel{ padding:1.6rem 1.2rem 1.5rem; border-radius:18px; }
+    .fp-doc-title{ margin-bottom:1.5rem; padding-bottom:1.1rem; }
+    .fp-block ul:has(li:nth-child(9)){ columns:1; }
+    .fp-contact{ padding:1.1rem 1.1rem; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .fp-panel{ animation:none; }
+    .fp-tab-btn, .fp-tab-btn::before, .fp-tab-arrow{ transition:none; }
   }
 
   /* Floating WhatsApp chat button */
@@ -2451,13 +2567,18 @@ body{ overflow-x:clip; }
       <div class="section-head">
         <div class="eyebrow">Know before you go</div>
         <h2>Choose your Destination.</h2>
-        <p>The complete process, expenses, and services for our two most popular student visa destinations.</p>
+        <p>The complete process, expenses, and services for our most popular student visa destinations across Europe and Asia.</p>
       </div>
 
       <div class="fp-tabs">
-        <button type="button" class="fp-tab-btn" data-fp-target="fp-italy"><span>🇮🇹 Italy</span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        <button type="button" class="fp-tab-btn" data-fp-target="fp-belgium"><span>🇧🇪 Belgium</span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        <button type="button" class="fp-tab-btn" data-fp-target="fp-poland"><span>🇵🇱 Poland</span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <div class="fp-region-title">🌍 Europe</div>
+        <button type="button" class="fp-tab-btn" data-fp-target="fp-italy" aria-controls="fp-italy"><span class="fp-flag" aria-hidden="true">🇮🇹</span><span class="fp-tab-text"><span class="fp-tab-name">Italy</span><span class="fp-tab-sub">Full process</span></span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" class="fp-tab-btn" data-fp-target="fp-belgium" aria-controls="fp-belgium"><span class="fp-flag" aria-hidden="true">🇧🇪</span><span class="fp-tab-text"><span class="fp-tab-name">Belgium</span><span class="fp-tab-sub">Full process</span></span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" class="fp-tab-btn" data-fp-target="fp-poland" aria-controls="fp-poland"><span class="fp-flag" aria-hidden="true">🇵🇱</span><span class="fp-tab-text"><span class="fp-tab-name">Poland</span><span class="fp-tab-sub">UG &amp; PG programs</span></span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" class="fp-tab-btn" data-fp-target="fp-malta" aria-controls="fp-malta"><span class="fp-flag" aria-hidden="true">🇲🇹</span><span class="fp-tab-text"><span class="fp-tab-name">Malta</span><span class="fp-tab-sub">Budget planner</span></span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <div class="fp-region-title">🌏 Asia</div>
+        <button type="button" class="fp-tab-btn" data-fp-target="fp-china" aria-controls="fp-china"><span class="fp-flag" aria-hidden="true">🇨🇳</span><span class="fp-tab-text"><span class="fp-tab-name">China</span><span class="fp-tab-sub">Cost estimation</span></span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button type="button" class="fp-tab-btn" data-fp-target="fp-malaysia" aria-controls="fp-malaysia"><span class="fp-flag" aria-hidden="true">🇲🇾</span><span class="fp-tab-text"><span class="fp-tab-name">Malaysia</span><span class="fp-tab-sub">Cost list</span></span><svg class="fp-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
 
       <p id="fpHint" class="fp-note" style="margin-bottom:1.5rem;">Select a country above to view the full file processing details.</p>
@@ -2705,6 +2826,183 @@ body{ overflow-x:clip; }
           <p>Facebook &amp; Instagram: NextStep Immigration</p>
           <p>Office Location: System imperial complex 3rd floor,Chawkbazar,Chittagong</p>
           <p style="margin-top:0.75rem;"><strong>Founder</strong><br>Minhaj Uddin Jesan<br>Facebook: Minhaj in EU</p>
+        </div>
+      </div>
+
+      <div class="fp-panel" id="fp-malta" style="display:none;">
+        <div class="fp-doc-kicker">Student Visa – Budget Planner by NSI</div>
+        <div class="fp-doc-title">MALTA STUDENT VISA – BUDGET PLANNER BY NSI (NextStep Immigration)</div>
+
+        <div class="fp-block">
+          <h4>Language Requirements</h4>
+          <ul>
+            <li>IELTS 6.0 (no band below 5.5)</li>
+            <li>PTE 52 (W51)</li>
+            <li>Duolingo 105 (95)</li>
+          </ul>
+        </div>
+
+        <div class="fp-block">
+          <h4>Total Costs (Including NextStep Service Charges)</h4>
+          <ul>
+            <li>File Opening (NextStep Service Charge) (Non-refundable): BDT 10,000</li>
+            <li>Police Clearance: BDT 2,000</li>
+            <li>Attesting from Foreign Ministry of Bangladesh: BDT 2,000</li>
+            <li>Tuition Fee (6,000–7,500 EUR) (300 EUR non-refundable): BDT 6,90,000 – 10,87,000</li>
+            <li>CVU 180 EUR: BDT 26,100</li>
+            <li>Accommodation 800–1,000 EUR (REF): BDT 1,16,000 – 1,45,000</li>
+            <li>Health Insurance 575 EUR (GuardMe) (REF): BDT 83,000</li>
+            <li>VFS Fees 150 EUR: BDT 22,500</li>
+            <li>After Getting the Visa: BDT 1,40,000</li>
+          </ul>
+          <p><strong>Total Cost: BDT 10,86,600 – 13,67,000</strong></p>
+        </div>
+
+        <div class="fp-block">
+          <h4>Sponsor's Fund</h4>
+          <ul>
+            <li>Savings account (minimum 3 months statement)</li>
+            <li>Amount: BDT 25 Lacs – 30 Lacs</li>
+          </ul>
+        </div>
+
+        <div class="fp-block">
+          <h4>GBS Malta – Bachelor Programs</h4>
+          <ul>
+            <li>Computer Science</li>
+            <li>Business and Management</li>
+            <li>Information Technology</li>
+            <li>BSc (Hons) Health, Social Care and Wellbeing</li>
+          </ul>
+          <p>Tuition fee: 6,000 EUR &nbsp;|&nbsp; IELTS 6 (Duolingo 105/85)</p>
+        </div>
+
+        <div class="fp-block">
+          <h4>GBS Malta – Master's Programs</h4>
+          <p><strong>MBA / Management</strong></p>
+          <ul>
+            <li>Brand Management</li>
+            <li>MBA in Marketing Management</li>
+            <li>MBA Management Consulting</li>
+            <li>MBA Project Management</li>
+            <li>MBA Entrepreneurship</li>
+            <li>MBA in Global Investment Banking</li>
+          </ul>
+          <p><strong>MSc Information Technology Management</strong></p>
+          <ul>
+            <li>General pathway</li>
+            <li>Cybersecurity</li>
+            <li>Data Analytics</li>
+            <li>Cloud Computing</li>
+            <li>Artificial Intelligence</li>
+          </ul>
+          <p><strong>Master of Public Health</strong></p>
+          <ul>
+            <li>Master of Public Health</li>
+            <li>with Epidemiology</li>
+            <li>with Health Promotion</li>
+            <li>with Leadership and Management</li>
+          </ul>
+          <p><strong>Tuition fee: 10,000 EUR per year (after 25% scholarship: 7,500 EUR)</strong></p>
+        </div>
+
+        <div class="fp-block fp-contact">
+          <h4 style="border-bottom:none; margin-bottom:0.5rem;">Contact Us</h4>
+          <p>NextStep Immigration</p>
+          <p>📱 WhatsApp: +8801805-723581</p>
+          <p>Facebook &amp; Instagram: NextStep Immigration</p>
+          <p>Office Location: System imperial complex 3rd floor,Chawkbazar,Chittagong</p>
+          <p style="margin-top:0.75rem;"><strong>Founder</strong><br>Minhaj Uddin Jesan<br>Facebook: Minhaj in EU</p>
+        </div>
+      </div>
+
+      <div class="fp-panel" id="fp-china" style="display:none;">
+        <div class="fp-doc-kicker">Student Visa – Cost Estimation by NSI</div>
+        <div class="fp-doc-title">CHINA STUDENT VISA – COST ESTIMATION BY NSI (NextStep Immigration)</div>
+
+        <div class="fp-block">
+          <h4>Before Arrival</h4>
+          <ul>
+            <li>File Opening: BDT 12,000</li>
+            <li>Application Fees (if applicable): around BDT 12,000 each</li>
+            <li>Medical: BDT 3,000–4,000</li>
+            <li>Police Clearance: BDT 500–1,000</li>
+            <li>Embassy Fees: BDT 6,900</li>
+            <li>After Visa Service Charge: BDT 1,00,000</li>
+            <li>Air Ticket (depends on time and airlines): BDT 25,000–35,000</li>
+          </ul>
+        </div>
+
+        <div class="fp-block">
+          <h4>After Arrival</h4>
+          <ul>
+            <li>Health Checkup – 450 RMB/year (China)</li>
+            <li>Health Insurance – 800 RMB/year (China)</li>
+            <li>Visa Extension or Renewal – 800 RMB/year (China)</li>
+            <li>Tuition &amp; accommodation fees – depends on scholarship &amp; university; student can pay after arrival if applicable</li>
+          </ul>
+        </div>
+
+        <div class="fp-block">
+          <h4>China Check List</h4>
+          <ul>
+            <li>All academic transcripts and certificates</li>
+            <li>Master's/PGD application: SSC/O-Level/Equivalent, HSC/A-Level/Equivalent, Bachelor</li>
+            <li>Bachelor's application: SSC/O-Level/Equivalent, HSC/A-Level/Equivalent</li>
+            <li>English proficiency test report: IELTS, TOEFL, Duolingo, PTE, MOI, or any other English proficiency certificate (not mandatory)</li>
+            <li>Student's passport copy</li>
+            <li>Student's recent photo (33 mm x 48 mm, white background)</li>
+            <li>Bank statement (showing balance – minimum 4 lac BDT)</li>
+            <li>SOP or Study Plan (Statement of Purpose) and LOR (Letter of Recommendation – minimum two)</li>
+            <li>Updated CV</li>
+            <li>Research proposal, publication and extracurricular certificate (for Master's and PhD)</li>
+            <li>Copy of parents' ID card</li>
+            <li>Police clearance</li>
+            <li>Medical checkup certificate</li>
+            <li>CSCA score required (for Bachelor)</li>
+          </ul>
+        </div>
+
+        <div class="fp-block fp-contact">
+          <h4 style="border-bottom:none; margin-bottom:0.5rem;">Contact Us</h4>
+          <p>NextStep Immigration</p>
+          <p>📱 WhatsApp: +8801805-723581</p>
+          <p>Facebook &amp; Instagram: NextStep Immigration</p>
+          <p>Office Location: System imperial complex 3rd floor,Chawkbazar,Chittagong</p>
+          <p>Office hours: Sat–Thurs, 10AM – 6PM</p>
+        </div>
+      </div>
+
+      <div class="fp-panel" id="fp-malaysia" style="display:none;">
+        <div class="fp-doc-kicker">Student Recruitment – Cost List by NSI</div>
+        <div class="fp-doc-title">STUDY IN MALAYSIA – ESTIMATED COST LIST FOR BANGLADESHI STUDENTS (NextStep Immigration)</div>
+
+        <div class="fp-block">
+          <h4>Estimated Costs</h4>
+          <ol>
+            <li><strong>File Opening Charge: BDT 8,000</strong> – Agency service charge for opening the student's file and starting the application process.</li>
+            <li><strong>EMGS Fees: RM 2,800 – 3,800</strong> – Paid after the student proceeds with the application. Exact amount depends on the university and the student's situation.</li>
+            <li><strong>EVAL / Visa-Related Fee: RM 159</strong> – Charges can change, so always confirm the current university / EMGS quotation before giving a final amount.</li>
+            <li><strong>Initial Tuition &amp; University Fees: per university quote</strong> – Depends on university, programme, major, intake and any scholarship or discount. Includes 1st semester tuition, registration fee, caution / deposit, international admission fee and other university fees.</li>
+            <li><strong>Flight Ticket (One-Way): BDT 34,000 – 60,000</strong> – Bangladesh to Malaysia. Varies by booking date, airline, travel date, season and baggage allowance.</li>
+          </ol>
+        </div>
+
+        <div class="fp-block">
+          <h4>Total Cost Formula</h4>
+          <p>File Opening Charge + EMGS Fees + EVAL Fee + Initial Tuition &amp; University Fees + Flight Ticket</p>
+          <p class="fp-note">There is no single fixed amount for every student. The final cost is calculated according to the student's chosen university and programme.</p>
+          <p class="fp-note">All amounts are estimates. Please confirm the current university / EMGS quotation before giving a final amount.</p>
+        </div>
+
+        <div class="fp-block fp-contact">
+          <h4 style="border-bottom:none; margin-bottom:0.5rem;">Contact Us</h4>
+          <p>NextStep Immigration</p>
+          <p>📱 WhatsApp: +8801805-723581</p>
+          <p>📧 support.nextstep1@gmail.com</p>
+          <p>🌐 www.nextstep-immigration.com</p>
+          <p>Office Location: 3rd Floor, System Imperial Complex, Chawkbazar, Chittagong (East side of Sabuj Hotel)</p>
+          <p>Office hours: Sat–Thu, 10AM – 6PM</p>
         </div>
       </div>
     </div>
@@ -3295,6 +3593,17 @@ body{ overflow-x:clip; }
     var tabButtons = document.querySelectorAll('.fp-tab-btn');
     var fpHint = document.getElementById('fpHint');
     if (!tabButtons.length) return;
+    var fpReduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // "All countries" button at the top of each panel: jumps back to the country cards
+    var fpTabsBox = document.querySelector('.fp-tabs');
+    document.querySelectorAll('.fp-panel').forEach(function(panel){
+      var back = document.createElement('button');
+      back.type = 'button'; back.className = 'fp-back'; back.innerHTML = '&larr; All countries';
+      back.addEventListener('click', function(){
+        if (fpTabsBox) fpTabsBox.scrollIntoView({ behavior: fpReduce ? 'auto' : 'smooth', block: 'start' });
+      });
+      panel.insertBefore(back, panel.firstChild);
+    });
     tabButtons.forEach(function(btn){
       btn.addEventListener('click', function(){
         var targetId = btn.getAttribute('data-fp-target');
@@ -3309,7 +3618,14 @@ body{ overflow-x:clip; }
           btn.classList.add('active');
           if (fpHint) fpHint.style.display = 'none';
           var target = document.getElementById(targetId);
-          if (target) target.style.display = 'block';
+          if (target) {
+            target.style.display = 'block';
+            // Bring the opened country straight into view (mainly for phones, where it sits below the cards)
+            var r = target.getBoundingClientRect();
+            if (r.top > window.innerHeight * 0.55 || r.top < 72) {
+              target.scrollIntoView({ behavior: fpReduce ? 'auto' : 'smooth', block: 'start' });
+            }
+          }
         }
       });
     });
