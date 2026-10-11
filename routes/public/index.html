@@ -435,16 +435,22 @@
   .ss-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
   .ss-card{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
   .ss-card:hover{ transform:translateY(-3px); border-color:var(--brass); box-shadow:0 18px 34px -22px rgba(18,33,59,0.35); }
-  .ss-media{ position:relative; aspect-ratio:4/3; background:var(--paper-2); overflow:hidden; }
-  .ss-media img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .ss-media{ position:relative; background:var(--paper-2); overflow:hidden; cursor:zoom-in; line-height:0; }
+  .ss-media img{ width:100%; height:auto; max-height:460px; object-fit:contain; display:block; margin:0 auto; }
   .ss-badge{ position:absolute; left:0.8rem; bottom:0.8rem; background:rgba(18,33,59,0.82); color:var(--brass-light); font-size:0.74rem; font-weight:700; letter-spacing:0.04em; padding:0.32rem 0.7rem; border-radius:999px; }
   .ss-body{ padding:1.35rem 1.4rem 1.5rem; display:flex; flex-direction:column; gap:0.6rem; flex:1; }
   .ss-visa{ color:var(--brass); font-size:0.76rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
   .ss-body h3{ font-size:1.15rem; margin:0; line-height:1.3; }
-  .ss-text{ font-size:0.92rem; color:#4A5670; margin:0; line-height:1.6; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
-  .ss-text.open{ display:block; -webkit-line-clamp:unset; }
+  .ss-review{ position:relative; background:linear-gradient(155deg, var(--paper-2), #fff); border:1px solid var(--line); border-left:3px solid var(--brass); border-radius:12px; padding:0.95rem 1.05rem 1rem 2.7rem; }
+  .ss-review::before{ content:"\201C"; position:absolute; left:0.75rem; top:0.2rem; font-family:'Fraunces', serif; font-size:2.6rem; line-height:1; color:var(--brass); opacity:.85; }
+  .ss-text{ font-size:0.95rem; color:#33405A; margin:0; line-height:1.7; white-space:pre-line; overflow-wrap:anywhere; }
   .ss-more{ align-self:flex-start; background:none; border:0; padding:0; color:var(--brass); font-weight:600; font-size:0.85rem; cursor:pointer; }
-  .ss-name{ margin-top:auto; padding-top:0.6rem; border-top:1px solid var(--line); font-weight:600; font-size:0.88rem; color:var(--ink); }
+  .ss-name{ margin-top:auto; padding-top:0.8rem; border-top:1px solid var(--line); display:flex; align-items:center; gap:0.65rem; font-weight:600; font-size:0.9rem; color:var(--ink); }
+  .ss-avatar{ width:34px; height:34px; flex:0 0 auto; border-radius:50%; display:grid; place-items:center; background:linear-gradient(155deg, var(--brass-light), var(--brass)); color:var(--ink); font-weight:700; font-size:0.85rem; }
+  .ss-lightbox{ position:fixed; inset:0; z-index:100000; background:rgba(10,18,34,0.92); display:flex; align-items:center; justify-content:center; padding:1.2rem; cursor:zoom-out; opacity:0; transition:opacity .2s ease; }
+  .ss-lightbox.open{ opacity:1; }
+  .ss-lightbox img{ max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.5); cursor:default; }
+  .ss-lb-close{ position:absolute; top:max(0.8rem, env(safe-area-inset-top)); right:1rem; width:42px; height:42px; border-radius:50%; border:0; background:rgba(255,255,255,.14); color:#fff; font-size:1.7rem; line-height:1; cursor:pointer; }
   @media (max-width:900px){ .ss-grid{ grid-template-columns:1fr 1fr; } }
   .ss-empty{ text-align:center; color:#5B6884; font-size:0.95rem; padding:1.5rem 0; }
   .ss-dots{ display:none; }
@@ -459,7 +465,7 @@
     }
     .ss-grid::-webkit-scrollbar{ display:none; }
     .ss-card{ flex:0 0 100%; min-width:0; scroll-snap-align:center; scroll-snap-stop:always; }
-    .ss-media{ aspect-ratio:16/11; }
+    .ss-media img{ max-height:380px; }
     .ss-body{ padding:1.15rem 1.15rem 1.3rem; }
     .ss-dots{ display:flex; justify-content:center; align-items:center; gap:0.5rem; margin-top:1.1rem; }
     .ss-dot{ width:8px; height:8px; padding:0; border:0; border-radius:999px; background:rgba(18,33,59,0.22); cursor:pointer; transition:width .2s ease, background .2s ease; }
@@ -1811,11 +1817,10 @@
 
 /* photo settles in, badge glides in from the left, text cascades up */
 #success-stories .ss-media img{ transition:transform .6s cubic-bezier(.22,1,.36,1); }
-#success-stories .ss-card:hover .ss-media img{ transform:scale(1.05); }
 #success-stories.is-visible .ss-media img{ animation:ssImg 1.2s cubic-bezier(.22,1,.36,1) calc(var(--pd) + .2s) backwards; }
 #success-stories.is-visible .ss-badge{ animation:ssBadge .7s cubic-bezier(.34,1.3,.64,1) calc(var(--pd) + .7s) backwards; }
 #success-stories.is-visible .ss-body > *{ animation:svcTextIn .6s cubic-bezier(.22,1,.36,1) calc(var(--pd) + .55s) backwards; }
-@keyframes ssImg{ from{ transform:scale(1.14); } to{ transform:scale(1); } }
+@keyframes ssImg{ from{ transform:scale(1.03); opacity:.5; } to{ transform:scale(1); opacity:1; } }
 @keyframes ssBadge{ from{ opacity:0; transform:translateX(-24px); } to{ opacity:1; transform:none; } }
 
 /* 2-column tablets */
@@ -1832,7 +1837,6 @@
   #success-stories .ss-card:nth-child(2){ --pd:.12s; }
   #success-stories .ss-card:nth-child(3){ --pd:.24s; }
   #success-stories.is-visible .ss-card{ animation:ssIn .85s cubic-bezier(.22,1.15,.36,1) var(--pd) backwards; }  /* no endless float while sliding */
-  #success-stories .ss-media{ aspect-ratio:16/11; }
   #success-stories .ss-body{ padding:1.1rem 1.1rem 1.4rem; }
   #success-stories .ss-body h3{ font-size:1.1rem; }
   #success-stories .ss-text{ font-size:.9rem; }
@@ -3159,26 +3163,46 @@ body{ overflow-x:clip; }
       if (emptyMsg) emptyMsg.style.display = 'none';
       grid.innerHTML = stories.map((s) => {
         const badge = s.destination ? `<span class="ss-badge">${escapeHtml(s.destination)}</span>` : '';
-        const long = s.story && s.story.length > 220;
+        const nm = String(s.client_name || '').trim();
+        const initial = nm ? nm.charAt(0).toUpperCase() : '★';
         return `
           <article class="ss-card">
-            ${s.image_url ? `<div class="ss-media"><img src="${escapeHtml(s.image_url)}" alt="${escapeHtml(s.client_name)}" loading="lazy" />${badge}</div>` : ''}
+            ${s.image_url ? `<div class="ss-media" role="button" tabindex="0" aria-label="View full photo"><img src="${escapeHtml(s.image_url)}" alt="${escapeHtml(s.client_name)}" loading="lazy" decoding="async" />${badge}</div>` : ''}
             <div class="ss-body">
               ${s.visa_type ? `<div class="ss-visa">${escapeHtml(s.visa_type)}</div>` : ''}
               <h3>${escapeHtml(s.title)}</h3>
-              ${s.story ? `<p class="ss-text">${escapeHtml(s.story)}</p>` : ''}
-              ${long ? `<button type="button" class="ss-more">Read more</button>` : ''}
-              <div class="ss-name">${escapeHtml(s.client_name)}</div>
+              ${s.story ? `<blockquote class="ss-review" style="margin:0;"><p class="ss-text">${escapeHtml(s.story)}</p></blockquote>` : ''}
+              <div class="ss-name"><span class="ss-avatar" aria-hidden="true">${escapeHtml(initial)}</span><span>${escapeHtml(s.client_name)}</span></div>
             </div>
           </article>`;
       }).join('');
-      grid.querySelectorAll('.ss-more').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const p = btn.previousElementSibling;
-          const open = p.classList.toggle('open');
-          btn.textContent = open ? 'Show less' : 'Read more';
-        });
-      });
+      // Tap/click a photo to see it full size
+      if (!grid.dataset.lightbox) {
+        grid.dataset.lightbox = '1';
+        let box = null;
+        const closeBox = () => { if (box) { box.classList.remove('open'); setTimeout(() => { if (box && !box.classList.contains('open')) box.style.display = 'none'; }, 200); } };
+        const openBox = (src, alt) => {
+          if (!box) {
+            box = document.createElement('div');
+            box.className = 'ss-lightbox';
+            box.innerHTML = '<button type="button" class="ss-lb-close" aria-label="Close">&times;</button><img alt="" />';
+            document.body.appendChild(box);
+            box.addEventListener('click', (e) => { if (e.target !== box.querySelector('img')) closeBox(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeBox(); });
+          }
+          const im = box.querySelector('img');
+          im.src = src; im.alt = alt || '';
+          box.style.display = 'flex';
+          requestAnimationFrame(() => box.classList.add('open'));
+        };
+        const trigger = (e) => {
+          const m = e.target.closest('.ss-media');
+          const im = m && m.querySelector('img');
+          if (im) openBox(im.currentSrc || im.src, im.alt);
+        };
+        grid.addEventListener('click', trigger);
+        grid.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger(e); } });
+      }
       section.style.display = '';
       // Mobile carousel: one story at a time, always moving left -> right
       (function initStoryCarousel() {
