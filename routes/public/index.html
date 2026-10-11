@@ -2143,6 +2143,24 @@ html, body{ background:#fff; }
   header .logo .brand-logo-img{ height:34px; width:34px; }
 }
 </style>
+<style id="header-start">
+/* "Get Started" button in the header — shown on mobile/tablet next to the menu icon (desktop already has the CTA in the nav) */
+.header-start{ display:none; }
+@media (max-width:1080px){
+  .nav-container{ gap:0.75rem; }
+  .header-start{
+    display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
+    margin-left:auto; margin-right:0.15rem; padding:0.55rem 1.1rem; min-height:40px;
+    font-size:0.86rem; font-weight:700; white-space:nowrap; line-height:1;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .header-start:active{ transform:scale(.96); }
+}
+@media (max-width:380px){
+  .nav-container{ gap:0.45rem; }
+  .header-start{ padding:0.5rem 0.8rem; font-size:0.78rem; min-height:38px; }
+}
+</style>
 </head>
 <body>
 
@@ -2218,6 +2236,7 @@ html, body{ background:#fff; }
       <a href="#success-stories" id="navSuccessStories">Success Stories</a>
       <a href="#contact" class="btn-primary jump-link"><span>Book a consultation</span><svg class="nav-cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </nav>
+    <a href="#apply" class="btn-primary header-start" id="headerStart">Get Started</a>
     <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="mainNav" aria-expanded="false" type="button">
       <span></span><span></span><span></span>
     </button>
