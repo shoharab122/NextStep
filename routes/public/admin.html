@@ -2497,6 +2497,7 @@
               <div style="display:flex; gap:0.4rem;">
                 <button class="tab-btn active" id="jobTypeJobseekerBtn" style="padding:0.5rem 1rem;">Jobseekers</button>
                 <button class="tab-btn" id="jobTypeEmployerBtn" style="padding:0.5rem 1rem;">Employers</button>
+                <button class="tab-btn" id="jobTypePostsBtn" style="padding:0.5rem 1rem;">Website Job Posts</button>
               </div>
               <input type="text" id="jobAppSearch" class="search-input" placeholder="Search by name or email…" />
               <select id="jobStatusFilter">
@@ -2513,6 +2514,45 @@
           </div>
           <div class="apps-grid" id="jobAppsGrid">
             <div class="empty-state">Loading…</div>
+          </div>
+
+          <!-- Website Job Posts manager (listings shown on the public Staffing site) -->
+          <div id="jobPostsManager" style="display:none;">
+            <div class="app-card" style="margin-bottom:1rem;">
+              <div class="app-name" id="jobPostFormTitle" style="margin-bottom:0.75rem;">Add a job post</div>
+              <form id="jobPostForm" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem;">
+                <input type="hidden" id="jobPostId" />
+                <label style="display:flex; flex-direction:column; gap:0.3rem; font-size:0.8rem; font-weight:600; grid-column:1 / -1;">Job title *
+                  <input type="text" id="jobPostTitle" placeholder="e.g. Warehouse Worker" required maxlength="200" />
+                </label>
+                <label style="display:flex; flex-direction:column; gap:0.3rem; font-size:0.8rem; font-weight:600;">Location
+                  <input type="text" id="jobPostLocation" placeholder="e.g. Bergen op Zoom, Netherlands" maxlength="200" />
+                </label>
+                <label style="display:flex; flex-direction:column; gap:0.3rem; font-size:0.8rem; font-weight:600;">Job type
+                  <select id="jobPostType" style="-webkit-appearance:none; appearance:none; width:100%; padding-right:2.2rem; background:#fff url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path d=%22M1 1.5l5 5 5-5%22 fill=%22none%22 stroke=%22%235B6884%22 stroke-width=%221.8%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>') no-repeat right 0.9rem center;">
+                    <option value="">—</option>
+                    <option>Full-time</option>
+                    <option>Part-time</option>
+                    <option>Contract</option>
+                    <option>Temporary</option>
+                    <option>Seasonal</option>
+                  </select>
+                </label>
+                <label style="display:flex; flex-direction:column; gap:0.3rem; font-size:0.8rem; font-weight:600;">Salary
+                  <input type="text" id="jobPostSalary" placeholder="e.g. €14/hour" maxlength="100" />
+                </label>
+                <label style="display:flex; flex-direction:column; gap:0.3rem; font-size:0.8rem; font-weight:600; grid-column:1 / -1;">Description
+                  <textarea id="jobPostDescription" rows="4" placeholder="Responsibilities, requirements, benefits…" style="font-family:'Inter',sans-serif; font-size:0.95rem; padding:0.78rem 0.9rem; border-radius:11px; border:1px solid var(--line); width:100%;"></textarea>
+                </label>
+                <div style="grid-column:1 / -1; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                  <button type="submit" class="btn-primary" id="jobPostSaveBtn">Publish job post</button>
+                  <button type="button" class="btn-ghost" id="jobPostCancelBtn" style="display:none;">Cancel edit</button>
+                </div>
+              </form>
+            </div>
+            <div class="apps-grid" id="jobPostsGrid">
+              <div class="empty-state">Loading…</div>
+            </div>
           </div>
         </section>
 
@@ -3682,7 +3722,7 @@
 
   // ---------------- Tabs ----------------
   function activateTab(tabName) {
-    $$('.tab-btn').forEach((b) => b.classList.remove('active'));
+    $$('.tab-btn[data-tab]').forEach((b) => b.classList.remove('active'));
     $$('.panel').forEach((p) => p.classList.remove('active'));
     $$('.tab-btn[data-tab="' + tabName + '"]').forEach((b) => b.classList.add('active'));
     const panel = $('#panel-' + tabName);
@@ -3695,7 +3735,7 @@
     $$('.topnav-link').forEach((b) => b.classList.toggle('active', b.dataset.tabLink === tabName));
   }
 
-  $$('.tab-btn').forEach((btn) => {
+  $$('.tab-btn[data-tab]').forEach((btn) => {
     btn.addEventListener('click', () => activateTab(btn.dataset.tab));
   });
 
@@ -7152,6 +7192,151 @@
     }
     $('#jobDetailModal').classList.add('open');
   }
+
+  // ---------------- Website Job Posts (shown on the public Staffing site) ----------------
+  let jobPosts = [];
+
+  function showJobAppsView(showPosts) {
+    $('#jobPostsManager').style.display = showPosts ? '' : 'none';
+    $('#jobAppsGrid').style.display = showPosts ? 'none' : '';
+    $('#jobAppSearch').style.display = showPosts ? 'none' : '';
+    $('#jobStatusFilter').style.display = showPosts ? 'none' : '';
+    $('#jobTypePostsBtn').classList.toggle('active', showPosts);
+  }
+
+  async function loadJobPosts() {
+    try {
+      const res = await apiFetch('/admin/job-posts');
+      if (!res.ok) throw new Error('Failed to load job posts.');
+      jobPosts = await res.json();
+      renderJobPosts();
+    } catch (err) {
+      $('#jobPostsGrid').innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderJobPosts() {
+    const grid = $('#jobPostsGrid');
+    if (!jobPosts.length) {
+      grid.innerHTML = '<div class="empty-state">No job posts yet. Add your first one above.</div>';
+      return;
+    }
+    grid.innerHTML = jobPosts.map((p) => `
+      <div class="app-card">
+        <div class="app-card-head">
+          <div class="app-avatar">${escapeHtml(initials(p.title))}</div>
+          <div class="app-card-id">
+            <div class="app-name">${escapeHtml(p.title)}</div>
+            <div class="app-email">${escapeHtml(p.location || '—')}</div>
+          </div>
+        </div>
+        <div class="app-facts">
+          <div><div class="fact-label">Type</div><div class="fact-value">${escapeHtml(p.job_type || '—')}</div></div>
+          <div><div class="fact-label">Salary</div><div class="fact-value">${escapeHtml(p.salary || '—')}</div></div>
+          <div><div class="fact-label">Applications</div><div class="fact-value">${p.application_count ?? 0}</div></div>
+          <div><div class="fact-label">Posted</div><div class="fact-value">${fmtDate(p.created_at)}</div></div>
+        </div>
+        <div class="app-card-foot">
+          <span class="status-pill ${p.is_active ? 'status-approved' : 'status-rejected'}">${p.is_active ? 'Live' : 'Hidden'}</span>
+          <div class="app-card-actions">
+            <button class="icon-btn" data-post-edit="${p.id}">Edit</button>
+            <button class="icon-btn" data-post-toggle="${p.id}">${p.is_active ? 'Hide' : 'Show'}</button>
+            <button class="icon-btn danger" data-post-delete="${p.id}">Delete</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function resetJobPostForm() {
+    $('#jobPostForm').reset();
+    $('#jobPostId').value = '';
+    $('#jobPostFormTitle').textContent = 'Add a job post';
+    $('#jobPostSaveBtn').textContent = 'Publish job post';
+    $('#jobPostCancelBtn').style.display = 'none';
+  }
+
+  $('#jobTypePostsBtn').addEventListener('click', () => {
+    jobAppView = 'posts';
+    $('#jobTypeJobseekerBtn').classList.remove('active');
+    $('#jobTypeEmployerBtn').classList.remove('active');
+    showJobAppsView(true);
+    loadJobPosts();
+  });
+  // Switching back to Jobseekers / Employers (their own handlers above re-render the list)
+  $('#jobTypeJobseekerBtn').addEventListener('click', () => showJobAppsView(false));
+  $('#jobTypeEmployerBtn').addEventListener('click', () => showJobAppsView(false));
+  $('#refreshJobAppsBtn').addEventListener('click', () => { if (jobAppView === 'posts') loadJobPosts(); });
+
+  $('#jobPostCancelBtn').addEventListener('click', resetJobPostForm);
+
+  $('#jobPostForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = $('#jobPostId').value;
+    const payload = {
+      title: $('#jobPostTitle').value.trim(),
+      location: $('#jobPostLocation').value.trim(),
+      job_type: $('#jobPostType').value,
+      salary: $('#jobPostSalary').value.trim(),
+      description: $('#jobPostDescription').value.trim(),
+    };
+    if (!payload.title) { toast('Job title is required.', true); return; }
+    const btn = $('#jobPostSaveBtn');
+    btn.disabled = true;
+    try {
+      const res = await apiFetch(id ? `/admin/job-posts/${id}` : '/admin/job-posts', {
+        method: id ? 'PUT' : 'POST',
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not save job post.');
+      toast(id ? 'Job post updated.' : 'Job post published.');
+      resetJobPostForm();
+      loadJobPosts();
+    } catch (err) {
+      toast(err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('#jobPostsGrid').addEventListener('click', async (e) => {
+    const editId = e.target.dataset.postEdit;
+    const toggleId = e.target.dataset.postToggle;
+    const deleteId = e.target.dataset.postDelete;
+
+    if (editId) {
+      const p = jobPosts.find((x) => x.id === Number(editId));
+      if (!p) return;
+      $('#jobPostId').value = p.id;
+      $('#jobPostTitle').value = p.title || '';
+      $('#jobPostLocation').value = p.location || '';
+      $('#jobPostType').value = p.job_type || '';
+      $('#jobPostSalary').value = p.salary || '';
+      $('#jobPostDescription').value = p.description || '';
+      $('#jobPostFormTitle').textContent = 'Edit job post';
+      $('#jobPostSaveBtn').textContent = 'Save changes';
+      $('#jobPostCancelBtn').style.display = '';
+      $('#jobPostForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    if (toggleId) {
+      try {
+        const res = await apiFetch(`/admin/job-posts/${toggleId}/toggle`, { method: 'PATCH' });
+        if (!res.ok) throw new Error('Could not update job post.');
+        loadJobPosts();
+      } catch (err) { toast(err.message, true); }
+    }
+
+    if (deleteId) {
+      if (!confirm('Delete this job post? Applications already received will be kept.')) return;
+      try {
+        const res = await apiFetch(`/admin/job-posts/${deleteId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Could not delete job post.');
+        toast('Job post deleted.');
+        loadJobPosts();
+      } catch (err) { toast(err.message, true); }
+    }
+  });
 
   // Cosmetic: quick-search box in the topbar filters the sidebar nav items only (no backend calls)
   const adminQuickSearch = document.getElementById('adminQuickSearch');
