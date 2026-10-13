@@ -417,6 +417,28 @@ const studyPromoImageUpload = multer({
     `);
 
     // -------------------------------------------------------------------
+    // Website job posts (public listings on the Staffing site). Visitors
+    // apply WITHOUT logging in; applications land in jobseeker_applications
+    // so they show up in the admin "Job Applications" panel.
+    // -------------------------------------------------------------------
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS job_posts (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        location TEXT,
+        job_type TEXT,
+        salary TEXT,
+        description TEXT,
+        is_active BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    await pool.query(`
+      ALTER TABLE jobseeker_applications
+        ADD COLUMN IF NOT EXISTS job_post_id INTEGER REFERENCES job_posts(id) ON DELETE SET NULL;
+    `);
+
+    // -------------------------------------------------------------------
     // LinkedIn-style extras on the customer profile.
     // -------------------------------------------------------------------
     await pool.query(`
@@ -1287,6 +1309,159 @@ router.delete('/admin/jobseeker-applications/:id', requireAdmin, async (req, res
   } catch (err) {
     console.error('Delete jobseeker application error:', err.message);
     res.status(500).json({ error: 'Could not delete application.' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Website job posts
+// Public: list active posts + apply (NO login required)
+// Admin (protected): create / edit / hide / delete posts
+// ---------------------------------------------------------------------------
+
+// Tiny in-memory throttle for the public apply endpoint only (per IP).
+const jobApplyHits = new Map();
+function jobApplyThrottle(req, res, next) {
+  const ip = req.ip || (req.connection && req.connection.remoteAddress) || 'unknown';
+  const now = Date.now();
+  const windowMs = 10 * 60 * 1000; // 10 minutes
+  const max = 8;                   // 8 applications per IP per window
+  const hits = (jobApplyHits.get(ip) || []).filter((t) => now - t < windowMs);
+  if (hits.length >= max) {
+    return res.status(429).json({ error: 'Too many applications from this connection. Please try again later.' });
+  }
+  hits.push(now);
+  jobApplyHits.set(ip, hits);
+  next();
+}
+
+router.get('/job-posts', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, title, location, job_type, salary, description, created_at
+         FROM job_posts WHERE is_active = true ORDER BY created_at DESC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch job posts error:', err.message);
+    res.status(500).json({ error: 'Could not load job posts.' });
+  }
+});
+
+router.post('/job-posts/:id/apply', jobApplyThrottle, async (req, res) => {
+  const { name, phone, email, description } = req.body || {};
+  const cleanName = (name || '').toString().trim();
+  const cleanPhone = (phone || '').toString().trim();
+  const cleanEmail = (email || '').toString().trim();
+  const cleanDesc = (description || '').toString().trim();
+
+  if (!cleanName || !cleanPhone || !cleanEmail) {
+    return res.status(400).json({ error: 'Name, phone number and email are required.' });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+    return res.status(400).json({ error: 'Please enter a valid email address.' });
+  }
+  if (cleanName.length > 200 || cleanEmail.length > 200 || cleanPhone.length > 60 || cleanDesc.length > 5000) {
+    return res.status(400).json({ error: 'One of the fields is too long.' });
+  }
+
+  const postId = parseInt(req.params.id, 10);
+  if (!Number.isInteger(postId)) return res.status(404).json({ error: 'Job post not found.' });
+
+  try {
+    const post = await pool.query('SELECT id, title FROM job_posts WHERE id = $1 AND is_active = true', [postId]);
+    if (!post.rows.length) return res.status(404).json({ error: 'This job post is no longer available.' });
+    const jobTitle = post.rows[0].title;
+
+    const result = await pool.query(
+      `INSERT INTO jobseeker_applications
+        (full_name, email, phone, field, message, job_post_id)
+       VALUES ($1,$2,$3,$4,$5,$6)
+       RETURNING id`,
+      [cleanName, cleanEmail, cleanPhone, `Job Post: ${jobTitle}`, cleanDesc || null, postId]
+    );
+
+    transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      subject: `New Job Post Application — ${jobTitle} — ${cleanName}`,
+      text: `New application #${result.rows[0].id} for job post "${jobTitle}"\nName: ${cleanName}\nEmail: ${cleanEmail}\nPhone: ${cleanPhone}\n\nMessage:\n${cleanDesc || 'N/A'}`
+    }).catch(err => console.error('Job post application notification email failed:', err.message));
+
+    res.status(200).json({ success: true, id: result.rows[0].id });
+  } catch (err) {
+    console.error('Job post apply error:', err.message);
+    res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+  }
+});
+
+router.get('/admin/job-posts', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT p.*, (SELECT COUNT(*) FROM jobseeker_applications a WHERE a.job_post_id = p.id)::int AS application_count
+         FROM job_posts p ORDER BY p.created_at DESC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch admin job posts error:', err.message);
+    res.status(500).json({ error: 'Could not load job posts.' });
+  }
+});
+
+router.post('/admin/job-posts', requireAdmin, async (req, res) => {
+  const { title, location, job_type, salary, description } = req.body || {};
+  if (!title || !title.toString().trim()) return res.status(400).json({ error: 'Job title is required.' });
+  try {
+    const result = await pool.query(
+      `INSERT INTO job_posts (title, location, job_type, salary, description)
+       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+      [title.toString().trim(), location || null, job_type || null, salary || null, description || null]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Create job post error:', err.message);
+    res.status(500).json({ error: 'Could not create job post.' });
+  }
+});
+
+router.put('/admin/job-posts/:id', requireAdmin, async (req, res) => {
+  const { title, location, job_type, salary, description } = req.body || {};
+  if (!title || !title.toString().trim()) return res.status(400).json({ error: 'Job title is required.' });
+  try {
+    const result = await pool.query(
+      `UPDATE job_posts SET title = $1, location = $2, job_type = $3, salary = $4, description = $5
+       WHERE id = $6 RETURNING *`,
+      [title.toString().trim(), location || null, job_type || null, salary || null, description || null, req.params.id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'Job post not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update job post error:', err.message);
+    res.status(500).json({ error: 'Could not update job post.' });
+  }
+});
+
+router.patch('/admin/job-posts/:id/toggle', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'UPDATE job_posts SET is_active = NOT is_active WHERE id = $1 RETURNING *',
+      [req.params.id]
+    );
+    if (!result.rows.length) return res.status(404).json({ error: 'Job post not found.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Toggle job post error:', err.message);
+    res.status(500).json({ error: 'Could not update job post.' });
+  }
+});
+
+router.delete('/admin/job-posts/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM job_posts WHERE id = $1 RETURNING id', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Job post not found.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete job post error:', err.message);
+    res.status(500).json({ error: 'Could not delete job post.' });
   }
 });
 
