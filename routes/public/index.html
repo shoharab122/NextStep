@@ -1087,7 +1087,7 @@
     .about-figures{ grid-template-columns:1fr 1fr; }
     section{ padding:3rem 0; }
   }
-  /* European university partner logo marquee */
+  /* University partner logo marquee (Europe & Asia) */
   #uni-partners{ padding-bottom:4rem; }
   #uni-partners .section-head{ margin-bottom:2.25rem; }
   .uni-marquee-wrap{
@@ -1098,12 +1098,12 @@
   .uni-marquee-fade{ position:absolute; top:0; bottom:0; width:70px; z-index:2; pointer-events:none; }
   .uni-marquee-fade--l{ left:0; background:linear-gradient(90deg, var(--paper), rgba(255,255,255,0)); }
   .uni-marquee-fade--r{ right:0; background:linear-gradient(270deg, var(--paper), rgba(255,255,255,0)); }
-  .uni-marquee-track{ display:flex; width:max-content; animation: uni-scroll 34s linear infinite; }
+  .uni-marquee-track{ display:flex; width:max-content; animation: uni-scroll 95s linear infinite; will-change:transform; }
   .uni-marquee-wrap:hover .uni-marquee-track{ animation-play-state:paused; }
   .uni-marquee-group{ display:flex; align-items:stretch; gap:1.1rem; padding:0 0.55rem; flex-shrink:0; }
   .uni-logo{
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:0.35rem; min-width:168px; height:104px; padding:0.9rem 1.1rem;
+    gap:0.3rem; min-width:176px; max-width:176px; height:132px; padding:0.8rem 0.9rem;
     background:#fff; border:1px solid var(--line); border-radius:var(--radius);
     box-shadow:0 4px 16px -10px rgba(18,33,59,0.18);
     transition: transform .23s ease, box-shadow .23s ease, border-color .23s ease;
@@ -1113,15 +1113,24 @@
     font-family:'Fraunces', Georgia, serif; font-weight:600; font-size:1.02rem;
     color:var(--ink); letter-spacing:-0.01em; text-align:center; line-height:1.15;
   }
+  .uni-logo-img{ width:44px; height:44px; object-fit:contain; flex-shrink:0; }
+  .uni-mono{
+    width:44px; height:44px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--ink); color:#fff; font-weight:700; font-size:0.95rem; letter-spacing:0.02em;
+  }
+  .uni-mono[hidden]{ display:none; }
+  .uni-logo span{ font-size:0.92rem !important; }
   .uni-logo small{ font-size:0.72rem; color:#6B7690; letter-spacing:0.02em; text-align:center; }
   @keyframes uni-scroll{
-    from{ transform:translateX(0); }
-    to{ transform:translateX(-50%); }
+    from{ transform:translateX(-50%); }
+    to{ transform:translateX(0); }
   }
   @media (max-width: 720px){
-    .uni-logo{ min-width:138px; height:92px; padding:0.7rem 0.85rem; }
-    .uni-logo span{ font-size:0.92rem; }
-    .uni-marquee-track{ animation-duration:24s; }
+    .uni-logo{ min-width:148px; max-width:148px; height:120px; padding:0.65rem 0.7rem; }
+    .uni-logo span{ font-size:0.85rem !important; }
+    .uni-logo-img, .uni-mono{ width:38px; height:38px; }
+    .uni-marquee-track{ animation-duration:75s; }
     .uni-marquee-fade{ width:40px; }
   }
   @media (prefers-reduced-motion: reduce){
@@ -2310,8 +2319,8 @@ html, body{ background:#fff; }
     <div class="container">
       <div class="section-head">
         <div class="eyebrow">Study destinations</div>
-        <h2>Universities across Europe.</h2>
-        <p>A glimpse of the European institutions our students have been placed with.</p>
+        <h2>Universities across Europe and Asia.</h2>
+        <p>A glimpse of the European and Asian institutions our students have been placed with.</p>
       </div>
     </div>
     <div class="uni-marquee-wrap">
@@ -2319,36 +2328,93 @@ html, body{ background:#fff; }
       <div class="uni-marquee-fade uni-marquee-fade--r"></div>
       <div class="uni-marquee-track">
         <div class="uni-marquee-group">
-          <div class="uni-logo"><span>Sorbonne</span><small>Paris, France</small></div>
-          <div class="uni-logo"><span>TU Munich</span><small>Munich, Germany</small></div>
-          <div class="uni-logo"><span>Bocconi</span><small>Milan, Italy</small></div>
-          <div class="uni-logo"><span>KU Leuven</span><small>Leuven, Belgium</small></div>
-          <div class="uni-logo"><span>Uni Amsterdam</span><small>Amsterdam, Netherlands</small></div>
-          <div class="uni-logo"><span>ETH Zurich</span><small>Zurich, Switzerland</small></div>
-          <div class="uni-logo"><span>Trinity College</span><small>Dublin, Ireland</small></div>
-          <div class="uni-logo"><span>Uni Helsinki</span><small>Helsinki, Finland</small></div>
-          <div class="uni-logo"><span>Uni Barcelona</span><small>Barcelona, Spain</small></div>
-          <div class="uni-logo"><span>Uppsala Uni</span><small>Uppsala, Sweden</small></div>
-          <div class="uni-logo"><span>Charles Uni</span><small>Prague, Czechia</small></div>
-          <div class="uni-logo"><span>Uni Warsaw</span><small>Warsaw, Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="apu.edu.my" alt="APU logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>APU</div><span>APU</span><small>Kuala Lumpur, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="bac.edu.my,baceducation.edu.my" alt="BAC Education logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>BE</div><span>BAC Education</span><small>Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="city.edu.my" alt="City University Malaysia logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>CM</div><span>City University Malaysia</span><small>Petaling Jaya, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="mbjb.gov.my,johor.gov.my" alt="Johor Bahru logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>JB</div><span>Johor Bahru</span><small>Johor, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="newinti.edu.my,inti.edu.my" alt="INTI logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>INT</div><span>INTI</span><small>Nilai, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="nilai.edu.my" alt="Nilai University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>NIL</div><span>Nilai University</span><small>Nilai, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unimy.edu.my" alt="UniMy logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>UniMy</span><small>Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unirazak.edu.my" alt="UNIRAZAK logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>UNIRAZAK</span><small>Kuala Lumpur, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="umw.edu.my,umwales.edu.my" alt="University of Malaya-Wales logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>MW</div><span>University of Malaya-Wales</span><small>Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="cyberjaya.edu.my" alt="University of Cyberjaya logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>University of Cyberjaya</span><small>Cyberjaya, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unisi.it" alt="University of Siena logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>University of Siena</span><small>Siena, Italy</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="uniroma1.it" alt="Sapienza University of Rome logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>SR</div><span>Sapienza University of Rome</span><small>Rome, Italy</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unipd.it" alt="University of Padua logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>University of Padua</span><small>Padua, Italy</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unito.it" alt="University of Turin logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>University of Turin</span><small>Turin, Italy</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="thomasmore.be" alt="Thomas More University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>TM</div><span>Thomas More University of Applied Sciences</span><small>Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="arteveldehs.be" alt="Artevelde University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>ART</div><span>Artevelde University of Applied Sciences</span><small>Ghent, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="odisee.be,kuleuven.be" alt="Odisee University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>ODI</div><span>Odisee University of Applied Sciences</span><small>Brussels, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="kdg.be" alt="KdG University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>KDG</div><span>KdG University of Applied Sciences</span><small>Antwerp, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="vives.be" alt="VIVES University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>VIV</div><span>VIVES University</span><small>Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="ugent.be" alt="Ghent University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>GHE</div><span>Ghent University</span><small>Ghent, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="uantwerpen.be" alt="Antwerp University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>ANT</div><span>Antwerp University</span><small>Antwerp, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="howest.be" alt="Howest University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>HOW</div><span>Howest University of Applied Sciences</span><small>Bruges, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="warszawa.merito.pl,wsb.edu.pl" alt="Warsaw University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>WAR</div><span>Warsaw University of Applied Sciences</span><small>Warsaw, Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="gdansk.merito.pl,wsb.gda.pl" alt="Gdansk University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>GDA</div><span>Gdansk University of Applied Sciences</span><small>Gdansk, Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="uek.krakow.pl,krakow.merito.pl" alt="Krakow University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>KRA</div><span>Krakow University</span><small>Krakow, Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="wsb.edu.pl,merito.pl" alt="WSB logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>WSB</div><span>WSB</span><small>Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="wsl.com.pl,merito.pl" alt="Logistics University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>LOG</div><span>Logistics University of Applied Sciences</span><small>Poland</small></div>
         </div>
         <div class="uni-marquee-group" aria-hidden="true">
-          <div class="uni-logo"><span>Sorbonne</span><small>Paris, France</small></div>
-          <div class="uni-logo"><span>TU Munich</span><small>Munich, Germany</small></div>
-          <div class="uni-logo"><span>Bocconi</span><small>Milan, Italy</small></div>
-          <div class="uni-logo"><span>KU Leuven</span><small>Leuven, Belgium</small></div>
-          <div class="uni-logo"><span>Uni Amsterdam</span><small>Amsterdam, Netherlands</small></div>
-          <div class="uni-logo"><span>ETH Zurich</span><small>Zurich, Switzerland</small></div>
-          <div class="uni-logo"><span>Trinity College</span><small>Dublin, Ireland</small></div>
-          <div class="uni-logo"><span>Uni Helsinki</span><small>Helsinki, Finland</small></div>
-          <div class="uni-logo"><span>Uni Barcelona</span><small>Barcelona, Spain</small></div>
-          <div class="uni-logo"><span>Uppsala Uni</span><small>Uppsala, Sweden</small></div>
-          <div class="uni-logo"><span>Charles Uni</span><small>Prague, Czechia</small></div>
-          <div class="uni-logo"><span>Uni Warsaw</span><small>Warsaw, Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="apu.edu.my" alt="APU logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>APU</div><span>APU</span><small>Kuala Lumpur, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="bac.edu.my,baceducation.edu.my" alt="BAC Education logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>BE</div><span>BAC Education</span><small>Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="city.edu.my" alt="City University Malaysia logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>CM</div><span>City University Malaysia</span><small>Petaling Jaya, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="mbjb.gov.my,johor.gov.my" alt="Johor Bahru logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>JB</div><span>Johor Bahru</span><small>Johor, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="newinti.edu.my,inti.edu.my" alt="INTI logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>INT</div><span>INTI</span><small>Nilai, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="nilai.edu.my" alt="Nilai University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>NIL</div><span>Nilai University</span><small>Nilai, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unimy.edu.my" alt="UniMy logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>UniMy</span><small>Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unirazak.edu.my" alt="UNIRAZAK logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>UNIRAZAK</span><small>Kuala Lumpur, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="umw.edu.my,umwales.edu.my" alt="University of Malaya-Wales logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>MW</div><span>University of Malaya-Wales</span><small>Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="cyberjaya.edu.my" alt="University of Cyberjaya logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>University of Cyberjaya</span><small>Cyberjaya, Malaysia</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unisi.it" alt="University of Siena logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>University of Siena</span><small>Siena, Italy</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="uniroma1.it" alt="Sapienza University of Rome logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>SR</div><span>Sapienza University of Rome</span><small>Rome, Italy</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unipd.it" alt="University of Padua logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>University of Padua</span><small>Padua, Italy</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="unito.it" alt="University of Turin logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>UNI</div><span>University of Turin</span><small>Turin, Italy</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="thomasmore.be" alt="Thomas More University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>TM</div><span>Thomas More University of Applied Sciences</span><small>Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="arteveldehs.be" alt="Artevelde University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>ART</div><span>Artevelde University of Applied Sciences</span><small>Ghent, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="odisee.be,kuleuven.be" alt="Odisee University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>ODI</div><span>Odisee University of Applied Sciences</span><small>Brussels, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="kdg.be" alt="KdG University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>KDG</div><span>KdG University of Applied Sciences</span><small>Antwerp, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="vives.be" alt="VIVES University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>VIV</div><span>VIVES University</span><small>Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="ugent.be" alt="Ghent University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>GHE</div><span>Ghent University</span><small>Ghent, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="uantwerpen.be" alt="Antwerp University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>ANT</div><span>Antwerp University</span><small>Antwerp, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="howest.be" alt="Howest University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>HOW</div><span>Howest University of Applied Sciences</span><small>Bruges, Belgium</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="warszawa.merito.pl,wsb.edu.pl" alt="Warsaw University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>WAR</div><span>Warsaw University of Applied Sciences</span><small>Warsaw, Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="gdansk.merito.pl,wsb.gda.pl" alt="Gdansk University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>GDA</div><span>Gdansk University of Applied Sciences</span><small>Gdansk, Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="uek.krakow.pl,krakow.merito.pl" alt="Krakow University logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>KRA</div><span>Krakow University</span><small>Krakow, Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="wsb.edu.pl,merito.pl" alt="WSB logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>WSB</div><span>WSB</span><small>Poland</small></div>
+          <div class="uni-logo"><img class="uni-logo-img" data-d="wsl.com.pl,merito.pl" alt="Logistics University of Applied Sciences logo" loading="eager" decoding="async" referrerpolicy="no-referrer" /><div class="uni-mono" hidden>LOG</div><span>Logistics University of Applied Sciences</span><small>Poland</small></div>
         </div>
       </div>
     </div>
   </section>
+
+
+  <script>
+  // University logo loader: tries several logo sources per domain, then falls back to an initials badge
+  (function(){
+    function sources(d){
+      return [
+        'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://'+d+'&size=128',
+        'https://icons.duckduckgo.com/ip3/'+d+'.ico',
+        'https://www.google.com/s2/favicons?domain='+d+'&sz=128',
+        'https://'+d+'/favicon.ico'
+      ];
+    }
+    document.querySelectorAll('.uni-logo-img').forEach(function(img){
+      var queue=[];
+      (img.dataset.d||'').split(',').forEach(function(d){ if(d) queue=queue.concat(sources(d)); });
+      function mono(){ img.style.display='none'; var m=img.nextElementSibling; if(m) m.hidden=false; }
+      function tryNext(){ if(!queue.length){ mono(); return; } img.src=queue.shift(); }
+      img.addEventListener('error', tryNext);
+      img.addEventListener('load', function(){
+        // reject tiny generic placeholder icons
+        if(img.naturalWidth && img.naturalWidth<24) tryNext();
+      });
+      tryNext();
+    });
+  })();
+  </script>
 
   <section id="services">
     <div class="container">
