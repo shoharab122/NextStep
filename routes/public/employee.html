@@ -2080,6 +2080,31 @@
             .logo span{ animation:none !important; }
         }
     </style>
+    <style id="jobPostsStyles">
+        /* ===== WEBSITE JOB POSTS ===== */
+        .jobs-section { padding: 80px 0; background: var(--bg-light); }
+        .jobs-header h2 { font-size: 44px; font-weight: 700; line-height: 1.15; margin-bottom: 16px; max-width: 700px; }
+        .jobs-header p { font-size: 17px; line-height: 1.7; color: var(--text-secondary); margin-bottom: 40px; max-width: 720px; }
+        .jobs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .job-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 28px 24px; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+        .job-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+        .job-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+        .job-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+        .job-chip { font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--bg); color: var(--blue); border: 1px solid var(--border); }
+        .job-chip.salary { color: var(--yellow); }
+        .job-desc { font-size: 14px; line-height: 1.6; color: var(--text-muted); margin: 0 0 20px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+        .job-card .btn { margin-top: auto; align-self: flex-start; }
+        .jobs-state { grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: #fff; border: 1px dashed var(--border); border-radius: 20px; color: var(--text-muted); font-size: 15px; }
+        .job-apply-summary { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 0.95rem; margin: 0 0 1rem; }
+        .job-apply-summary .job-meta { margin-bottom: 8px; }
+        .job-apply-summary .job-apply-desc { font-size: 0.86rem; line-height: 1.55; color: var(--text-muted); white-space: pre-line; max-height: 140px; overflow-y: auto; margin: 0; }
+        @media (max-width: 960px) { .jobs-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) {
+            .jobs-section { padding: 56px 0; }
+            .jobs-header h2 { font-size: 30px; }
+            .jobs-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
@@ -2092,6 +2117,7 @@
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About us</a></li>
+                <li><a href="#jobs">Jobs</a></li>
                 <li><a href="#" data-open-modal="jobseeker">Jobseeker</a></li>
                 <li><a href="#" data-open-modal="employer">Employer</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -2300,6 +2326,20 @@
                     <h3>Agricultural workers</h3>
                     <p>We provide experienced professionals in the agriculture industry, including farmers, farmhands and technicians.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Website Job Posts (public, no login needed to apply) -->
+    <section class="jobs-section" id="jobs">
+        <div class="container">
+            <div class="jobs-header">
+                <span class="about-eyebrow">Open positions</span>
+                <h2>Current job openings</h2>
+                <p>Browse our latest openings and apply in under a minute &mdash; no account or login needed.</p>
+            </div>
+            <div class="jobs-grid" id="jobPostsGrid">
+                <div class="jobs-state">Loading job posts&hellip;</div>
             </div>
         </div>
     </section>
@@ -2816,6 +2856,39 @@
         </div>
     </div>
 
+    <!-- Job post apply popup (no account required) -->
+    <div class="ns-modal-overlay" id="jobApplyModal" aria-hidden="true">
+        <div class="ns-modal" role="dialog" aria-modal="true" aria-labelledby="jobApplyTitle">
+            <button class="ns-modal-close" type="button" data-close-modal aria-label="Close">&times;</button>
+            <h3 id="jobApplyTitle">Apply for this job</h3>
+            <p style="color:var(--text-muted); font-size:0.88rem; margin:-0.1rem 0 1rem;">No account needed &mdash; we'll reach out by email or phone.</p>
+            <div class="job-apply-summary" id="jobApplySummary"></div>
+            <div class="ns-form-msg" id="jobApplyFormMsg"></div>
+            <form id="jobApplyForm">
+                <input type="hidden" id="jobApplyPostId" />
+                <div class="ns-form-group">
+                    <label for="ja_name">Name</label>
+                    <input type="text" id="ja_name" name="name" placeholder="Your full name" required maxlength="200" />
+                </div>
+                <div class="ns-form-row">
+                    <div class="ns-form-group">
+                        <label for="ja_phone">Phone number</label>
+                        <input type="tel" id="ja_phone" name="phone" placeholder="+880 1XXX-XXXXXX" required maxlength="60" />
+                    </div>
+                    <div class="ns-form-group">
+                        <label for="ja_email">Email</label>
+                        <input type="email" id="ja_email" name="email" placeholder="you@example.com" required maxlength="200" />
+                    </div>
+                </div>
+                <div class="ns-form-group">
+                    <label for="ja_description">Description</label>
+                    <textarea id="ja_description" name="description" rows="4" placeholder="Tell us a little about yourself, your experience, or anything we should know." maxlength="5000"></textarea>
+                </div>
+                <button type="submit" class="btn btn-blue" id="jobApplySubmitBtn" style="width:100%;justify-content:center;margin-top:0.5rem;">Submit application</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Logged-in customer profile -->
     <div class="ns-modal-overlay" id="profileModal" aria-hidden="true">
         <div class="ns-modal ns-profile-modal" style="max-width:560px;">
@@ -3132,6 +3205,7 @@
             login: document.getElementById('loginModal'),
             guestJobseeker: document.getElementById('guestJobseekerModal'),
             guestEmployer: document.getElementById('guestEmployerModal'),
+            jobApply: document.getElementById('jobApplyModal'),
             profile: document.getElementById('profileModal'),
         };
 
@@ -3476,6 +3550,104 @@
                 loginBtn.textContent = 'Log in';
             }
         });
+
+        // ---------------- Website job posts (public, no login) ----------------
+        (function jobPostsInit() {
+            const grid = document.getElementById('jobPostsGrid');
+            const form = document.getElementById('jobApplyForm');
+            if (!grid || !form) return;
+            const msgEl = document.getElementById('jobApplyFormMsg');
+            const submitBtn = document.getElementById('jobApplySubmitBtn');
+            const postIdInput = document.getElementById('jobApplyPostId');
+            const titleEl = document.getElementById('jobApplyTitle');
+            const summaryEl = document.getElementById('jobApplySummary');
+            let posts = [];
+
+            function esc(v) {
+                return String(v == null ? '' : v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            }
+
+            function metaChips(p) {
+                return [
+                    p.location ? `<span class="job-chip">📍 ${esc(p.location)}</span>` : '',
+                    p.job_type ? `<span class="job-chip">${esc(p.job_type)}</span>` : '',
+                    p.salary ? `<span class="job-chip salary">${esc(p.salary)}</span>` : '',
+                ].join('');
+            }
+
+            function renderPosts() {
+                if (!posts.length) {
+                    grid.innerHTML = '<div class="jobs-state">No openings right now &mdash; please check back soon.</div>';
+                    return;
+                }
+                grid.innerHTML = posts.map((p) => `
+                    <div class="job-card">
+                        <h3>${esc(p.title)}</h3>
+                        <div class="job-meta">${metaChips(p)}</div>
+                        <p class="job-desc">${esc(p.description || '')}</p>
+                        <button type="button" class="btn btn-blue" data-job-apply="${p.id}">Apply</button>
+                    </div>`).join('');
+            }
+
+            async function loadPosts() {
+                try {
+                    const res = await fetch('/api/job-posts');
+                    if (!res.ok) throw new Error('bad status');
+                    posts = await res.json();
+                    renderPosts();
+                } catch (err) {
+                    grid.innerHTML = '<div class="jobs-state">Could not load job posts right now. Please try again later.</div>';
+                }
+            }
+
+            grid.addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-job-apply]');
+                if (!btn) return;
+                const post = posts.find((x) => String(x.id) === btn.getAttribute('data-job-apply'));
+                if (!post) return;
+                postIdInput.value = post.id;
+                titleEl.textContent = 'Apply: ' + post.title;
+                summaryEl.innerHTML = `<div class="job-meta">${metaChips(post)}</div>`
+                    + (post.description ? `<p class="job-apply-desc">${esc(post.description)}</p>` : '');
+                msgEl.className = 'ns-form-msg';
+                form.reset();
+                openModal('jobApply');
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                msgEl.className = 'ns-form-msg';
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+                try {
+                    const res = await fetch('/api/job-posts/' + encodeURIComponent(postIdInput.value) + '/apply', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: document.getElementById('ja_name').value,
+                            phone: document.getElementById('ja_phone').value,
+                            email: document.getElementById('ja_email').value,
+                            description: document.getElementById('ja_description').value,
+                        }),
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (res.ok && data.success) {
+                        showFormMsg(msgEl, 'Application submitted! We\'ll be in touch soon.', 'success');
+                        form.reset();
+                        window.setTimeout(() => closeAllModals(), 1400);
+                    } else {
+                        showFormMsg(msgEl, data.error || 'Something went wrong. Please try again.', 'error');
+                    }
+                } catch (err) {
+                    showFormMsg(msgEl, 'Network error. Please check your connection and try again.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit application';
+                }
+            });
+
+            loadPosts();
+        })();
 
         // ---------------- Guest jobseeker application (no account) ----------------
         const guestJobseekerForm = document.getElementById('guestJobseekerForm');
