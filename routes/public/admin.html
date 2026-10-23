@@ -1757,6 +1757,88 @@
     #dashboard .icon-pill-dot{ border-color:var(--ink-2); }
   }
 
+
+  /* ---------- Notification bell: badge + dropdown (additive) -------- */
+  #notifBellBtn{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  #notifBellBtn svg.bell-ico{ width:19px; height:19px; display:block; transform-origin:50% 8%; pointer-events:none; }
+  #notifBellBtn[aria-expanded="true"]{ color:var(--brass); border-color:var(--brass); background:rgba(184,134,46,0.10); }
+  @media (min-width:981px){
+    #dashboard #notifBellBtn[aria-expanded="true"]{ color:var(--ink); background:var(--brass-light); border-color:var(--brass-light); }
+  }
+  #messagesUnreadDotTop.ntf-badge{
+    position:absolute; top:-5px; right:-5px; left:auto;
+    min-width:19px; width:auto; height:19px; padding:0 5px; box-sizing:border-box;
+    display:none; align-items:center; justify-content:center;
+    border-radius:999px; background:var(--brand-red); color:#fff;
+    font-size:0.66rem; font-weight:700; line-height:1; letter-spacing:0;
+    border:2px solid #fff; box-shadow:0 1px 4px rgba(208,52,44,0.4);
+    font-family:inherit; pointer-events:none;
+  }
+  @media (min-width:981px){ #dashboard #messagesUnreadDotTop.ntf-badge{ border-color:var(--ink-2); } }
+  @keyframes ntfRing{
+    0%,100%{ transform:rotate(0); } 15%{ transform:rotate(14deg); } 30%{ transform:rotate(-12deg); }
+    45%{ transform:rotate(9deg); } 60%{ transform:rotate(-6deg); } 75%{ transform:rotate(3deg); }
+  }
+  #notifBellBtn.ntf-ring svg.bell-ico{ animation:ntfRing 0.9s ease-in-out 2; }
+  @media (prefers-reduced-motion:reduce){ #notifBellBtn.ntf-ring svg.bell-ico{ animation:none; } }
+
+  #ntfPanel{
+    position:fixed; z-index:99999; display:none; flex-direction:column;
+    width:min(380px, calc(100vw - 20px)); max-height:min(520px, calc(100vh - 90px)); max-height:min(520px, calc(100dvh - 90px));
+    background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:16px;
+    box-shadow:0 22px 50px -14px rgba(18,33,59,0.38), 0 4px 14px rgba(18,33,59,0.10);
+    overflow:hidden; text-align:left;
+  }
+  #ntfPanel.open{ display:flex; animation:ntfPop .18s var(--ease) both; }
+  @keyframes ntfPop{ from{ opacity:0; transform:translateY(-6px) scale(.98); } to{ opacity:1; transform:none; } }
+  .ntf-head{
+    display:flex; align-items:center; justify-content:space-between; gap:0.75rem;
+    padding:0.85rem 1rem; border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(250,248,242,0.9), #fff);
+  }
+  .ntf-title{ font-weight:700; font-size:0.95rem; display:flex; align-items:center; gap:0.5rem; }
+  .ntf-count{ background:var(--brand-red); color:#fff; border-radius:999px; font-size:0.68rem; padding:2px 8px; font-weight:700; }
+  .ntf-markall{
+    border:0; background:none; color:var(--brand-blue); font-weight:600; font-size:0.78rem;
+    cursor:pointer; padding:4px 6px; border-radius:6px; font-family:inherit;
+  }
+  .ntf-markall:hover{ background:rgba(27,78,155,0.08); }
+  .ntf-markall[disabled]{ opacity:0.4; cursor:default; background:none; }
+  .ntf-list{ overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; flex:1 1 auto; }
+  .ntf-item{
+    display:flex; gap:0.7rem; align-items:flex-start; width:100%; text-align:left;
+    padding:0.75rem 1rem; border:0; border-bottom:1px solid rgba(18,33,59,0.07);
+    background:#fff; cursor:pointer; color:inherit; font-family:inherit; font-size:inherit;
+  }
+  .ntf-item:last-child{ border-bottom:0; }
+  .ntf-item:hover{ background:rgba(184,134,46,0.07); }
+  .ntf-item.unseen{ background:rgba(27,78,155,0.05); }
+  .ntf-item.unseen:hover{ background:rgba(27,78,155,0.09); }
+  .ntf-ico{
+    flex:0 0 auto; width:34px; height:34px; border-radius:50%;
+    display:inline-flex; align-items:center; justify-content:center;
+    background:rgba(27,78,155,0.10); color:var(--brand-blue);
+  }
+  .ntf-ico svg{ width:17px; height:17px; display:block; }
+  .ntf-ico.t-contact{ background:rgba(184,134,46,0.14); color:var(--brass); }
+  .ntf-ico.t-message{ background:rgba(208,52,44,0.11); color:var(--brand-red); }
+  .ntf-ico.t-job{ background:rgba(18,33,59,0.09); color:var(--ink); }
+  .ntf-body{ flex:1 1 auto; min-width:0; }
+  .ntf-line1{ display:flex; justify-content:space-between; gap:0.5rem; align-items:baseline; }
+  .ntf-name{ font-weight:600; font-size:0.84rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ntf-time{ flex:0 0 auto; font-size:0.7rem; opacity:0.55; white-space:nowrap; }
+  .ntf-sub{
+    font-size:0.78rem; opacity:0.72; margin-top:2px; line-height:1.35;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;
+  }
+  .ntf-dot{ flex:0 0 auto; width:8px; height:8px; border-radius:50%; background:var(--brand-red); margin-top:6px; }
+  .ntf-empty{ padding:2rem 1rem; text-align:center; font-size:0.85rem; opacity:0.65; }
+  .ntf-foot{
+    padding:0.55rem 1rem; border-top:1px solid var(--line); font-size:0.72rem; opacity:0.75;
+    display:flex; justify-content:space-between; align-items:center; gap:0.5rem; background:rgba(250,248,242,0.7);
+  }
+  .ntf-foot button{ border:0; background:none; color:var(--brand-blue); font-weight:600; font-size:0.72rem; cursor:pointer; font-family:inherit; padding:2px 4px; }
+
   /* ---------- Brand logo: real brand colours, properly aligned ------- */
   .topbar .logo{
     display:inline-flex; align-items:center; gap:0.55rem;
@@ -2323,8 +2405,8 @@
         <button type="button" class="topnav-link" data-tab-link="invoices">Invoices</button>
       </nav>
       <div class="topbar-actions">
-        <button class="icon-pill" id="notifBellBtn" title="Notifications" aria-label="Notifications">
-          <svg class="bell-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8.6a6 6 0 1 0-12 0c0 5-2 6.4-2 6.4h16s-2-1.4-2-6.4"/><path d="M13.7 19a2 2 0 0 1-3.4 0"/></svg><span class="icon-pill-dot" id="messagesUnreadDotTop" style="display:none;"></span>
+        <button type="button" class="icon-pill" id="notifBellBtn" title="Notifications" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false" aria-controls="ntfPanel">
+          <svg class="bell-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8.6a6 6 0 1 0-12 0c0 5-2 6.4-2 6.4h16s-2-1.4-2-6.4"/><path d="M13.7 19a2 2 0 0 1-3.4 0"/></svg><span class="icon-pill-dot ntf-badge" id="messagesUnreadDotTop" style="display:none;" aria-hidden="true"></span>
         </button>
         <span id="whoami" class="row-sub"></span>
         <button class="btn-ghost" id="logoutBtn">Log out</button>
@@ -3680,9 +3762,11 @@
       who.removeAttribute('title');
     }
     loadEverything();
+    if (typeof ntfStart === 'function') ntfStart();
   }
 
   function showLogin() {
+    if (typeof ntfStop === 'function') ntfStop();
     loadCaptcha();
     $('#loginScreen').style.display = 'flex';
     $('#dashboard').style.display = 'none';
@@ -7424,6 +7508,335 @@
   $('#jobDetailModal').addEventListener('click', (e) => {
     if (e.target === $('#jobDetailModal')) $('#jobDetailModal').classList.remove('open');
   });
+
+
+  // ---------------- Notifications (bell in the top nav) ----------------
+  // Shows a red count badge on the bell and a dropdown with everything that
+  // needs the admin's attention: unread customer messages, plus new student
+  // applications, contact messages, jobseeker applications and employer
+  // requests that arrived since the admin last looked at them. It uses only
+  // the existing /admin/* GET endpoints — no backend changes are needed.
+  const NTF_SEEN_KEY = 'nextstep_admin_notif_seen_v1';
+  const NTF_POLL_MS = 45000;
+  const NTF_FIRST_RUN_WINDOW_MS = 7 * 24 * 3600 * 1000; // first ever login: look back 7 days
+  const NTF_TYPES = ['application', 'contact', 'jobseeker', 'employer'];
+  const NTF_TAB_TYPES = { applications: ['application'], contacts: ['contact'], 'job-applications': ['jobseeker', 'employer'] };
+  const NTF_ICONS = {
+    application: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>',
+    contact: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>',
+    message: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15a2 2 0 0 1-2 2H8l-4 3.5V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>',
+    job: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>'
+  };
+
+  let ntfItems = [];            // newest first
+  let ntfUnreadMsgTotal = 0;
+  let ntfTimer = null;
+  let ntfBusy = false;
+  let ntfKnown = null;          // Set of keys already announced (null until first poll finishes)
+  let ntfPanelEl = null;
+  const ntfBaseTitle = document.title;
+
+  function ntfSeenMap() {
+    let m = {};
+    try { m = JSON.parse(localStorage.getItem(NTF_SEEN_KEY) || '{}') || {}; } catch { m = {}; }
+    const base = Date.now() - NTF_FIRST_RUN_WINDOW_MS;
+    NTF_TYPES.forEach((t) => { if (typeof m[t] !== 'number') m[t] = base; });
+    return m;
+  }
+  function ntfSaveSeen(m) {
+    try { localStorage.setItem(NTF_SEEN_KEY, JSON.stringify(m)); } catch { /* storage unavailable */ }
+  }
+  function ntfMarkSeen(types) {
+    const m = ntfSeenMap();
+    const now = Date.now();
+    types.forEach((t) => { m[t] = now; });
+    ntfSaveSeen(m);
+    ntfRender();
+  }
+  function ntfTs(v) {
+    const n = v ? new Date(v).getTime() : 0;
+    return Number.isFinite(n) ? n : 0;
+  }
+  function ntfAgo(ts) {
+    if (!ts) return '';
+    const sec = Math.max(0, Math.round((Date.now() - ts) / 1000));
+    if (sec < 60) return 'Just now';
+    const min = Math.round(sec / 60);
+    if (min < 60) return min + 'm ago';
+    const hr = Math.round(min / 60);
+    if (hr < 24) return hr + 'h ago';
+    const day = Math.round(hr / 24);
+    if (day < 7) return day + 'd ago';
+    return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+  function ntfIsUnseen(it, seen) {
+    return it.kind === 'message' ? true : it.ts > (seen[it.type] || 0);
+  }
+
+  async function ntfGet(path) {
+    try {
+      const res = await apiFetch(path);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return Array.isArray(data) ? data : null;
+    } catch { return null; }
+  }
+
+  async function ntfPoll() {
+    if (!token || ntfBusy) return;
+    ntfBusy = true;
+    try {
+      const [apps, cons, jobs, emps, threads] = await Promise.all([
+        ntfGet('/admin/applications'),
+        ntfGet('/admin/contacts'),
+        ntfGet('/admin/jobseeker-applications'),
+        ntfGet('/admin/employer-inquiries'),
+        ntfGet('/admin/messages'),
+      ]);
+      if (!token) return; // logged out while waiting
+      const items = [];
+      (apps || []).forEach((a) => items.push({
+        key: 'application:' + a.id, kind: 'record', type: 'application', icon: 'application', tab: 'applications',
+        title: 'New student application', name: a.full_name || a.email || 'Applicant',
+        sub: [a.email, a.phone].filter(Boolean).join(' · '), ts: ntfTs(a.created_at),
+      }));
+      (cons || []).forEach((c) => items.push({
+        key: 'contact:' + c.id, kind: 'record', type: 'contact', icon: 'contact', tab: 'contacts',
+        title: 'New contact message', name: c.name || c.email || 'Visitor',
+        sub: c.message || c.email || '', ts: ntfTs(c.created_at),
+      }));
+      (jobs || []).forEach((j) => items.push({
+        key: 'jobseeker:' + j.id, kind: 'record', type: 'jobseeker', icon: 'job', tab: 'job-applications', jobView: 'jobseeker',
+        title: 'New jobseeker application', name: j.full_name || j.email || 'Jobseeker',
+        sub: [j.field, j.country].filter(Boolean).join(' · ') || j.email || '', ts: ntfTs(j.created_at),
+      }));
+      (emps || []).forEach((e) => items.push({
+        key: 'employer:' + e.id, kind: 'record', type: 'employer', icon: 'job', tab: 'job-applications', jobView: 'employer',
+        title: 'New employer request', name: e.company_name || e.contact_name || e.email || 'Employer',
+        sub: [e.industry, e.contact_name].filter(Boolean).join(' · ') || e.email || '', ts: ntfTs(e.created_at),
+      }));
+      let msgTotal = 0;
+      (threads || []).forEach((t) => {
+        const n = Number(t.unread_count) || 0;
+        if (n > 0) {
+          msgTotal += n;
+          items.push({
+            key: 'message:' + t.user_id + ':' + n + ':' + (t.last_at || ''), kind: 'message', type: 'message', icon: 'message',
+            tab: 'messages', userId: t.user_id, count: n,
+            title: n > 1 ? n + ' unread messages' : 'New customer message', name: t.name || t.email || 'Customer',
+            sub: t.last_message || '', ts: ntfTs(t.last_at),
+          });
+        }
+      });
+      // unread messages first, then newest first
+      items.sort((a, b) => (b.kind === 'message') - (a.kind === 'message') || b.ts - a.ts);
+
+      ntfItems = items;
+      ntfUnreadMsgTotal = msgTotal;
+
+      const seen = ntfSeenMap();
+      const fresh = items.filter((it) => ntfIsUnseen(it, seen));
+      const firstPoll = ntfKnown === null;
+      const announce = fresh.filter((it) => firstPoll || !ntfKnown.has(it.key));
+      ntfKnown = new Set(items.map((it) => it.key));
+      ntfRender();
+      if (announce.length) ntfAnnounce(announce, firstPoll);
+    } finally {
+      ntfBusy = false;
+    }
+  }
+
+  function ntfUnseenCount() {
+    const seen = ntfSeenMap();
+    let n = ntfUnreadMsgTotal;
+    ntfItems.forEach((it) => { if (it.kind !== 'message' && ntfIsUnseen(it, seen)) n += 1; });
+    return n;
+  }
+
+  function ntfAnnounce(list, firstPoll) {
+    const n = list.reduce((sum, it) => sum + (it.kind === 'message' ? (it.count || 1) : 1), 0);
+    const text = firstPoll
+      ? 'You have ' + n + ' new notification' + (n === 1 ? '' : 's')
+      : (list.length === 1 ? list[0].title + ' — ' + list[0].name : n + ' new notifications');
+    toast(text);
+    const bell = $('#notifBellBtn');
+    if (bell) {
+      bell.classList.remove('ntf-ring');
+      void bell.offsetWidth; // restart the animation
+      bell.classList.add('ntf-ring');
+      setTimeout(() => bell.classList.remove('ntf-ring'), 2000);
+    }
+    // Native desktop notification (only if the admin allowed it earlier)
+    try {
+      if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
+        new Notification('Nextstep Admin', { body: text, tag: 'nextstep-admin-notif' });
+      }
+    } catch { /* not supported */ }
+  }
+
+  function ntfRender() {
+    const n = ntfUnseenCount();
+    const badge = $('#messagesUnreadDotTop');
+    if (badge) {
+      badge.textContent = n > 99 ? '99+' : String(n);
+      badge.style.display = n > 0 ? 'flex' : 'none';
+    }
+    const bell = $('#notifBellBtn');
+    if (bell) {
+      bell.setAttribute('aria-label', n > 0 ? 'Notifications, ' + n + ' new' : 'Notifications');
+      bell.title = n > 0 ? n + ' new notification' + (n === 1 ? '' : 's') : 'Notifications';
+    }
+    document.title = n > 0 ? '(' + (n > 99 ? '99+' : n) + ') ' + ntfBaseTitle : ntfBaseTitle;
+    if (ntfPanelEl && ntfPanelEl.classList.contains('open')) ntfRenderPanel();
+  }
+
+  function ntfEnsurePanel() {
+    if (ntfPanelEl) return ntfPanelEl;
+    const el = document.createElement('div');
+    el.id = 'ntfPanel';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-label', 'Notifications');
+    // Lives on <body> so the sticky header's overflow can never clip it
+    document.body.appendChild(el);
+    el.addEventListener('click', (e) => {
+      const markAll = e.target.closest('[data-ntf-markall]');
+      if (markAll) { if (!markAll.disabled) ntfMarkSeen(NTF_TYPES); return; }
+      const perm = e.target.closest('[data-ntf-perm]');
+      if (perm) {
+        try {
+          Notification.requestPermission().then(() => ntfRenderPanel());
+        } catch { /* not supported */ }
+        return;
+      }
+      const row = e.target.closest('[data-ntf-key]');
+      if (row) ntfOpenItem(row.dataset.ntfKey);
+    });
+    ntfPanelEl = el;
+    return el;
+  }
+
+  function ntfRenderPanel() {
+    const el = ntfEnsurePanel();
+    const seen = ntfSeenMap();
+    const unseen = ntfUnseenCount();
+    const list = ntfItems.slice(0, 15);
+    const canAskPerm = 'Notification' in window && Notification.permission === 'default';
+    el.innerHTML = `
+      <div class="ntf-head">
+        <div class="ntf-title">Notifications ${unseen > 0 ? `<span class="ntf-count">${unseen > 99 ? '99+' : unseen} new</span>` : ''}</div>
+        <button type="button" class="ntf-markall" data-ntf-markall ${ntfItems.some((it) => it.kind !== 'message' && ntfIsUnseen(it, seen)) ? '' : 'disabled'}>Mark all as read</button>
+      </div>
+      <div class="ntf-list">
+        ${list.length ? list.map((it) => {
+          const isNew = ntfIsUnseen(it, seen);
+          const cls = it.type === 'contact' ? 't-contact' : (it.type === 'message' ? 't-message' : (it.type === 'jobseeker' || it.type === 'employer' ? 't-job' : ''));
+          return `
+          <button type="button" class="ntf-item ${isNew ? 'unseen' : ''}" data-ntf-key="${escapeHtml(it.key)}">
+            <span class="ntf-ico ${cls}">${NTF_ICONS[it.icon] || ''}</span>
+            <span class="ntf-body">
+              <span class="ntf-line1"><span class="ntf-name">${escapeHtml(it.title)}</span><span class="ntf-time">${escapeHtml(ntfAgo(it.ts))}</span></span>
+              <span class="ntf-sub"><strong>${escapeHtml(it.name)}</strong>${it.sub ? ' — ' + escapeHtml(String(it.sub).slice(0, 140)) : ''}</span>
+            </span>
+            ${isNew ? '<span class="ntf-dot"></span>' : ''}
+          </button>`;
+        }).join('') : `<div class="ntf-empty">You're all caught up — nothing new right now.</div>`}
+      </div>
+      <div class="ntf-foot">
+        <span>Checks for new activity every minute</span>
+        ${canAskPerm ? '<button type="button" data-ntf-perm>Enable desktop alerts</button>' : ''}
+      </div>`;
+  }
+
+  function ntfPositionPanel() {
+    const bell = $('#notifBellBtn');
+    if (!bell || !ntfPanelEl) return;
+    const r = bell.getBoundingClientRect();
+    const w = Math.min(380, window.innerWidth - 20);
+    let left = r.right - w;
+    left = Math.max(10, Math.min(left, window.innerWidth - w - 10));
+    ntfPanelEl.style.left = left + 'px';
+    ntfPanelEl.style.top = Math.round(r.bottom + 10) + 'px';
+  }
+
+  function ntfOpenPanel() {
+    const el = ntfEnsurePanel();
+    ntfRenderPanel();
+    ntfPositionPanel();
+    el.classList.add('open');
+    const bell = $('#notifBellBtn');
+    if (bell) bell.setAttribute('aria-expanded', 'true');
+    ntfPoll(); // refresh in the background so the list is current
+  }
+  function ntfClosePanel() {
+    if (ntfPanelEl) ntfPanelEl.classList.remove('open');
+    const bell = $('#notifBellBtn');
+    if (bell) bell.setAttribute('aria-expanded', 'false');
+  }
+
+  function ntfOpenItem(key) {
+    const it = ntfItems.find((x) => x.key === key);
+    ntfClosePanel();
+    if (!it) return;
+    if (typeof closeMobileMenu === 'function') closeMobileMenu();
+    if (it.type === 'jobseeker' || it.type === 'employer') {
+      // show the matching list (Jobseekers / Employers) in the Job applications tab
+      activateTab(it.tab);
+      const toggle = $(it.jobView === 'employer' ? '#jobTypeEmployerBtn' : '#jobTypeJobseekerBtn');
+      if (toggle) toggle.click();
+    } else {
+      activateTab(it.tab);
+    }
+    if (it.type === 'message' && typeof openThread === 'function') openThread(it.userId);
+    if (it.type !== 'message') ntfMarkSeen([it.type]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function ntfStart() {
+    ntfEnsurePanel();
+    ntfKnown = null;
+    ntfPoll();
+    clearInterval(ntfTimer);
+    ntfTimer = setInterval(ntfPoll, NTF_POLL_MS);
+  }
+  function ntfStop() {
+    clearInterval(ntfTimer);
+    ntfTimer = null;
+    ntfItems = [];
+    ntfUnreadMsgTotal = 0;
+    ntfKnown = null;
+    ntfClosePanel();
+    const badge = $('#messagesUnreadDotTop');
+    if (badge) badge.style.display = 'none';
+    document.title = ntfBaseTitle;
+  }
+
+  (function ntfWire() {
+    const bell = $('#notifBellBtn');
+    if (!bell) return;
+    bell.addEventListener('click', (e) => {
+      e.stopPropagation();
+      ntfPanelEl && ntfPanelEl.classList.contains('open') ? ntfClosePanel() : ntfOpenPanel();
+    });
+    document.addEventListener('click', (e) => {
+      if (!ntfPanelEl || !ntfPanelEl.classList.contains('open')) return;
+      if (ntfPanelEl.contains(e.target) || bell.contains(e.target)) return;
+      ntfClosePanel();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && ntfPanelEl && ntfPanelEl.classList.contains('open')) { ntfClosePanel(); bell.focus(); }
+    });
+    window.addEventListener('resize', () => { if (ntfPanelEl && ntfPanelEl.classList.contains('open')) ntfPositionPanel(); });
+    window.addEventListener('scroll', () => { if (ntfPanelEl && ntfPanelEl.classList.contains('open')) ntfPositionPanel(); }, { passive: true });
+    // Visiting a section counts as having seen its new items
+    $$('.tab-btn[data-tab], [data-tab-link]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const types = NTF_TAB_TYPES[btn.dataset.tab || btn.dataset.tabLink];
+        if (types) ntfMarkSeen(types);
+      });
+    });
+    // Coming back to the tab: check right away
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && token && ntfTimer) ntfPoll(); });
+  })();
 
   verifySession();
 </script>
