@@ -4548,12 +4548,12 @@ var ART=(function(){
 })();
 
   var DEFAULTS=[
-    {country:'Italy',flag_emoji:'🇮🇹',title:'Study in Italy',description:'Scholarships & admissions',art:'italy'},
-    {country:'Belgium',flag_emoji:'🇧🇪',title:'Study in Belgium',description:'Full process, start to finish',art:'belgium'},
-    {country:'Poland',flag_emoji:'🇵🇱',title:'Study in Poland',description:'UG & PG programs',art:'poland'},
-    {country:'Malta',flag_emoji:'🇲🇹',title:'Study in Malta',description:'Budget planner & guidance',art:'malta'},
-    {country:'China',flag_emoji:'🇨🇳',title:'Study in China',description:'Cost estimation & admissions',art:'china'},
-    {country:'Malaysia',flag_emoji:'🇲🇾',title:'Study in Malaysia',description:'Cost list & programs',art:'malaysia'}
+    {country:'Italy',flag_emoji:'🇮🇹',title:'Study in Italy',description:'Scholarships & admissions',art:'italy',photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Colosseo_2020.jpg?width=800'},
+    {country:'Belgium',flag_emoji:'🇧🇪',title:'Study in Belgium',description:'Full process, start to finish',art:'belgium',photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Belgique_-_Bruxelles_-_Grand-Place_-_C%C3%B4t%C3%A9_nord-est.jpg?width=800'},
+    {country:'Poland',flag_emoji:'🇵🇱',title:'Study in Poland',description:'UG & PG programs',art:'poland',photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Krakow%C2%B4s_Main_Square_at_dusk_%289157072789%29.jpg?width=800'},
+    {country:'Malta',flag_emoji:'🇲🇹',title:'Study in Malta',description:'Budget planner & guidance',art:'malta',photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Valletta.jpg?width=800'},
+    {country:'China',flag_emoji:'🇨🇳',title:'Study in China',description:'Cost estimation & admissions',art:'china',photo:'https://commons.wikimedia.org/wiki/Special:FilePath/The_Great_Wall_of_China_at_Jinshanling-edit.jpg?width=800'},
+    {country:'Malaysia',flag_emoji:'🇲🇾',title:'Study in Malaysia',description:'Cost list & programs',art:'malaysia',photo:'https://commons.wikimedia.org/wiki/Special:FilePath/Petronas_Panorama_II.jpg?width=800'}
   ];
   var built=false, DUR=700, EASE='cubic-bezier(.22,1,.36,1)';
   function build(list){
@@ -4569,13 +4569,20 @@ var ART=(function(){
     built=true;
     var slides=root.querySelector('.hf-slides');
     slides.innerHTML=list.map(function(d,i){
-      var img=opt(d.image_url);
+      var img=opt(d.image_url)||d.photo||'';
       var rating=Number(d.rating)>0?' · ★ '+Number(d.rating).toFixed(1):'';
       return '<a class="hf-slide'+(i===0?' is-active':'')+'" href="#destinations" aria-hidden="'+(i===0?'false':'true')+'" tabindex="'+(i===0?'0':'-1')+'" aria-label="'+esc(d.title)+' ('+(i+1)+' of '+list.length+')">'+
-        '<div class="hf-pic'+(img||!d.art?'':' hasart')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(d.title)+'" decoding="async" '+(i===0?'fetchpriority="high"':'loading="lazy"')+' />':'')+
+        '<div class="hf-pic'+(img||!d.art?'':' hasart')+'"'+(d.art?' data-art="'+esc(d.art)+'"':'')+'>'+(img?'<img src="'+esc(img)+'" alt="'+esc(d.title)+'" decoding="async" '+(i===0?'fetchpriority="high"':'loading="lazy"')+' />':'')+
         (!img&&d.art&&ART[d.art]?ART[d.art]():'')+'<span>'+(d.flag_emoji?esc(d.flag_emoji)+' ':'')+esc(d.country)+'</span></div>'+
         '<div class="hf-meta"><div><b>'+esc(d.title)+'</b><small>'+esc(d.description||'Explore this destination')+rating+'</small></div><i aria-hidden="true">→</i></div></a>';
     }).join('');
+    [].slice.call(slides.querySelectorAll('.hf-pic img')).forEach(function(im){
+      im.addEventListener('error',function(){
+        var pic=im.parentNode, a=pic&&pic.getAttribute('data-art');
+        if(a&&ART[a]){ im.insertAdjacentHTML('afterend',ART[a]()); }
+        if(im.parentNode) im.parentNode.removeChild(im);
+      },{once:true});
+    });
     var els=[].slice.call(slides.children), idx=0, timer=null, hold=false, vis=true, busy=false;
     if(els.length<2) return;
     var dots=document.createElement('div'); dots.className='hf-dots';
@@ -4791,6 +4798,42 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;oversc
   .destination-card,.event-card,.uni-card{transform:translateZ(0);backface-visibility:hidden}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+<style id="hero-white-desktop">
+/* Desktop hero: same clean white background as phones/tablets (no sky photo). Mobile rules are unchanged. */
+@media(min-width:1081px){
+  .hero,#siteContent .hero{background:#fff!important;background-image:none!important}
+  .hero::before,.hero::after{display:none!important}
+  .hero-frame{background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border:0!important;box-shadow:none!important}
+}
+</style>
+<style id="hero-search-pill-mobile">
+/* Mobile: 2x2 quick-start fields + full-width CTA in one rounded bar. Nothing scrolls or overlaps. Desktop untouched. */
+@media(max-width:720px){
+  /* order: copy -> stats + cards -> search bar */
+  .hero-frame>.hero-copy{order:0}
+  .hero-frame>.hero-row{order:1;margin-top:0}
+  .hero-frame>.hero-search{order:2;margin-top:0!important}
+  /* keep carousel slide inside its card so the arrow chip is never clipped */
+  .hf-slides{grid-template-columns:minmax(0,1fr)}
+  .hf-slide{min-width:0;max-width:100%}
+  .hf-meta{min-width:0}
+
+  .hero .hero-search{display:grid!important;grid-template-columns:1fr 1fr!important;gap:0!important;align-items:stretch!important;
+    border-radius:28px!important;padding:6px!important;overflow:visible!important;
+    background:#fff!important;border:1px solid rgba(20,40,58,.06)!important;
+    box-shadow:0 14px 32px -16px rgba(18,33,59,.35),0 2px 8px -3px rgba(18,33,59,.12)!important}
+  .hero .hero-search a.hs-f{display:flex!important;flex-direction:column;justify-content:center;gap:2px;min-width:0;
+    min-height:58px!important;padding:8px 14px!important;white-space:normal;text-align:left;
+    font-size:.92rem!important;line-height:1.2;border:0!important}
+  .hero .hero-search a.hs-f small{font-size:.72rem!important;line-height:1.25;color:#5a6577}
+  .hero .hero-search a.hs-f:nth-child(even){border-left:1px solid rgba(20,40,58,.1)!important}
+  .hero .hero-search a.hs-f:nth-child(n+3){border-top:1px solid rgba(20,40,58,.1)!important}
+  .hero .hero-search .hs-go{grid-column:1/-1!important;position:static!important;width:100%;
+    margin:6px 0 0!important;min-height:52px!important;height:52px;padding:0 22px!important;
+    font-size:1rem!important;gap:10px;text-align:center}
+  .hero .hero-search .hs-go::after{content:"\2192"!important;font-size:1.15rem!important;color:#F1D58F!important}
+}
 </style>
 </body>
 </html>
