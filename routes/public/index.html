@@ -2248,7 +2248,22 @@ input:focus,select:focus,textarea:focus,a:focus-visible,button:focus-visible{out
 footer{background:var(--navy)!important;color:#dfe7ee;border-radius:var(--r-lg) var(--r-lg) 0 0;margin-top:30px}
 footer h4,footer a{color:#fff}
 /* welcome screen */
-#welcomeScreen{background:linear-gradient(180deg,rgba(247,243,236,.85),rgba(20,40,58,.35)),url('https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=2000&auto=format&fit=crop') center/cover!important}
+#welcomeScreen{background:#fff!important;isolation:isolate}
+/* soft layered light on pure white */
+#welcomeScreen::before{display:block!important;content:"";position:fixed;inset:0;z-index:-2;opacity:1!important;pointer-events:none;
+ background:
+  radial-gradient(55% 42% at 90% -4%,rgba(184,134,46,.17),transparent 66%),
+  radial-gradient(50% 45% at 4% 104%,rgba(27,78,155,.13),transparent 66%),
+  radial-gradient(38% 30% at 50% 38%,rgba(27,78,155,.045),transparent 72%),
+  radial-gradient(30% 26% at 100% 70%,rgba(208,52,44,.045),transparent 70%),
+  #fff!important;background-image:none}
+/* fine dot grid + route arcs, faded out behind the content */
+#welcomeScreen::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+ background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' fill='none'%3E%3Cg stroke-width='1.5' stroke-dasharray='2 8' stroke-linecap='round'%3E%3Cpath d='M-20 650C260 380 520 290 820 335S1120 210 1230 90' stroke='%231B4E9B' stroke-opacity='.30'/%3E%3Cpath d='M-20 770C300 570 640 515 900 565S1150 485 1230 395' stroke='%23B8862E' stroke-opacity='.38'/%3E%3C/g%3E%3Cg stroke='%231B4E9B' stroke-opacity='.08' stroke-width='1.2'%3E%3Ccircle cx='1090' cy='110' r='80'/%3E%3Ccircle cx='1090' cy='110' r='150'/%3E%3Ccircle cx='1090' cy='110' r='230'/%3E%3Ccircle cx='90' cy='700' r='70'/%3E%3Ccircle cx='90' cy='700' r='140'/%3E%3Ccircle cx='90' cy='700' r='215'/%3E%3C/g%3E%3Cg fill='%23B8862E'%3E%3Ccircle cx='820' cy='335' r='4.5' fill-opacity='.55'/%3E%3Ccircle cx='900' cy='565' r='4.5' fill-opacity='.55'/%3E%3Ccircle cx='1090' cy='110' r='3.5' fill-opacity='.6'/%3E%3C/g%3E%3Cg fill='%23D0342C' fill-opacity='.35'%3E%3Ccircle cx='260' cy='430' r='3.5'/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat,
+  radial-gradient(rgba(18,33,59,.10) 1px,transparent 1.4px) 0 0/26px 26px;
+ -webkit-mask-image:radial-gradient(ellipse 62% 58% at 50% 46%,transparent 0,transparent 38%,#000 100%);
+ mask-image:radial-gradient(ellipse 62% 58% at 50% 46%,transparent 0,transparent 38%,#000 100%)}
+@media(max-width:640px){#welcomeScreen::after{background-size:auto 100%,26px 26px;background-position:60% center,0 0}}
 .welcome-title,.welcome-tagline{font-family:var(--serif);color:var(--ink)!important}
 .welcome-role-card{overflow:hidden}
 /* tablet + mobile */
